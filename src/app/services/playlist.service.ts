@@ -35,6 +35,14 @@ export class PlaylistService {
     return this.albums;
   }
 
+  public GetMax(): number {
+    return this.albums.reduce((acc, album) => { return album.GetRank() > acc ? album.GetRank() : acc }, 0);
+  }
+
+  public GetMin(): number {
+    return this.albums.reduce((acc, album) => { return album.GetRank() < acc ? album.GetRank() : acc }, 800);
+  }
+
   /////////////////////////////
   //                         //
   //     PRIVATE METHODS     //
