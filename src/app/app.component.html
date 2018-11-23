@@ -1,0 +1,8 @@
+<input id="playlist" type="file" accept=".xml" (change)="handleFileInput($event.target.files)">
+
+<p>Albums</p>
+<div id="long-plays"></div>
+<p>EPs</p>
+<div id="extended-plays"></div>
+
+<router-outlet></router-outlet>
