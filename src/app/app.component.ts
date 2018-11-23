@@ -29,17 +29,11 @@ export class AppComponent {
       this.playlistService.init(e.target.result);
 
       // Display Albums
-      const min = this.playlistService.GetMin();
-      const max = this.playlistService.GetMax();
-
       this.albums = this.playlistService.GetAlbums().map(album => {
-        album.rank = (5 - 1) * ((album.GetRank() - min) / (max - min)) + 1;
-        album.starRatings = this.getStarRatings(album.rank);
+        album.starRatings = this.getStarRatings(album.rating);
         album.tracks.forEach(disc => {
           Object.keys(disc).forEach(track => {
-            disc[track].rating = disc[track].GetRating();
             disc[track].starRatings = this.getStarRatings(disc[track].rating);
-            console.log(disc[track].rating);
           });
         });
         return album;

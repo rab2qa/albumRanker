@@ -15,8 +15,10 @@ export class PlaylistService {
   //                    //
   ////////////////////////
     
-  private playlist;
-  private albums;
+  private playlist;               // JSON Representation of Initial XML Playlist
+  private albums: Array<Album>;   // Object Relational Model
+  private minAlbumScore;          // Cached Minimum Album Score for Performance Gain
+  private maxAlbumRScore;         // Cached Maximum Album Score for Performance Gain
 
   ////////////////////////////
   //                        //
@@ -27,20 +29,27 @@ export class PlaylistService {
   constructor() { }
 
   public init(xml): void {
+
+    // Parse XML
     this.playlist = this.ParseXML(xml);
-    this.albums = this.GenerateORM(this.playlist);
-  }
+
+    // Generate the Object Relational Model
+    this.GenerateORM();
+
+    // Set Each Album's Rating Based on Its Songs' Ratings
+    this.albums.forEach(album => {
+      album.rating = (5 - 1) * ((album.GetScore() - this.GetMinAlbumRScore()) / (this.GetMaxAlbumScore() - this.GetMinAlbumRScore())) + 1;
+    });
+
+    // Sort All Albums By Rating
+    this.albums = this.albums.sort((a: Album, b: Album) => { 
+      return b.rating - a.rating; 
+    });
+
+  } // End init()
 
   public GetAlbums(): Array<Album> {
     return this.albums;
-  }
-
-  public GetMax(): number {
-    return this.albums.reduce((acc, album) => { return album.GetRank() > acc ? album.GetRank() : acc }, 0);
-  }
-
-  public GetMin(): number {
-    return this.albums.reduce((acc, album) => { return album.GetRank() < acc ? album.GetRank() : acc }, 800);
   }
 
   /////////////////////////////
@@ -48,6 +57,26 @@ export class PlaylistService {
   //     PRIVATE METHODS     //
   //                         //
   /////////////////////////////
+
+  private GetMaxAlbumScore(): number {
+    if (!this.maxAlbumRScore) {
+      this.maxAlbumRScore = this.albums.reduce((acc, album) => { 
+        let albumRating = album.GetScore(); 
+        return albumRating > acc ? albumRating : acc;
+      }, 0);
+    }
+    return this.maxAlbumRScore;
+  }
+
+  private GetMinAlbumRScore(): number {
+    if (!this.minAlbumScore) {
+      this.minAlbumScore = this.albums.reduce((acc, album) => { 
+        let albumRating = album.GetScore(); 
+        return albumRating < acc ? albumRating: acc;
+      }, 800);
+    }
+    return this.minAlbumScore;
+  }
 
   private ParseXML(value) {
     var response = {};
@@ -103,12 +132,12 @@ export class PlaylistService {
     return response;
   }
   
-  private GenerateORM(playlist) {
+  private GenerateORM() {
     let artists = {};
     let albums = {};
   
-    for (let key in playlist["Tracks"]) {
-      let track = playlist["Tracks"][key];
+    for (let key in this.playlist["Tracks"]) {
+      let track = this.playlist["Tracks"][key];
       let artistName: string = track["Artist"];
       let albumName: string = track["Album"];
       let trackNumber = +track["Track Number"];
@@ -129,7 +158,7 @@ export class PlaylistService {
         genre: track["Genre"],
         duration: +track["Total Time"],
         releaseDate: new Date(track["Release Date"]),
-        rating: +track["Rating"] || 0,
+        rating: +track["Rating"] / 20 || 0,
         playCount: +track["Play Count"] || 0,
         skipCount: +track["Skip Count"] || 0,
         trackID: +track["Track ID"]
@@ -142,6 +171,7 @@ export class PlaylistService {
       albums[albumName].artist = artists[artistName];
     }
   
-    return Object.values(albums).sort((a: Album, b: Album) => { return b.GetRank() - a.GetRank(); } );
+    this.albums = Object.values(albums);
   }
-}
+
+} // End class PlaylistService
