@@ -38,13 +38,15 @@ export class PlaylistService {
 
     // Set Each Album's Rating Based on Its Songs' Ratings
     this.albums.forEach(album => {
-      album.rating = (5 - 1) * ((album.GetScore() - this.GetMinAlbumRScore()) / (this.GetMaxAlbumScore() - this.GetMinAlbumRScore())) + 1;
+      album.rating = (5 - 0) * ((album.GetScore() - this.GetMinAlbumRScore()) / (this.GetMaxAlbumScore() - this.GetMinAlbumRScore())) + 0;
     });
 
     // Sort All Albums By Rating
-    this.albums = this.albums.sort((a: Album, b: Album) => { 
-      return b.rating - a.rating; 
-    });
+    this.albums = this.albums
+      .filter(album => album.rating > 0)
+      .sort((a: Album, b: Album) => { 
+        return b.rating - a.rating; 
+      });
 
   } // End init()
 

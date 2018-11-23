@@ -41,14 +41,18 @@ export class Album {
     }, 0);
   }
 
+  // Main Algorithm For Calculating an Album's Rating
+  // 1) Order the Tracks on the Album by Indivitual Track Rating
+  // 2) Take the Top 10 Tracks, Discarding the Rest (So That Albums With Lots of Tracks Don't Dwarf Standard LPs)
+  // 3) Sum All Individual Track Points into Total Album Points
   public GetScore(): number {
     return this.Flatten()
       .sort((a, b) => {
         return b.rating - a.rating;
       })
       .slice(0, 10)
-      .reduce((accumulator, song) => {
-        return song.rating > 0 ? accumulator + Math.pow(2, song.rating - 1) : 0;
+      .reduce((sum, song) => {
+        return sum + song.GetScore();
       }, 0);
   }
 
