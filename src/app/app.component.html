@@ -10,12 +10,23 @@
     </div>
     <ul class="albums">
       <ng-template ngFor let-album [ngForOf]="albums" let-i="index">
-        <li class="flex">
-          <div>{{  album.artist.name }} - {{ album.name }}</div>
-          <div class="text-right">
-            <span class="points">
-              {{ album.rank }}
-            </span>
+        <li class="transition" (click)="toggleShowAlbumDetails(album)">
+          <div class="album-title flex">
+            <div>{{  album.artist.name }} - {{ album.name }}</div>
+            <div class="text-right">
+              <span class="points">
+                {{ album.rank }}
+              </span>
+            </div>
+          </div>
+          <div class="album-details" *ngIf="album.showDetails">
+            <ng-template ngFor let-disc [ngForOf]="album.tracks" let-d="index">
+              <div *ngIf="album.tracks.length > 1">Disc {{ d }}</div>
+              <div *ngFor="let track of disc | keyvalue" class="flex">
+                <div>{{ +track.key + 1 }}. {{ track.value.name }}</div>
+                <div class="text-right">{{ track.value.rating }}</div>
+              </div>
+            </ng-template>
           </div>
         </li>
       </ng-template>
