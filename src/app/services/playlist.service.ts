@@ -4,6 +4,23 @@ import { Artist } from '../models/artist';
 import { Album } from '../models/album';
 import { Song } from '../models/song'; 
 
+const minRating = 0;
+const maxRating = 5;
+
+class Cache {
+  public minAlbumScore?: number;
+  public maxAlbumScore?: number;
+  public maxPlayCount?: number;
+  public maxSkipCount?: number;
+
+  constructor() {
+    this.minAlbumScore = null;
+    this.maxAlbumScore = null;
+    this.maxPlayCount = 0;
+    this.maxSkipCount = 0;
+  }
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,11 +31,11 @@ export class PlaylistService {
   //     PROPERTIES     //
   //                    //
   ////////////////////////
-    
-  private playlist;               // JSON Representation of Initial XML Playlist
-  private albums: Array<Album>;   // Object Relational Model
-  private minAlbumScore;          // Cached Minimum Album Score for Performance Gain
-  private maxAlbumRScore;         // Cached Maximum Album Score for Performance Gain
+
+  private playlist: object;         // JSON Representation of Initial XML Playlist
+  private albums: Array<Album>;     // Object Relational Model
+
+  private cache: Cache;
 
   ////////////////////////////
   //                        //
@@ -26,7 +43,9 @@ export class PlaylistService {
   //                        //
   ////////////////////////////
 
-  constructor() { }
+  constructor() {
+    this.cache = new Cache();
+  }
 
   public init(xml): void {
 
@@ -38,7 +57,7 @@ export class PlaylistService {
 
     // Set Each Album's Rating Based on Its Songs' Ratings
     this.albums.forEach(album => {
-      album.rating = (5 - 0) * ((album.GetScore() - this.GetMinAlbumRScore()) / (this.GetMaxAlbumScore() - this.GetMinAlbumRScore())) + 0;
+      album.rating = this.Normalize(album.GetScore(), this.GetMinAlbumRScore(), this.GetMaxAlbumScore(), minRating, maxRating);
     });
 
     // Sort All Albums By Rating
@@ -54,30 +73,57 @@ export class PlaylistService {
     return this.albums;
   }
 
+  public GetSongRanking(song: Song): number {
+    if (!song.cache.ranking) {
+      let scaledRating = song.rating > 0 ? Math.pow(2, song.rating - 1) : 0;
+      let normalizedRating = this.Normalize(scaledRating, minRating, maxRating);
+      let normalizedPlayCount = this.Normalize(song.playCount, 0, this.cache.maxPlayCount);
+      let normalizedSkipCount = this.Normalize(song.skipCount, 0, this.cache.maxSkipCount);
+      let result = this.ApplyWeight(normalizedRating, 0.8) + this.ApplyWeight(normalizedPlayCount, 0.1) + this.ApplyWeight(1 - normalizedSkipCount, 0.1);
+      song.cache.ranking = this.Scale(result, minRating, maxRating);
+    }
+    return song.cache.ranking;
+  }
+
   /////////////////////////////
   //                         //
   //     PRIVATE METHODS     //
   //                         //
   /////////////////////////////
 
+  private ApplyWeight(x, weight): number {
+    return x * weight;
+  }
+
+  private Normalize(x: number, min: number, max: number, a?: number, b?: number): number {
+    a = a || 0;
+    b = b || 1;
+    let result = (x - min) / (max - min);
+    return this.Scale(result, a, b);
+  }
+
+  private Scale(x: number, a: number , b: number) {
+    return (b - a) * x + a;
+  }
+
   private GetMaxAlbumScore(): number {
-    if (!this.maxAlbumRScore) {
-      this.maxAlbumRScore = this.albums.reduce((acc, album) => { 
+    if (!this.cache.maxAlbumScore) {
+      this.cache.maxAlbumScore = this.albums.reduce((max, album) => { 
         let albumRating = album.GetScore(); 
-        return albumRating > acc ? albumRating : acc;
+        return albumRating > max ? albumRating : max;
       }, 0);
     }
-    return this.maxAlbumRScore;
+    return this.cache.maxAlbumScore;
   }
 
   private GetMinAlbumRScore(): number {
-    if (!this.minAlbumScore) {
-      this.minAlbumScore = this.albums.reduce((acc, album) => { 
+    if (!this.cache.minAlbumScore) {
+      this.cache.minAlbumScore = this.albums.reduce((min, album) => { 
         let albumRating = album.GetScore(); 
-        return albumRating < acc ? albumRating: acc;
+        return albumRating < min ? albumRating: min;
       }, 800);
     }
-    return this.minAlbumScore;
+    return this.cache.minAlbumScore;
   }
 
   private ParseXML(value) {
@@ -161,10 +207,15 @@ export class PlaylistService {
         duration: +track["Total Time"],
         releaseDate: new Date(track["Release Date"]),
         rating: +track["Rating"] / 20 || 0,
+        loved: track["Loved"] === "true",
         playCount: +track["Play Count"] || 0,
         skipCount: +track["Skip Count"] || 0,
         trackID: +track["Track ID"]
       });
+
+      // Update Statistics
+      this.cache.maxPlayCount = song.playCount > this.cache.maxPlayCount ? song.playCount : this.cache.maxPlayCount;
+      this.cache.maxSkipCount = song.skipCount > this.cache.maxSkipCount ? song.skipCount : this.cache.maxSkipCount;
   
       // Update ORM References
       albums[albumName].tracks[discNumber - 1] = albums[albumName].tracks[discNumber - 1] || new Array<Song>();

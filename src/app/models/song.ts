@@ -1,6 +1,16 @@
 import { Artist } from './artist';
 import { Album } from './album';
 
+class Cache {
+    private _ranking?: number;
+    get ranking(): number { return this._ranking; };
+    set ranking(value: number) { this._ranking = value; };
+
+    constructor() {
+        this._ranking = null;
+    }
+}
+
 export class Song {
 
     ////////////////////////
@@ -16,11 +26,14 @@ export class Song {
     public duration: number;
     public releaseDate: Date;
     public rating: number;
+    public loved: boolean;
     public playCount: number;
     public skipCount: number;
     public trackID: number;
     public trackNumber: number;
     public discNumber: number;
+
+    public cache: Cache;
 
     ////////////////////////////
     //                        //
@@ -30,6 +43,7 @@ export class Song {
 
     public constructor(init?: Partial<Song>) {
         Object.assign(this, init);
+        this.cache = new Cache();
     }
 
   // Transform Star Rating Weights From Linear to Exponential
