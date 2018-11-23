@@ -31,6 +31,11 @@ export class AppComponent {
       // Display Albums
       this.albums = this.playlistService.GetAlbums().map(album => {
         album.rank = album.GetRank();
+        album.tracks.forEach(disc => {
+          Object.keys(disc).forEach(track => {
+            disc[track].rating = disc[track].GetRating();
+          });
+        });
         return album;
       });
     };
