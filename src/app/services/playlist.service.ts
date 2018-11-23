@@ -104,7 +104,7 @@ export class PlaylistService {
       let artistName: string = track["Artist"];
       let albumName: string = track["Album"];
       let trackNumber = +track["Track Number"];
-      let discNumber = +track["Disc Number"];
+      let discNumber = +track["Disc Number"] || 1;
   
       if (!artists[artistName]) {
         artists[artistName] = new Artist(artistName);
