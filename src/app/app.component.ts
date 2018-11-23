@@ -15,6 +15,8 @@ export class AppComponent {
   public albums: Album[];
 
   handleFileInput(files: FileList) {
+    this.albums = [];
+
     const file = files.item(0);
 
     if (!file) {
