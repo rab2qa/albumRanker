@@ -1,8 +1,10 @@
 <input id="playlist" type="file" accept=".xml" (change)="handleFileInput($event.target.files)">
 
 <p>Albums</p>
-<div id="long-plays"></div>
-<p>EPs</p>
-<div id="extended-plays"></div>
+<ol *ngIf="albums">
+  <ng-template ngFor let-album [ngForOf]="albums" let-i="index">
+    <li>{{  album.artist.name }} - {{ album.name }} ({{ album.rank }} points)</li>
+  </ng-template>
+</ol>
 
 <router-outlet></router-outlet>
