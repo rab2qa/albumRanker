@@ -38,6 +38,7 @@ ul.star-ratings {
   margin: 0;
   padding: 0;
   list-style: none;
+  display: inline-block;
   > li {
     display: inline-block;
     position: relative;
@@ -47,6 +48,17 @@ ul.star-ratings {
       left: 0;
       top: 0;
       overflow: hidden;
+    }
+  }
+}
+.album-rating-parent {
+  > .rating-number {
+    display: none;
+    margin-right: 10px;
+  }
+  &:hover {
+    > .rating-number {
+      display: inline-block;
     }
   }
 }
