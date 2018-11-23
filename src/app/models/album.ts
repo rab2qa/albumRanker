@@ -26,6 +26,6 @@ export class Album {
         return this.Flatten()
             .sort((a, b) => { return b.rating - a.rating })
             .slice(0, 10)
-            .reduce((accumulator, song) => { return accumulator + Math.pow(2, (song.rating / 20) - 1); }, 0);
+            .reduce((accumulator, song) => { return song.rating > 0 ? accumulator + Math.pow(2, (song.rating / 20) - 1) : 0; }, 0);
     }
 }

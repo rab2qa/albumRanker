@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 
-import { Artist } from './classes/artist';
-import { Album } from './classes/album';
-import { Song } from './classes/song';
+import { Artist } from '../models/artist';
+import { Album } from '../models/album';
+import { Song } from '../models/song'; 
 
 @Injectable({
   providedIn: 'root'
@@ -101,7 +101,7 @@ export class PlaylistService {
   
     for (let key in playlist["Tracks"]) {
       let track = playlist["Tracks"][key];
-      let artistName: string = track["Album Artist"];
+      let artistName: string = track["Artist"];
       let albumName: string = track["Album"];
       let trackNumber = +track["Track Number"];
       let discNumber = +track["Disc Number"];
@@ -121,9 +121,9 @@ export class PlaylistService {
         genre: track["Genre"],
         duration: +track["Total Time"],
         releaseDate: new Date(track["Release Date"]),
-        rating: +track["Rating"],
-        playCount: +track["Play Count"],
-        skipCount: +track["Skip Count"],
+        rating: +track["Rating"] || 0,
+        playCount: +track["Play Count"] || 0,
+        skipCount: +track["Skip Count"] || 0,
         trackID: +track["Track ID"]
       });
   
