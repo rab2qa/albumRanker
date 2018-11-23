@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
+
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.text-right {
+  text-align: right;
+}
+.flex {
+  display: flex;
+  > div {
+    flex-grow: 1;
+  }
+}
