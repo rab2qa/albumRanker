@@ -34,6 +34,8 @@ export class AppComponent {
         album.tracks.forEach(disc => {
           Object.keys(disc).forEach(track => {
             disc[track].rating = disc[track].GetRating();
+            disc[track].starRatings = this.getStarRatings(disc[track].rating);
+            console.log(disc[track].rating);
           });
         });
         return album;
@@ -44,5 +46,14 @@ export class AppComponent {
 
   public toggleShowAlbumDetails(album): void {
     album.showDetails = album.showDetails ? false : true;
+  }
+
+  private getStarRatings(rating): number[] {
+    // if (rating === 1) {
+    //   return [1, 0, 0, 0, 0];
+    // } else if (rating === 1.5) {
+    //   return [1]
+    // }
+    return [1, 0.5, 0, 0, 0];
   }
 }
