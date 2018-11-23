@@ -9,13 +9,23 @@
   padding: 0;
   list-style: none;
   > li {
-    padding: 8px 10px;
+    cursor: pointer;
+    padding: 12px 15px;
     background: #eee;
     font-size: 0.75rem;
     margin-bottom: 2px;
+    &:hover {
+      transform: scale(1.0125, 1.0125)
+    }
+    .album-title {
+      font-size: 0.875rem;
+    }
+    .album-details {
+      margin-top: 5px;
+    }
     .points {
       display: inline-block;
-      transform: scale(1.5, 1.5);
+      // transform: scale(1.5, 1.5);
       font-weight: bold;
     }
   }
