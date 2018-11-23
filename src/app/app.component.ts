@@ -35,12 +35,7 @@ export class AppComponent {
     reader.readAsText(file);
   }
 
-  displayContents(list, id) {
-    const element = document.getElementById(id);
-
-    list.forEach((album, index) => {
-      element.innerHTML +=
-        index + 1 + ') ' + album.artist.name + ' - ' + album.name + ' ' + '(' + album.GetRank() + ' points)' + '</br>';
-    });
+  public toggleShowAlbumDetails(album): void {
+    album.showDetails = album.showDetails ? false : true;
   }
 }
