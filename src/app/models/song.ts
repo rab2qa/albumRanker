@@ -23,4 +23,8 @@ export class Song {
     public constructor(init?: Partial<Song>) {
         Object.assign(this, init);
     }
+
+    public GetRating(): number {
+        return this.rating > 0 ? this.rating / 20 : 0;
+    }
 }
