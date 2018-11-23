@@ -11,6 +11,7 @@ export class Album {
   public tracks: Array<Array<Song>>;
 
   public rank?: number;
+  public starRatings?: number[];
 
   public constructor(name: string) {
     this.name = name;

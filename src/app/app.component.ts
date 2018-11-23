@@ -34,6 +34,7 @@ export class AppComponent {
 
       this.albums = this.playlistService.GetAlbums().map(album => {
         album.rank = (5 - 1) * ((album.GetRank() - min) / (max - min)) + 1;
+        album.starRatings = this.getStarRatings(album.rank);
         album.tracks.forEach(disc => {
           Object.keys(disc).forEach(track => {
             disc[track].rating = disc[track].GetRating();
@@ -52,11 +53,16 @@ export class AppComponent {
   }
 
   private getStarRatings(rating): number[] {
-    // if (rating === 1) {
-    //   return [1, 0, 0, 0, 0];
-    // } else if (rating === 1.5) {
-    //   return [1]
-    // }
-    return [1, 0.5, 0, 0, 0];
+    rating = rating.toFixed(2);
+    const array = [0, 0, 0, 0, 0];
+    const ratingWhole = +rating.toString().split('.')[0];
+    const ratingDecimal = +rating.toString().split('.')[1];
+    for (let i = 0; i < ratingWhole; i++) {
+      array[i] = 100;
+    }
+    if (ratingWhole < 5) {
+      array[ratingWhole] = ratingDecimal;
+    }
+    return array;
   }
 }
