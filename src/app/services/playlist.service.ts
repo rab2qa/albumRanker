@@ -174,7 +174,7 @@ export class PlaylistService {
 
     public GetSongRanking(song: Song): number {
         if (!song.ranking) {
-            const weights = { rating: 0.8, playCount: 0.1, skipCount: 0.1 };
+            const weights = { rating: 0.8, playCount: 0.16, skipCount: 0.04 };
             const normalizedSongRating = Algorithm.Normalize(song.rating, minRating, maxRating);
             const normalizedPlayCount = Algorithm.Normalize(song.playCount, this._cache.minPlayCount, this._cache.maxPlayCount);
             const normalizedSkipCount = Algorithm.Normalize(song.skipCount, this._cache.minSkipCount, this._cache.maxSkipCount);
