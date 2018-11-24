@@ -20,6 +20,7 @@ export class Song implements Ratable{
     //                    //
     ////////////////////////
 
+    public id: number;
     public name: string;
     public artist: Artist;
     public album: Album;
@@ -30,9 +31,6 @@ export class Song implements Ratable{
     public loved: boolean;
     public playCount: number;
     public skipCount: number;
-    public trackID: number;
-    public trackNumber: number;
-    public discNumber: number;
 
     public cache: Cache;
 

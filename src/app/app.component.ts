@@ -29,8 +29,8 @@ export class AppComponent {
     const reader = new FileReader();
     reader.onloadend = (e: any) => {
       const xml = this.xmlService.FromText(e.target.result);
-      const playlist = this.xmlService.ToJson(xml);
-      this.playlistService.init(playlist);
+      const json = this.xmlService.ToJSON(xml);
+      this.playlistService.FromJSON(json);
 
       // Display Albums
       this.albums = this.generateAlbums(this.albums);

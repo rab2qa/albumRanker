@@ -18,7 +18,7 @@ export class XmlService {
     return parser.parseFromString(text, "text/xml");
   }
 
-  public ToJson(xml): object {
+  public ToJSON(xml): object {
     const plist = xml.getElementsByTagName("plist")[0].firstElementChild;
     return this.ParseDictionary(plist);
   }
