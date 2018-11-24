@@ -3,17 +3,20 @@ import { Artist } from './artist';
 import { Song } from './song';
 
 class Cache {
-    private _ranking?: number;
-    get ranking(): number { return this._ranking; };
-    set ranking(value: number) { this._ranking = value; };
+  private _ranking?: number;
+  get ranking(): number {
+    return this._ranking;
+  }
+  set ranking(value: number) {
+    this._ranking = value;
+  }
 
-    constructor() {
-        this._ranking = null;
-    }
+  constructor() {
+    this._ranking = null;
+  }
 }
 
 export class Album implements Ratable {
-
   ////////////////////////
   //                    //
   //     PROPERTIES     //
@@ -42,12 +45,12 @@ export class Album implements Ratable {
   }
 
   public IsRated(): boolean {
-    return !!(this.rating);
-}
+    return !!this.rating;
+  }
   public IsEP(): boolean {
     return this.Flatten().length < 10;
   }
-  
+
   public IsLP(): boolean {
     return this.Flatten().length >= 10;
   }
@@ -71,7 +74,6 @@ export class Album implements Ratable {
   // 2) Take the Top 10 Tracks, Discarding the Rest (So That Albums With Lots of Tracks Don't Dwarf Standard LPs)
   // 3) Sum All Individual Track Points into Total Album Points
   public GetScore(): number {
-
     // Use this algorithm to normalize EPs to be competitive with LPs
     //   let topTenSongs = this.Flatten()
     //   .sort((a, b) => {
@@ -107,5 +109,4 @@ export class Album implements Ratable {
       return a;
     }, new Array<Song>());
   }
-
 } // End class Album
