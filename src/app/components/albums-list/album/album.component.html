@@ -1,6 +1,9 @@
 <div class="album transition" (click)="toggleShowAlbumDetails(album)">
   <div class="album-title flex">
-    <div>{{ album.artist.name }} - {{ album.name }}</div>
+    <div>
+      <i *ngIf="canReorder" class="sort-icon fa-sort fas"></i>
+      {{ album.artist.name }} - {{ album.name }}
+    </div>
     <div class="text-right">
       <ranker-stars [ratings]="album.starRatings"></ranker-stars>
     </div>

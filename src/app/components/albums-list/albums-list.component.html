@@ -4,7 +4,7 @@
 </div>
 <ng-container *ngIf="canReorder">
   <div class="albums" cdkDropList (cdkDropListDropped)="drop($event)">
-    <ranker-albums-list-album *ngFor="let album of albums" [album]="album" cdkDrag></ranker-albums-list-album>
+    <ranker-albums-list-album *ngFor="let album of albums" [album]="album" [canReorder]="canReorder" cdkDrag></ranker-albums-list-album>
   </div>
 </ng-container>
 <ng-container *ngIf="!canReorder">
