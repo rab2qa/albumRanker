@@ -1,0 +1,17 @@
+ul.star-ratings {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: inline-block;
+  > li {
+    display: inline-block;
+    position: relative;
+    color: #aaa;
+    .star-rating-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      overflow: hidden;
+    }
+  }
+}

@@ -1,0 +1,10 @@
+<ul class="star-ratings">
+  <ng-template ngFor let-starRating [ngForOf]="ratings">
+    <li>
+      <i class="star-rating fa-star far"></i>
+      <div class="star-rating-fill" [style.width.%]="starRating">
+        <i class="star-rating fa-star fas"></i>
+      </div>
+    </li>
+  </ng-template>
+</ul>

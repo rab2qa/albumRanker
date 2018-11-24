@@ -44,10 +44,6 @@ export class AppComponent {
     reader.readAsText(file);
   }
 
-  public toggleShowAlbumDetails(album): void {
-    album.showDetails = album.showDetails ? false : true;
-  }
-
   private getStarRatings(rating): number[] {
     rating = rating.toFixed(2);
     const array = [0, 0, 0, 0, 0];
@@ -61,5 +57,4 @@ export class AppComponent {
     }
     return array;
   }
-
 } // End class AppComponent

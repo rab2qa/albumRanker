@@ -1,0 +1,16 @@
+.album {
+  cursor: pointer;
+  padding: 12px 15px;
+  background: #eee;
+  font-size: 0.75rem;
+  margin-bottom: 2px;
+  &:hover {
+    transform: scale(1.0125, 1.0125)
+  }
+  .album-title {
+    font-size: 0.875rem;
+  }
+  .album-details {
+    margin-top: 5px;
+  }
+}
