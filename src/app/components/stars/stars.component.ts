@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-  selector: 'ranker-star-ratings',
-  templateUrl: './star-ratings.component.html',
-  styleUrls: ['./star-ratings.component.scss'],
+  selector: 'ranker-stars',
+  templateUrl: './stars.component.html',
+  styleUrls: ['./stars.component.scss'],
 })
 export class StarRatingsComponent {
   @Input() ratings: any[];

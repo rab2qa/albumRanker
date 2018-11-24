@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AlbumsListComponent } from './components/albums-list/albums-list.component';
 import { AlbumComponent } from './components/albums-list/album/album.component';
-import { StarRatingsComponent } from './components/star-ratings/star-ratings.component';
+import { StarRatingsComponent } from './components/stars/stars.component';
 
 @NgModule({
   declarations: [AppComponent, AlbumsListComponent, AlbumComponent, StarRatingsComponent],
