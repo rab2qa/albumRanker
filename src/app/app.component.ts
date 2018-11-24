@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { PlaylistService } from './services/playlist.service';
+import { XmlService } from './services/xml.service';
 import { Album } from './models/album';
 
 @Component({
@@ -8,7 +9,7 @@ import { Album } from './models/album';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  constructor(public playlistService: PlaylistService) {}
+  constructor(public xmlService: XmlService, public playlistService: PlaylistService) {}
 
   title = 'albumRanker';
 
@@ -25,8 +26,9 @@ export class AppComponent {
 
     const reader = new FileReader();
     reader.onloadend = (e: any) => {
-      // Initialize Playlist Service
-      this.playlistService.init(e.target.result);
+      const xml = this.xmlService.FromText(e.target.result);
+      const playlist = this.xmlService.ToJson(xml);
+      this.playlistService.init(playlist);
 
       // Display Albums
       this.albums = this.playlistService.GetAlbums().map(album => {

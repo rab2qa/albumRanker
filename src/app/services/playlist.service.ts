@@ -37,7 +37,6 @@ export class PlaylistService {
   //                    //
   ////////////////////////
 
-  private playlist: object;         // JSON Representation of Initial XML Playlist
   private artists: Array<Artist>;
   private albums: Array<Album>;     // Object Relational Model
   private songs: Array<Song>;
@@ -55,13 +54,10 @@ export class PlaylistService {
     this.songs = new Array<Song>();
   }
 
-  public init(xml): void {
-
-    // Parse XML
-    this.playlist = this.ParseXML(xml);
+  public init(playlist): void {
 
     // Generate the Object Relational Model
-    this.GenerateORM();
+    this.GenerateORM(playlist);
 
     // Set Each Album's Ranking Based on Its Songs' Ratings
     // this.albums.forEach(album => {
@@ -224,12 +220,12 @@ export class PlaylistService {
     return response;
   }
   
-  private GenerateORM() {
+  private GenerateORM(playlist) {
     let artists = {};
     let albums = {};
   
-    for (let key in this.playlist["Tracks"]) {
-      let track = this.playlist["Tracks"][key];
+    for (let key in playlist["Tracks"]) {
+      let track = playlist["Tracks"][key];
       let artistName: string = track["Artist"];
       let albumName: string = track["Album"];
       let trackNumber = +track["Track Number"];
