@@ -30,7 +30,7 @@ export class AppComponent {
 
       // Display Albums
       this.albums = this.playlistService.GetAlbums().map(album => {
-        album.starRatings = this.getStarRatings(album.rating);
+        album.starRatings = this.getStarRatings(album.cache.ranking);
         album.tracks.forEach(disc => {
           Object.keys(disc).forEach(track => {
             disc[track].starRatings = this.getStarRatings(disc[track].rating);
@@ -59,4 +59,5 @@ export class AppComponent {
     }
     return array;
   }
-}
+
+} // End class AppComponent
