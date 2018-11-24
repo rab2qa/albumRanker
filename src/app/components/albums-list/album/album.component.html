@@ -5,7 +5,7 @@
       {{ album.artist.name }} - {{ album.name }}
     </div>
     <div class="text-right">
-      <ranker-stars [ratings]="album.starRatings"></ranker-stars>
+      <ranker-stars [ratings]="album.stars"></ranker-stars>
     </div>
   </div>
   <div class="album-details" *ngIf="showDetails">
@@ -14,7 +14,7 @@
       <div *ngFor="let track of disc | keyvalue" class="flex">
         <div>{{ +track.key + 1 }}. {{ track.value.name }}</div>
         <div class="text-right">
-          <ranker-stars [ratings]="track.value.starRatings"></ranker-stars>
+          <ranker-stars [ratings]="track.value.stars"></ranker-stars>
         </div>
       </div>
     </ng-template>

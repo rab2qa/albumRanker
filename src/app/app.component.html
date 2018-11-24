@@ -3,7 +3,7 @@
 
   <input id="playlist" type="file" accept=".xml" (change)="handleFileInput($event.target.files)">
 
-  <ng-container *ngIf="albums">
+  <ng-container *ngIf="albums.length > 0">
     <div class="flex list-columns">
       <div>
         <h1>Generated List</h1>

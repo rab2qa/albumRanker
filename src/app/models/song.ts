@@ -2,17 +2,19 @@ import { Artist } from './artist';
 import { Album } from './album';
 import { Ratable } from '../interfaces/ratable';
 
+const MAX_STARS: number = 5;
+
 class Cache {
-    private _ranking?: number;
-    get ranking(): number { return this._ranking; };
-    set ranking(value: number) { this._ranking = value; };
+    public ranking?: number;
+    public stars: Array<number>;
 
     constructor() {
-        this._ranking = null;
+        this.ranking = null;
+        this.stars = null;
     }
 }
 
-export class Song implements Ratable{
+export class Song implements Ratable {
 
     ////////////////////////
     //                    //
@@ -32,7 +34,27 @@ export class Song implements Ratable{
     public playCount: number;
     public skipCount: number;
 
-    public cache: Cache;
+    private cache: Cache;
+
+    get ranking(): number { return this.cache.ranking; };
+    set ranking(value: number) { this.cache.ranking = value; };
+
+    get stars(): Array<number> {
+        if (!this.cache.stars) {
+            const rating = this.rating.toFixed(2);
+            const array = [0, 0, 0, 0, 0];
+            const ratingWhole = +rating.toString().split('.')[0];
+            const ratingDecimal = +rating.toString().split('.')[1];
+            for (let i = 0; i < ratingWhole; i++) {
+                array[i] = 100;
+            }
+            if (ratingWhole < 5) {
+                array[ratingWhole] = ratingDecimal;
+            }
+            this.cache.stars = array;
+        }
+        return this.cache.stars;
+    }
 
     ////////////////////////////
     //                        //

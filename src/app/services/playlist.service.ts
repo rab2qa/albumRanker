@@ -163,26 +163,26 @@ export class PlaylistService {
     }
 
     public GetAlbumRanking(album: Album): number {
-        if (!album.cache.ranking) {
+        if (!album.ranking) {
             const weights = { rating: 0.0, aggregateSongRating: 1.0 };
             const normalizedAlbumRating = Algorithm.Normalize(Algorithm.GetTransform(album.rating), Algorithm.GetTransform(minRating), Algorithm.GetTransform(maxRating));
             const normalizedAlbumScore = Algorithm.Normalize(this.GetAlbumScore(album), this.minAlbumScore, this.maxAlbumScore);
             const weightedRating = Algorithm.ApplyWeight(normalizedAlbumRating, weights.rating) + Algorithm.ApplyWeight(normalizedAlbumScore, weights.aggregateSongRating);
-            album.cache.ranking = Algorithm.Scale(weightedRating, minRating, maxRating);
+            album.ranking = Algorithm.Scale(weightedRating, minRating, maxRating);
         }
-        return album.cache.ranking;
+        return album.ranking;
     }
 
     public GetSongRanking(song: Song): number {
-        if (!song.cache.ranking) {
+        if (!song.ranking) {
             const weights = { rating: 1.0, playCount: 0.0, skipCount: 0.0 };
             const normalizedSongRating = Algorithm.Normalize(Algorithm.GetTransform(song.rating), Algorithm.GetTransform(minRating), Algorithm.GetTransform(maxRating));
             const normalizedPlayCount = Algorithm.Normalize(song.playCount, this._cache.minPlayCount, this._cache.maxPlayCount);
             const normalizedSkipCount = Algorithm.Normalize(song.skipCount, this._cache.minSkipCount, this._cache.maxSkipCount);
             const weightedRating = Algorithm.ApplyWeight(normalizedSongRating, weights.rating) + Algorithm.ApplyWeight(normalizedPlayCount, weights.playCount) + Algorithm.ApplyWeight(1 - normalizedSkipCount, weights.skipCount);
-            song.cache.ranking = Algorithm.Scale(weightedRating, minRating, maxRating);
+            song.ranking = Algorithm.Scale(weightedRating, minRating, maxRating);
         }
-        return song.cache.ranking;
+        return song.ranking;
     }
 
     /*******************/
@@ -254,14 +254,14 @@ export class PlaylistService {
 
     private RankSongs(): void {
         this.songs.forEach(song => this.GetSongRanking(song));
-        this.songs.sort((a: Song, b: Song) => { return b.cache.ranking - a.cache.ranking });
+        this.songs.sort((a: Song, b: Song) => { return b.ranking - a.ranking });
     }
 
     private RankAlbums(): void {
         this.albums.forEach(album => this.GetAlbumRanking(album));
         this._albums = this._albums
-            .filter(album => album.cache.ranking > 0)
-            .sort((a, b) => b.cache.ranking - a.cache.ranking);
+            .filter(album => album.ranking > 0)
+            .sort((a, b) => b.ranking - a.ranking);
     }
 
     private RankArtists(): void {
