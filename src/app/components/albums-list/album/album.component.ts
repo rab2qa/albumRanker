@@ -8,7 +8,8 @@ import { Album } from '../../../models/album';
 })
 export class AlbumComponent {
   @Input() album: Album;
+  public showDetails: boolean = false;
   public toggleShowAlbumDetails(album): void {
-    album.showDetails = album.showDetails ? false : true;
+    this.showDetails = this.showDetails ? false : true;
   }
 }

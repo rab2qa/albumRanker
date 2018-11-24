@@ -29,7 +29,6 @@ export class Album implements Ratable {
   public rating: number;
   public tracks: Array<Array<Song>>;
   public starRatings?: number[];
-  public showDetails: boolean;
 
   public cache: Cache;
 

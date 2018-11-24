@@ -14,9 +14,11 @@ export class AppComponent {
   title = 'albumRanker';
 
   public albums: Album[];
+  public albumsSupervised: Album[];
 
   handleFileInput(files: FileList) {
     this.albums = [];
+    this.albumsSupervised = [];
 
     const file = files.item(0);
 
@@ -31,17 +33,22 @@ export class AppComponent {
       this.playlistService.init(playlist);
 
       // Display Albums
-      this.albums = this.playlistService.GetAlbums().map(album => {
-        album.starRatings = this.getStarRatings(album.cache.ranking);
-        album.tracks.forEach(disc => {
-          Object.keys(disc).forEach(track => {
-            disc[track].starRatings = this.getStarRatings(disc[track].rating);
-          });
-        });
-        return album;
-      });
+      this.albums = this.generateAlbums(this.albums);
+      this.albumsSupervised = this.generateAlbums(this.albums);
     };
     reader.readAsText(file);
+  }
+
+  private generateAlbums(albums) {
+    return this.playlistService.GetAlbums().map(album => {
+      album.starRatings = this.getStarRatings(album.cache.ranking);
+      album.tracks.forEach(disc => {
+        Object.keys(disc).forEach(track => {
+          disc[track].starRatings = this.getStarRatings(disc[track].rating);
+        });
+      });
+      return album;
+    });
   }
 
   private getStarRatings(rating): number[] {

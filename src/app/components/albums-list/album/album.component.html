@@ -5,7 +5,7 @@
       <ranker-stars [ratings]="album.starRatings"></ranker-stars>
     </div>
   </div>
-  <div class="album-details" *ngIf="album.showDetails">
+  <div class="album-details" *ngIf="showDetails">
     <ng-template ngFor let-disc [ngForOf]="album.tracks" let-d="index">
       <div *ngIf="album.tracks.length > 1">Disc {{ +d + 1 }}</div>
       <div *ngFor="let track of disc | keyvalue" class="flex">
