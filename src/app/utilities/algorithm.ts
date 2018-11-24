@@ -1,10 +1,15 @@
+/////////////////////
+//                 //
+//     SERVICE     //
+//                 //
+/////////////////////
+
 export class Algorithm {
-    
-    //    1 Star  = 2^0 = 1 Point
-    //    2 Stars = 2^1 = 2 Points
-    //    3 Stars = 2^2 = 4 Points
-    //    4 Stars = 2^3 = 8 Points
-    //    5 Stars = 2^4 = 16 Points
+
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
+
     public static GetTransform(value: number): number {
         return value > 0 ? Math.pow(2, value - 1) : 0;
     }
@@ -20,7 +25,7 @@ export class Algorithm {
         return this.Scale(result, a, b);
     }
 
-    public static Scale(x: number, a: number , b: number) {
+    public static Scale(x: number, a: number, b: number) {
         return (b - a) * x + a;
     }
 

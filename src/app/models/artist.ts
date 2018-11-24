@@ -1,37 +1,38 @@
+//////////////////////////
+//                      //
+//     DEPENDENCIES     //
+//                      //
+//////////////////////////
 
-class Cache {
-    private _ranking?: number;
-    get ranking(): number { return this._ranking; }
-    set ranking(value: number) { this._ranking = value; }
-  
-    constructor() {
-      this._ranking = null;
-    }
-  }
+/***********/
+/* CLASSES */
+/***********/
 
-export class Artist {
+import { Presenter } from '../classes/presenter';
 
-    ////////////////////////
-    //                    //
-    //     PROPERTIES     //
-    //                    //
-    ////////////////////////
+////////////////////
+//                //
+//     ARTIST     //
+//                //
+////////////////////
+
+export class Artist extends Presenter {
+
+    /**************/
+    /* PROPERTIES */
+    /**************/
 
     public name: string;
     public albums: Object;
-
-    public cache: Cache;
-
-    ////////////////////////////
-    //                        //
-    //     PUBLIC METHODS     //
-    //                        //
-    ////////////////////////////
+  
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
 
     public constructor(name: string) {
+        super();
         this.name = name;
         this.albums = new Object();
-        this.cache = new Cache();
     }
 
 } // End class Artist

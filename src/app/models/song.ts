@@ -1,26 +1,39 @@
-import { Artist } from './artist';
-import { Album } from './album';
+//////////////////////////
+//                      //
+//     DEPENDENCIES     //
+//                      //
+//////////////////////////
+
+/***********/
+/* CLASSES */
+/***********/
+
+import { Presenter } from '../classes/presenter';
+
+/**************/
+/* INTERFACES */
+/**************/
+
 import { Ratable } from '../interfaces/ratable';
 
-const MAX_STARS: number = 5;
+/**********/
+/* MODELS */
+/**********/
 
-class Cache {
-    public ranking?: number;
-    public stars: Array<number>;
+import { Artist } from './artist';
+import { Album } from './album';
 
-    constructor() {
-        this.ranking = null;
-        this.stars = null;
-    }
-}
+    //////////////////
+    //              //
+    //     SONG     //
+    //              //
+    //////////////////
 
-export class Song implements Ratable {
+export class Song extends Presenter implements Ratable {
 
-    ////////////////////////
-    //                    //
-    //     PROPERTIES     //
-    //                    //
-    ////////////////////////
+    /**************/
+    /* PROPERTIES */
+    /**************/
 
     public id: number;
     public name: string;
@@ -34,37 +47,13 @@ export class Song implements Ratable {
     public playCount: number;
     public skipCount: number;
 
-    private cache: Cache;
-
-    get ranking(): number { return this.cache.ranking; };
-    set ranking(value: number) { this.cache.ranking = value; };
-
-    get stars(): Array<number> {
-        if (!this.cache.stars) {
-            const rating = this.rating.toFixed(2);
-            const array = [0, 0, 0, 0, 0];
-            const ratingWhole = +rating.toString().split('.')[0];
-            const ratingDecimal = +rating.toString().split('.')[1];
-            for (let i = 0; i < ratingWhole; i++) {
-                array[i] = 100;
-            }
-            if (ratingWhole < 5) {
-                array[ratingWhole] = ratingDecimal;
-            }
-            this.cache.stars = array;
-        }
-        return this.cache.stars;
-    }
-
-    ////////////////////////////
-    //                        //
-    //     PUBLIC METHODS     //
-    //                        //
-    ////////////////////////////
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
 
     public constructor(init?: Partial<Song>) {
+        super();
         Object.assign(this, init);
-        this.cache = new Cache();
     }
 
     public IsRated(): boolean {

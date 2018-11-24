@@ -1,4 +1,3 @@
-
 //////////////////////////
 //                      //
 //     DEPENDENCIES     //
@@ -128,7 +127,7 @@ export class PlaylistService {
     /* PUBLIC METHODS */
     /******************/
 
-    constructor() {
+    public constructor() {
         this._artists = new Array<Artist>();
         this._albums = new Array<Album>();
         this._songs = new Array<Song>();
@@ -148,24 +147,24 @@ export class PlaylistService {
     }
 
     public GetAlbumScore(album: Album): number {
-        return album.GetTopTenSongs().reduce((sum, song) => sum + this.GetSongRanking(song), 0);
+        return album.GetTopTenSongs().reduce((sum, song) => sum + Algorithm.GetTransform(this.GetSongRanking(song)), 0);
     }
 
-    public GetSongScore(song: Song): number {
-        return this.GetSongRanking(song);
-    }
+    // public GetSongScore(song: Song): number {
+    //     return this.GetSongRanking(song);
+    // }
 
     public GetArtistRanking(artist: Artist): number {
-        if (!artist.cache.ranking) {
-            artist.cache.ranking = Algorithm.Normalize(this.GetArtistScore(artist), this.minArtistScore, this.maxArtistScore, minRating, maxRating);
+        if (!artist.ranking) {
+            artist.ranking = Algorithm.Normalize(this.GetArtistScore(artist), this.minArtistScore, this.maxArtistScore, minRating, maxRating);
         }
-        return artist.cache.ranking;
+        return artist.ranking;
     }
 
     public GetAlbumRanking(album: Album): number {
         if (!album.ranking) {
             const weights = { rating: 0.0, aggregateSongRating: 1.0 };
-            const normalizedAlbumRating = Algorithm.Normalize(Algorithm.GetTransform(album.rating), Algorithm.GetTransform(minRating), Algorithm.GetTransform(maxRating));
+            const normalizedAlbumRating = Algorithm.Normalize(album.rating, minRating, maxRating);
             const normalizedAlbumScore = Algorithm.Normalize(this.GetAlbumScore(album), this.minAlbumScore, this.maxAlbumScore);
             const weightedRating = Algorithm.ApplyWeight(normalizedAlbumRating, weights.rating) + Algorithm.ApplyWeight(normalizedAlbumScore, weights.aggregateSongRating);
             album.ranking = Algorithm.Scale(weightedRating, minRating, maxRating);
@@ -175,8 +174,8 @@ export class PlaylistService {
 
     public GetSongRanking(song: Song): number {
         if (!song.ranking) {
-            const weights = { rating: 1.0, playCount: 0.0, skipCount: 0.0 };
-            const normalizedSongRating = Algorithm.Normalize(Algorithm.GetTransform(song.rating), Algorithm.GetTransform(minRating), Algorithm.GetTransform(maxRating));
+            const weights = { rating: 0.8, playCount: 0.1, skipCount: 0.1 };
+            const normalizedSongRating = Algorithm.Normalize(song.rating, minRating, maxRating);
             const normalizedPlayCount = Algorithm.Normalize(song.playCount, this._cache.minPlayCount, this._cache.maxPlayCount);
             const normalizedSkipCount = Algorithm.Normalize(song.skipCount, this._cache.minSkipCount, this._cache.maxSkipCount);
             const weightedRating = Algorithm.ApplyWeight(normalizedSongRating, weights.rating) + Algorithm.ApplyWeight(normalizedPlayCount, weights.playCount) + Algorithm.ApplyWeight(1 - normalizedSkipCount, weights.skipCount);
@@ -267,8 +266,8 @@ export class PlaylistService {
     private RankArtists(): void {
         this.artists.forEach(artist => this.GetArtistRanking(artist));
         this._artists = this._artists
-            .filter(artist => artist.cache.ranking > 0)
-            .sort((a, b) => b.cache.ranking - a.cache.ranking);
+            .filter(artist => artist.ranking > 0)
+            .sort((a, b) => b.ranking - a.ranking);
     }
 
 } // End class PlaylistService
