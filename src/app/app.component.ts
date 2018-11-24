@@ -40,7 +40,7 @@ export class AppComponent {
   }
 
   private generateAlbums(albums) {
-    return this.playlistService.GetAlbums().map(album => {
+    return this.playlistService.albums.map(album => {
       album.starRatings = this.getStarRatings(album.cache.ranking);
       album.tracks.forEach(disc => {
         Object.keys(disc).forEach(track => {
