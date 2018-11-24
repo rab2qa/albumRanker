@@ -6,10 +6,11 @@ import { AppComponent } from './app.component';
 import { AlbumsListComponent } from './components/albums-list/albums-list.component';
 import { AlbumComponent } from './components/albums-list/album/album.component';
 import { StarRatingsComponent } from './components/stars/stars.component';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [AppComponent, AlbumsListComponent, AlbumComponent, StarRatingsComponent],
-  imports: [BrowserModule, AppRoutingModule],
+  imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule],
   providers: [],
   bootstrap: [AppComponent],
 })
