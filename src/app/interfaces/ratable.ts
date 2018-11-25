@@ -11,5 +11,11 @@ export interface Ratable {
     /**************/
 
     rating: number;
+   
+    /***********/
+    /* METHODS */
+    /***********/
+
+    isRated(): boolean;
 
 } // End interface Ratable
