@@ -138,7 +138,7 @@ export class PlaylistService {
     /* PUBLIC METHODS */
     /******************/
 
-    public FromJSON(playlist): void {
+    public Apply(playlist): void {
         this.ClearORM();
         this.GenerateORM(playlist);
         this.RankSongs();
