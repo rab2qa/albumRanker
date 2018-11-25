@@ -32,23 +32,32 @@ export class DataService {
   /* PROPERTIES */
   /**************/
 
-  public artists: Album[] = [];
-  public artistsSupervised: Album[] = [];
-  public albums: Album[] = [];
-  public albumsSupervised: Album[] = [];
-  public songs: Album[] = [];
-  public songsSupervised: Album[] = [];
+  public albums: {
+    initial: Album[];
+    adjusted: Album[];
+  };
+  public artists: {
+    initial: Artist[];
+    adjusted: Artist[];
+  };
+  public songs: {
+    initial: Song[];
+    adjusted: Song[];
+  };
 
   /******************/
   /* PUBLIC METHODS */
   /******************/
   public updateData(playlistService): void {
-    console.log(playlistService);
-    this.artists = [...playlistService.artists];
-    this.artistsSupervised = [...playlistService.artists];
-    this.albums = [...playlistService.albums];
-    this.albumsSupervised = [...playlistService.albums];
-    this.songs = [...playlistService.songs];
-    this.songsSupervised = [...playlistService.songs];
+    this.albums = this.updateEachEntity(playlistService.albums);
+    this.artists = this.updateEachEntity(playlistService.artists);
+    this.songs = this.updateEachEntity(playlistService.songs);
+  }
+
+  private updateEachEntity(data) {
+    return {
+      initial: [...data],
+      adjusted: [...data],
+    };
   }
 } // End class DataService
