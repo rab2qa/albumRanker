@@ -49,12 +49,38 @@ export class Album extends Presenter implements Ratable {
     get topTenSongs(): Array<Song> {
         if (!this.cache.has('topTenSongs')) {
             const topTenSongs = this.flatten()
-            .filter(song => song.isRated())
-            .sort((a, b) => b.rating - a.rating)
-            .slice(0, 10);
+                .filter(song => song.isRated())
+                .sort((a, b) => b.rating - a.rating)
+                .slice(0, 10);
             this.cache.add('topTenSongs', topTenSongs);
         }
         return this.cache.get('topTenSongs');
+    }
+
+    get duration(): number {
+        if (!this.cache.has('duration')) {
+            const duration = this.flatten().reduce((total, track) => {
+                return total + track.duration;
+            }, 0);
+            this.cache.add('duration', duration);
+        }
+        return this.cache.get('duration');
+    }
+
+    get playCount(): number {
+        if (!this.cache.has('playCount')) {
+            const playCount = this.flatten().reduce((sum, song) => sum + song.playCount, 0);
+            this.cache.add('playCount', playCount);
+        }
+        return this.cache.get('playCount');
+    }
+
+    get skipCount(): number {
+        if (!this.cache.has('skipCount')) {
+            const skipCount = this.flatten().reduce((sum, song) => sum + song.skipCount, 0);
+            this.cache.add('skipCount', skipCount);
+        }
+        return this.cache.get('skipCount');
     }
 
     /***************/
@@ -83,20 +109,6 @@ export class Album extends Presenter implements Ratable {
         return this.flatten().length >= 10;
     }
 
-    public getDuration(): number {
-        return this.flatten().reduce((total, track) => {
-            return total + track.duration;
-        }, 0);
-    }
-
-    public getPLayCount(): number {
-        return this.flatten().reduce((sum, song) => sum + song.playCount, 0);
-    }
-
-    public getSkipCount(): number {
-        return this.flatten().reduce((sum, song) => sum + song.skipCount, 0);
-    }
-
     public getSongsWithRatingOf(rating: number): Array<Song> {
         return this.flatten().filter(song => song.rating === rating);
     }
@@ -105,10 +117,11 @@ export class Album extends Presenter implements Ratable {
     /* PRIVATE METHODS */
     /*******************/
 
-    public flatten(): Array<Song> {
+    private flatten(): Array<Song> {
         return this.tracks.reduce((a, disc) => {
             disc.forEach(track => a.push(track));
             return a;
         }, new Array<Song>());
     }
+
 } // End class Album
