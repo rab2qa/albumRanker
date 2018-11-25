@@ -42,6 +42,21 @@ export class Album extends Presenter implements Ratable {
     public tracks: Array<Array<Song>>;
     public starRatings?: number[];
 
+    /*************/
+    /* ACCESSORS */
+    /*************/
+
+    get topTenSongs(): Array<Song> {
+        if (!this.cache.has('topTenSongs')) {
+            const topTenSongs = this.flatten()
+            .filter(song => song.isRated())
+            .sort((a, b) => b.rating - a.rating)
+            .slice(0, 10);
+            this.cache.add('topTenSongs', topTenSongs);
+        }
+        return this.cache.get('topTenSongs');
+    }
+
     /***************/
     /* CONSTRUCTOR */
     /***************/
@@ -82,13 +97,6 @@ export class Album extends Presenter implements Ratable {
         return this.flatten().reduce((sum, song) => sum + song.skipCount, 0);
     }
 
-    public getTopTenSongs(): Array<Song> {
-        return this.flatten()
-            .filter(song => song.isRated())
-            .sort((a, b) => b.rating - a.rating)
-            .slice(0, 10);
-    }
-
     public getSongsWithRatingOf(rating: number): Array<Song> {
         return this.flatten().filter(song => song.rating === rating);
     }
@@ -97,7 +105,7 @@ export class Album extends Presenter implements Ratable {
     /* PRIVATE METHODS */
     /*******************/
 
-    private flatten(): Array<Song> {
+    public flatten(): Array<Song> {
         return this.tracks.reduce((a, disc) => {
             disc.forEach(track => a.push(track));
             return a;

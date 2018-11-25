@@ -23,11 +23,11 @@ import { Ratable } from '../interfaces/ratable';
 import { Artist } from './artist';
 import { Album } from './album';
 
-    //////////////////
-    //              //
-    //     SONG     //
-    //              //
-    //////////////////
+//////////////////
+//              //
+//     SONG     //
+//              //
+//////////////////
 
 export class Song extends Presenter implements Ratable {
 
@@ -46,6 +46,38 @@ export class Song extends Presenter implements Ratable {
     public loved: boolean;
     public playCount: number;
     public skipCount: number;
+
+    /*************/
+    /* ACCESSORS */
+    /*************/
+
+    public get discNumber(): number {
+        if (!this.cache.has('discNumber')) {
+            for (let i = 0; i < this.album.tracks.length; i++) {
+                for (let j = 0; j < this.album.tracks[i].length; j++) {
+                    if (this.album.tracks[i][j] === this) {
+                        this.cache.add('discNumber', i + 1);
+                        return i + 1;
+                    }
+                }
+            }
+        }
+        return this.cache.get('discNumber');
+    }
+
+    public get trackNumber(): number {
+        if (!this.cache.has('trackNumber')) {
+            for (let i = 0; i < this.album.tracks.length; i++) {
+                for (let j = 0; j < this.album.tracks[i].length; j++) {
+                    if (this.album.tracks[i][j] === this) {
+                        this.cache.add('trackNumber', j + 1);
+                        return j + 1;
+                    }
+                }
+            }
+        }
+        return this.cache.get('trackNumber');
+    }
 
     /***************/
     /* CONSTRUCTOR */

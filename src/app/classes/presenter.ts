@@ -4,6 +4,12 @@
 //                      //
 //////////////////////////
 
+/***********/
+/* CLASSES */
+/***********/
+
+import { Cache } from "../classes/cache";
+
 /**************/
 /* INTERFACES */
 /**************/
@@ -17,31 +23,6 @@ import { Rankable } from "../interfaces/rankable";
 /////////////////////
 
 const MAX_STARS: number = 5;
-
-///////////////////
-//               //
-//     CACHE     //
-//               //
-///////////////////
-
-class Cache {
-
-    /**************/
-    /* PROPERTIES */
-    /**************/
-
-    public ranking?: number;
-    public stars?: Array<number>;
-
-    /***************/
-    /* CONSTRUCTOR */
-    /***************/
-
-    constructor() {
-        this.ranking = null;
-        this.stars = null;
-    }
-}
 
 ///////////////////////
 //                   //
@@ -61,11 +42,11 @@ export class Presenter implements Rankable {
     /* ACCESSORS */
     /*************/
 
-    get ranking(): number { return this.cache.ranking; };
-    set ranking(value: number) { this.cache.ranking = value; };
+    get ranking(): number { return this.cache.get('ranking'); };
+    set ranking(value: number) { this.cache.add('ranking', value); };
 
     get stars(): Array<number> {
-        if (!this.cache.stars) {
+        if (!this.cache.has('stars')) {
             const rating = this.ranking.toFixed(2);
             const array = [0, 0, 0, 0, 0];
             const ratingWhole = +rating.toString().split('.')[0];
@@ -76,9 +57,9 @@ export class Presenter implements Rankable {
             if (ratingWhole < 5) {
                 array[ratingWhole] = ratingDecimal;
             }
-            this.cache.stars = array;
+            this.cache.add('stars', array);;
         }
-        return this.cache.stars;
+        return this.cache.get('stars');
     }
 
     /***************/
