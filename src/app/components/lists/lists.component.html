@@ -1,12 +1,12 @@
-<ng-container *ngIf="data?.initial.length > 0">
+<ng-container *ngIf="key && dataService[key]?.initial.length > 0">
   <div class="flex list-columns">
     <div>
-      <h1>Initial {{ type }}</h1>
-      <ranker-list [data]="data.initial" [name]="name" [type]="type"></ranker-list>
+      <h1>Initial {{ name }}</h1>
+      <ranker-list [data]="dataService[key].initial" [name]="name" [key]="key"></ranker-list>
     </div>
     <div>
-      <h1>User-ranked {{ type }}</h1>
-      <ranker-list [data]="data.adjusted" [name]="name" [type]="type" [canReorder]="true"></ranker-list>
+      <h1>User-ranked {{ name }}</h1>
+      <ranker-list [data]="dataService[key].adjusted" [name]="name" [key]="key" [canReorder]="true"></ranker-list>
     </div>
   </div>
 </ng-container>

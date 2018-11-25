@@ -7,14 +7,22 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class ListItemComponent implements OnInit {
   @Input() item: any;
-  @Input() type: string;
+  @Input() key: string;
   @Input() canReorder: boolean = false;
+  public listItemTitle: string;
   public showDetails: boolean = false;
   public ngOnInit(): void {
-    console.log(this.item);
+    this.listItemTitle = this.setListItemTitle(this.key);
+  }
+  public setListItemTitle(key) {
+    if (this.key === 'albums' || this.key === 'songs') {
+      return `${this.item.artist.name} "${this.item.name}"`;
+    } else if (this.key === 'artists') {
+      return this.item.name;
+    }
   }
   public toggleShowDetails(): void {
-    if (this.type === 'Albums') {
+    if (this.key === 'albums') {
       this.showDetails = this.showDetails ? false : true;
     }
   }
