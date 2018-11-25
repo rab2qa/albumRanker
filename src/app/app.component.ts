@@ -80,7 +80,7 @@ export class AppComponent {
     /* PRIVATE METHODS */
     /*******************/
 
-    private parseXML(text): object {
+    private parseXML(text: string): object {
         const xml = this.xmlService.FromText(text);
         const json = this.xmlService.ToJSON(xml);
         return json;
