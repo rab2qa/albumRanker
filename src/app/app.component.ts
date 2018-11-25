@@ -42,11 +42,6 @@ export class AppComponent {
   /* PROPERTIES */
   /**************/
 
-  public artists: Artist[];
-  public albums: Album[];
-  public albumsSupervised: Album[];
-  public songs: Song[];
-
   /***************/
   /* CONSTRUCTOR */
   /***************/
@@ -55,12 +50,7 @@ export class AppComponent {
     public xmlService: XmlService,
     public playlistService: PlaylistService,
     private dataService: DataService
-  ) {
-    this.artists = [];
-    this.albums = [];
-    this.albumsSupervised = [];
-    this.songs = [];
-  }
+  ) {}
 
   /******************/
   /* PUBLIC METHODS */
