@@ -3,18 +3,11 @@
 
   <input id="playlist" type="file" accept=".xml" (change)="onFileUpload($event.target.files)">
 
-  <ng-container *ngIf="albums.length > 0">
-    <div class="flex list-columns">
-      <div>
-        <h1>Generated List</h1>
-        <ranker-albums-list [albums]="albums"></ranker-albums-list>
-      </div>
-      <div>
-        <h1>Supervised List</h1>
-        <ranker-albums-list [albums]="albumsSupervised" [canReorder]="true"></ranker-albums-list>
-      </div>
-    </div>
-  </ng-container>
+  <ul class="navigation">
+    <li routerLink="albums" routerLinkActive="active">Albums</li>
+    <li routerLink="artists" routerLinkActive="active">Artists</li>
+    <li routerLink="songs" routerLinkActive="active">Songs</li>
+  </ul>
 
   <router-outlet></router-outlet>
 
