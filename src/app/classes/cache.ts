@@ -20,9 +20,9 @@ export class Cache {
         this._cache = new Object();
     }
 
-    /*************/
-    /* ACCESSORS */
-    /*************/
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
 
     public get(key: string): any {
         return this._cache[key];
