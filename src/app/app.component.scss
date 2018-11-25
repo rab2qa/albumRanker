@@ -1,7 +1,24 @@
+$primaryColor: #DC1431;
+
 .content-container {
   max-width: 1000px;
   margin: 20px auto;
 }
-.list-columns > div {
-  padding: 10px;
+.navigation {
+  margin: 20px 0 0 0;
+  padding: 0;
+  list-style: none;
+  > li {
+    display: inline-block;
+    cursor: pointer;
+    outline: none;
+    margin-right: 20px;
+    border-bottom: 2px transparent solid;
+    &:hover {
+      color: #aaa;
+    }
+    &.active {
+      border-color: black;
+    }
+  }
 }
