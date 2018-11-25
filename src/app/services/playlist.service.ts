@@ -87,7 +87,7 @@ export class PlaylistService {
     get maxArtistScore(): number {
         if (!this._cache.maxArtistScore) {
             this._cache.maxArtistScore = this.artists.reduce((max, artist) => {
-                const artistScore = this.GetArtistScore(artist);
+                const artistScore = this.getArtistScore(artist);
                 return artistScore > max ? artistScore : max;
             }, 0);
         }
@@ -97,7 +97,7 @@ export class PlaylistService {
     get minArtistScore(): number {
         if (!this._cache.minArtistScore) {
             this._cache.minArtistScore = this.artists.reduce((min, artist) => {
-                const artistScore = this.GetArtistScore(artist);
+                const artistScore = this.getArtistScore(artist);
                 return artistScore < min ? artistScore : min;
             }, 800);
         }
@@ -106,7 +106,7 @@ export class PlaylistService {
     get maxAlbumScore(): number {
         if (!this._cache.maxAlbumScore) {
             this._cache.maxAlbumScore = this.albums.reduce((max, album) => {
-                const albumScore = this.GetAlbumScore(album);
+                const albumScore = this.getAlbumScore(album);
                 return albumScore > max ? albumScore : max;
             }, 0);
         }
@@ -116,7 +116,7 @@ export class PlaylistService {
     get minAlbumScore(): number {
         if (!this._cache.minAlbumScore) {
             this._cache.minAlbumScore = this.albums.reduce((min, album) => {
-                const albumScore = this.GetAlbumScore(album);
+                const albumScore = this.getAlbumScore(album);
                 return albumScore < min ? albumScore : min;
             }, 800);
         }
@@ -138,52 +138,52 @@ export class PlaylistService {
     /* PUBLIC METHODS */
     /******************/
 
-    public Apply(playlist): void {
-        this.ClearORM();
-        this.GenerateORM(playlist);
-        this.RankSongs();
-        this.RankAlbums();
-        this.RankArtists();
+    public apply(playlist): void {
+        this.clearORM();
+        this.generateORM(playlist);
+        this.rankSongs();
+        this.rankAlbums();
+        this.rankArtists();
     }
 
-    public GetArtistScore(artist: Artist): number {
-        return Object.values(artist.albums).reduce((sum, album) => sum + this.GetAlbumRanking(album), 0);
+    public getArtistScore(artist: Artist): number {
+        return Object.values(artist.albums).reduce((sum, album) => sum + this.getAlbumRanking(album), 0);
     }
 
-    public GetAlbumScore(album: Album): number {
-        return album.GetTopTenSongs().reduce((sum, song) => sum + Algorithm.GetTransform(this.GetSongRanking(song)), 0);
+    public getAlbumScore(album: Album): number {
+        return album.getTopTenSongs().reduce((sum, song) => sum + Algorithm.getTransform(this.getSongRanking(song)), 0);
     }
 
     // public GetSongScore(song: Song): number {
     //     return this.GetSongRanking(song);
     // }
 
-    public GetArtistRanking(artist: Artist): number {
+    public getArtistRanking(artist: Artist): number {
         if (!artist.ranking) {
-            artist.ranking = Algorithm.Normalize(this.GetArtistScore(artist), this.minArtistScore, this.maxArtistScore, minRating, maxRating);
+            artist.ranking = Algorithm.normalize(this.getArtistScore(artist), this.minArtistScore, this.maxArtistScore, minRating, maxRating);
         }
         return artist.ranking;
     }
 
-    public GetAlbumRanking(album: Album): number {
+    public getAlbumRanking(album: Album): number {
         if (!album.ranking) {
             const weights = { rating: 0.0, aggregateSongRating: 1.0 };
-            const normalizedAlbumRating = Algorithm.Normalize(album.rating, minRating, maxRating);
-            const normalizedAlbumScore = Algorithm.Normalize(this.GetAlbumScore(album), this.minAlbumScore, this.maxAlbumScore);
-            const weightedRating = Algorithm.ApplyWeight(normalizedAlbumRating, weights.rating) + Algorithm.ApplyWeight(normalizedAlbumScore, weights.aggregateSongRating);
-            album.ranking = Algorithm.Scale(weightedRating, minRating, maxRating);
+            const normalizedAlbumRating = Algorithm.normalize(album.rating, minRating, maxRating);
+            const normalizedAlbumScore = Algorithm.normalize(this.getAlbumScore(album), this.minAlbumScore, this.maxAlbumScore);
+            const weightedRating = Algorithm.applyWeight(normalizedAlbumRating, weights.rating) + Algorithm.applyWeight(normalizedAlbumScore, weights.aggregateSongRating);
+            album.ranking = Algorithm.scale(weightedRating, minRating, maxRating);
         }
         return album.ranking;
     }
 
-    public GetSongRanking(song: Song): number {
+    public getSongRanking(song: Song): number {
         if (!song.ranking) {
             const weights = { rating: 0.8, playCount: 0.16, skipCount: 0.04 };
-            const normalizedSongRating = Algorithm.Normalize(song.rating, minRating, maxRating);
-            const normalizedPlayCount = Algorithm.Normalize(song.playCount, this._cache.minPlayCount, this._cache.maxPlayCount);
-            const normalizedSkipCount = Algorithm.Normalize(song.skipCount, this._cache.minSkipCount, this._cache.maxSkipCount);
-            const weightedRating = Algorithm.ApplyWeight(normalizedSongRating, weights.rating) + Algorithm.ApplyWeight(normalizedPlayCount, weights.playCount) + Algorithm.ApplyWeight(1 - normalizedSkipCount, weights.skipCount);
-            song.ranking = Algorithm.Scale(weightedRating, minRating, maxRating);
+            const normalizedSongRating = Algorithm.normalize(song.rating, minRating, maxRating);
+            const normalizedPlayCount = Algorithm.normalize(song.playCount, this._cache.minPlayCount, this._cache.maxPlayCount);
+            const normalizedSkipCount = Algorithm.normalize(song.skipCount, this._cache.minSkipCount, this._cache.maxSkipCount);
+            const weightedRating = Algorithm.applyWeight(normalizedSongRating, weights.rating) + Algorithm.applyWeight(normalizedPlayCount, weights.playCount) + Algorithm.applyWeight(1 - normalizedSkipCount, weights.skipCount);
+            song.ranking = Algorithm.scale(weightedRating, minRating, maxRating);
         }
         return song.ranking;
     }
@@ -192,14 +192,14 @@ export class PlaylistService {
     /* PRIVATE METHODS */
     /*******************/
 
-    private ClearORM() {
+    private clearORM() {
         this._artists.splice(0, this._artists.length);
         this._albums.splice(0, this._albums.length);
         this._songs.splice(0, this._songs.length);
         this._cache = new Cache();
     }
 
-    private GenerateORM(playlist) {
+    private generateORM(playlist) {
         const artists = {};
         const albums = {};
 
@@ -255,20 +255,20 @@ export class PlaylistService {
         Array.prototype.push.apply(this._albums, Object.values(albums));
     }
 
-    private RankSongs(): void {
-        this.songs.forEach(song => this.GetSongRanking(song));
+    private rankSongs(): void {
+        this.songs.forEach(song => this.getSongRanking(song));
         this.songs.sort((a: Song, b: Song) => { return b.ranking - a.ranking });
     }
 
-    private RankAlbums(): void {
-        this.albums.forEach(album => this.GetAlbumRanking(album));
+    private rankAlbums(): void {
+        this.albums.forEach(album => this.getAlbumRanking(album));
         this._albums = this._albums
             .filter(album => album.ranking > 0)
             .sort((a, b) => b.ranking - a.ranking);
     }
 
-    private RankArtists(): void {
-        this.artists.forEach(artist => this.GetArtistRanking(artist));
+    private rankArtists(): void {
+        this.artists.forEach(artist => this.getArtistRanking(artist));
         this._artists = this._artists
             .filter(artist => artist.ranking > 0)
             .sort((a, b) => b.ranking - a.ranking);

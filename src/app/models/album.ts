@@ -50,35 +50,35 @@ export class Album extends Presenter {
     /* PUBLIC METHODS */
     /******************/
 
-    public IsRated(): boolean {
+    public isRated(): boolean {
         return !!this.rating;
     }
 
-    public IsEP(): boolean {
-        return this.Flatten().length < 10;
+    public isEP(): boolean {
+        return this.flatten().length < 10;
     }
 
-    public IsLP(): boolean {
-        return this.Flatten().length >= 10;
+    public isLP(): boolean {
+        return this.flatten().length >= 10;
     }
 
-    public GetDuration(): number {
-        return this.Flatten().reduce((total, track) => {
+    public getDuration(): number {
+        return this.flatten().reduce((total, track) => {
             return total + track.duration;
         }, 0);
     }
 
-    public GetPLayCount(): number {
-        return this.Flatten().reduce((sum, song) => sum + song.playCount, 0);
+    public getPLayCount(): number {
+        return this.flatten().reduce((sum, song) => sum + song.playCount, 0);
     }
 
-    public GetSkipCount(): number {
-        return this.Flatten().reduce((sum, song) => sum + song.skipCount, 0);
+    public getSkipCount(): number {
+        return this.flatten().reduce((sum, song) => sum + song.skipCount, 0);
     }
 
-    public GetTopTenSongs(): Array<Song> {
-        return this.Flatten()
-            .filter(song => song.IsRated())
+    public getTopTenSongs(): Array<Song> {
+        return this.flatten()
+            .filter(song => song.isRated())
             .sort((a, b) => b.rating - a.rating)
             .slice(0, 10);
     }
@@ -87,7 +87,7 @@ export class Album extends Presenter {
     /* PRIVATE METHODS */
     /*******************/
 
-    private Flatten(): Array<Song> {
+    private flatten(): Array<Song> {
         return this.tracks.reduce((a, disc) => {
             disc.forEach(track => a.push(track));
             return a;

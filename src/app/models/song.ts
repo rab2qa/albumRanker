@@ -54,7 +54,7 @@ export class Song extends Presenter {
     /* PUBLIC METHODS */
     /******************/
 
-    public IsRated(): boolean {
+    public isRated(): boolean {
         return !!(this.rating);
     }
 

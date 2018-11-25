@@ -69,7 +69,7 @@ export class AppComponent {
             const fileReader = new FileReader();
             fileReader.onloadend = (e: any) => {
                 const playlist = this.parseXML(e.target.result);
-                this.playlistService.Apply(playlist);
+                this.playlistService.apply(playlist);
                 this.updateData();
             };
             fileReader.readAsText(file);
@@ -81,8 +81,8 @@ export class AppComponent {
     /*******************/
 
     private parseXML(text: string): object {
-        const xml = this.xmlService.FromText(text);
-        const json = this.xmlService.ToJSON(xml);
+        const xml = this.xmlService.fromText(text);
+        const json = this.xmlService.toJSON(xml);
         return json;
     }
 
