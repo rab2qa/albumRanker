@@ -54,6 +54,8 @@ class Cache {
     public minAlbumScore?: number = null;
     public maxAlbumScore?: number = null;
 
+    public lovedCount?: number = 0;
+
     public maxPlayCount?: number = 0;
     public minPlayCount?: number = Number.MAX_SAFE_INTEGER;
 
@@ -158,16 +160,17 @@ export class PlaylistService {
         }
     }
 
-    private scaleRating(ratable: Ratable): number {
-        return ratable.rating * starWeights[ratable.rating - 1];
-    }
-
     public getArtistScore(artist: Artist): number {
         return Object.values(artist.albums).reduce((sum, album) => sum + this.getAlbumRanking(album), 0);
     }
 
     public getAlbumScore(album: Album): number {
-        return album.getTopTenSongs().reduce((sum, song) => sum + this.scaleRating(song), 0);
+        return album.topTenSongs.reduce((sum, song) => sum + this.transformRating(song), 0);
+    }
+
+    private transformRating(ratable: Ratable): number {
+        const starIndex = ratable.rating - 1;
+        return Algorithm.linearTransform(ratable.rating, starWeights[starIndex]);
     }
 
     // public GetSongScore(song: Song): number {
@@ -183,14 +186,14 @@ export class PlaylistService {
 
     public getAlbumRanking(album: Album): number {
         if (!album.ranking) {
-            const weights = album.rating
+            const weights = (album.rating)
                 ? { rating: 0.5, aggregateSongRating: 0.4, aggregatePlayCount: 0.08, aggregateSkipCount: 0.02 }
-                : { rating: 0.0, aggregateSongRating: 0.8, aggregatePlayCount: 0.16, aggregateSkipCount: 0.04 }; 
+                : { rating: 0.0, aggregateSongRating: 0.8, aggregatePlayCount: 0.16, aggregateSkipCount: 0.04 };
 
             const normalizedAlbumRating = Algorithm.normalize(album.rating, minRating, maxRating);
             const normalizedAlbumScore = Algorithm.normalize(this.getAlbumScore(album), this.minAlbumScore, this.maxAlbumScore);
 
-            const topTenSongs = album.getTopTenSongs();
+            const topTenSongs = album.topTenSongs;
             const aggregatePlayCount = topTenSongs.reduce((sum, song) => sum + song.playCount, 0);
             const aggregateSkipCount = topTenSongs.reduce((sum, song) => sum + song.skipCount, 0);
             const normalizedAggregatePlayCount = Algorithm.normalize(aggregatePlayCount, this._cache.minPlayCount * topTenSongs.length, this._cache.maxPlayCount * topTenSongs.length);
@@ -204,7 +207,7 @@ export class PlaylistService {
 
     public getSongRanking(song: Song): number {
         if (!song.ranking) {
-            const weights = { rating: 0.8, playCount: 0.16, skipCount: 0.04 };
+            const weights = { rating: 0.8, loved: 0.0, playCount: 0.16, skipCount: 0.04 };
             const normalizedSongRating = Algorithm.normalize(song.rating, minRating, maxRating);
             const normalizedPlayCount = Algorithm.normalize(song.playCount, this._cache.minPlayCount, this._cache.maxPlayCount);
             const normalizedSkipCount = Algorithm.normalize(song.skipCount, this._cache.minSkipCount, this._cache.maxSkipCount);
@@ -263,10 +266,11 @@ export class PlaylistService {
                 playCount: +track["Play Count"] || 0,
                 skipCount: +track["Skip Count"] || 0
             });
-            if (song.rating) { this._cache.songStarCount[song.rating - 1]++; }
             this.songs.push(song);
 
-            // Update Statistics
+            // Update Cache
+            if (song.loved) { this._cache.lovedCount++; }
+            if (song.rating) { this._cache.songStarCount[song.rating - 1]++; }
             this._cache.maxPlayCount = Math.max(song.playCount, this._cache.maxPlayCount);
             this._cache.maxSkipCount = Math.max(song.skipCount, this._cache.maxSkipCount);
             this._cache.minPlayCount = Math.min(song.playCount, this._cache.minPlayCount);
