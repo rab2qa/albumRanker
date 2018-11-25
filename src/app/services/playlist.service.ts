@@ -16,6 +16,12 @@ import { Injectable } from '@angular/core';
 
 import { Algorithm } from '../utilities/algorithm';
 
+/**************/
+/* INTERFACES */
+/**************/
+
+import { Ratable } from '../interfaces/ratable';
+
 /**********/
 /* MODELS */
 /**********/
@@ -32,6 +38,8 @@ import { Song } from '../models/song';
 
 const minRating = 0;
 const maxRating = 5;
+
+const starWeights = [1, 2, 3, 4, 5];
 
 ///////////////////
 //               //
@@ -51,6 +59,9 @@ class Cache {
 
     public maxSkipCount?: number = 0;
     public minSkipCount?: number = Number.MAX_SAFE_INTEGER;
+
+    public albumStarCount?: Array<number> = [0, 0, 0, 0, 0];
+    public songStarCount?: Array<number> = [0, 0, 0, 0, 0];
 
     constructor() { }
 }
@@ -105,20 +116,14 @@ export class PlaylistService {
     }
     get maxAlbumScore(): number {
         if (!this._cache.maxAlbumScore) {
-            this._cache.maxAlbumScore = this.albums.reduce((max, album) => {
-                const albumScore = this.getAlbumScore(album);
-                return albumScore > max ? albumScore : max;
-            }, 0);
+            this._cache.maxAlbumScore = this.albums.reduce((max, album) => Math.max(max, this.getAlbumScore(album)), Number.MIN_SAFE_INTEGER);
         }
         return this._cache.maxAlbumScore;
     }
 
     get minAlbumScore(): number {
         if (!this._cache.minAlbumScore) {
-            this._cache.minAlbumScore = this.albums.reduce((min, album) => {
-                const albumScore = this.getAlbumScore(album);
-                return albumScore < min ? albumScore : min;
-            }, 800);
+            this._cache.minAlbumScore = this.albums.reduce((min, album) => Math.min(min, this.getAlbumScore(album)), Number.MAX_SAFE_INTEGER);
         }
         return this._cache.minAlbumScore;
     }
@@ -141,9 +146,20 @@ export class PlaylistService {
     public apply(playlist): void {
         this.clearORM();
         this.generateORM(playlist);
+        this.updateStarWeights();
         this.rankSongs();
         this.rankAlbums();
         this.rankArtists();
+    }
+
+    private updateStarWeights(): void {
+        for (let i = 1; i < maxRating; i++) {
+            if (this._cache.songStarCount[i]) { starWeights[i] = Math.max(this._cache.songStarCount[i - 1] / this._cache.songStarCount[i], 1); }
+        }
+    }
+
+    private scaleRating(ratable: Ratable): number {
+        return ratable.rating * starWeights[ratable.rating - 1];
     }
 
     public getArtistScore(artist: Artist): number {
@@ -151,7 +167,7 @@ export class PlaylistService {
     }
 
     public getAlbumScore(album: Album): number {
-        return album.getTopTenSongs().reduce((sum, song) => sum + Algorithm.getTransform(this.getSongRanking(song)), 0);
+        return album.getTopTenSongs().reduce((sum, song) => sum + this.scaleRating(song), 0);
     }
 
     // public GetSongScore(song: Song): number {
@@ -167,10 +183,20 @@ export class PlaylistService {
 
     public getAlbumRanking(album: Album): number {
         if (!album.ranking) {
-            const weights = { rating: 0.0, aggregateSongRating: 1.0 };
+            const weights = album.rating
+                ? { rating: 0.5, aggregateSongRating: 0.4, aggregatePlayCount: 0.08, aggregateSkipCount: 0.02 }
+                : { rating: 0.0, aggregateSongRating: 0.8, aggregatePlayCount: 0.16, aggregateSkipCount: 0.04 }; 
+
             const normalizedAlbumRating = Algorithm.normalize(album.rating, minRating, maxRating);
             const normalizedAlbumScore = Algorithm.normalize(this.getAlbumScore(album), this.minAlbumScore, this.maxAlbumScore);
-            const weightedRating = Algorithm.applyWeight(normalizedAlbumRating, weights.rating) + Algorithm.applyWeight(normalizedAlbumScore, weights.aggregateSongRating);
+
+            const topTenSongs = album.getTopTenSongs();
+            const aggregatePlayCount = topTenSongs.reduce((sum, song) => sum + song.playCount, 0);
+            const aggregateSkipCount = topTenSongs.reduce((sum, song) => sum + song.skipCount, 0);
+            const normalizedAggregatePlayCount = Algorithm.normalize(aggregatePlayCount, this._cache.minPlayCount * topTenSongs.length, this._cache.maxPlayCount * topTenSongs.length);
+            const normalizedAggregateSkipCount = Algorithm.normalize(aggregateSkipCount, this._cache.minSkipCount * topTenSongs.length, this._cache.maxSkipCount * topTenSongs.length);
+
+            const weightedRating = Algorithm.applyWeight(normalizedAlbumRating, weights.rating) + Algorithm.applyWeight(normalizedAlbumScore, weights.aggregateSongRating) + Algorithm.applyWeight(normalizedAggregatePlayCount, weights.aggregatePlayCount) + Algorithm.applyWeight(normalizedAggregateSkipCount, weights.aggregateSkipCount);
             album.ranking = Algorithm.scale(weightedRating, minRating, maxRating);
         }
         return album.ranking;
@@ -220,6 +246,7 @@ export class PlaylistService {
                     albums[albumName].rating = 0;
                 } else {
                     albums[albumName].rating = +track["Album Rating"] / 20 || 0;
+                    if (albums[albumName].rating) { this._cache.albumStarCount[albums[albumName].rating - 1]++; }
                 }
             }
 
@@ -236,6 +263,7 @@ export class PlaylistService {
                 playCount: +track["Play Count"] || 0,
                 skipCount: +track["Skip Count"] || 0
             });
+            if (song.rating) { this._cache.songStarCount[song.rating - 1]++; }
             this.songs.push(song);
 
             // Update Statistics

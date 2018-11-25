@@ -10,6 +10,12 @@
 
 import { Presenter } from '../classes/presenter';
 
+/**************/
+/* INTERFACES */
+/**************/
+
+import { Ratable } from '../interfaces/ratable';
+
 /**********/
 /* MODELS */
 /**********/
@@ -23,7 +29,7 @@ import { Song } from './song';
 //               //
 ///////////////////
 
-export class Album extends Presenter {
+export class Album extends Presenter implements Ratable {
 
     /**************/
     /* PROPERTIES */
@@ -81,6 +87,10 @@ export class Album extends Presenter {
             .filter(song => song.isRated())
             .sort((a, b) => b.rating - a.rating)
             .slice(0, 10);
+    }
+
+    public getSongsWithRatingOf(rating: number): Array<Song> {
+        return this.flatten().filter(song => song.rating === rating);
     }
 
     /*******************/

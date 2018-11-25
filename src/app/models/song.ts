@@ -10,6 +10,12 @@
 
 import { Presenter } from '../classes/presenter';
 
+/**************/
+/* INTERFACES */
+/**************/
+
+import { Ratable } from '../interfaces/ratable';
+
 /**********/
 /* MODELS */
 /**********/
@@ -23,7 +29,7 @@ import { Album } from './album';
     //              //
     //////////////////
 
-export class Song extends Presenter {
+export class Song extends Presenter implements Ratable {
 
     /**************/
     /* PROPERTIES */
