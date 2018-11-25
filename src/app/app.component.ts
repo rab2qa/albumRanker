@@ -62,25 +62,35 @@ export class AppComponent {
     /* PUBLIC METHODS */
     /******************/
 
-    public handleFileInput(files: FileList) {
+    public onFileUpload(files: FileList) {
         const file = files.item(0);
 
         if (file) {
             const fileReader = new FileReader();
             fileReader.onloadend = (e: any) => {
-                const text = e.target.result;
-                const xml = this.xmlService.FromText(text);
-                const json = this.xmlService.ToJSON(xml);
-                this.playlistService.FromJSON(json);
-
-                // Fill Data Structures
-                this.artists = this.playlistService.artists;        // TODO: implementation
-                this.albums = this.playlistService.albums;
-                this.albumsSupervised = this.playlistService.albums;
-                this.songs = this.playlistService.songs;            // TODO: implementation
+                const playlist = this.parseXML(e.target.result);
+                this.playlistService.FromJSON(playlist);
+                this.updateData();
             };
             fileReader.readAsText(file);
         }
+    }
+
+    /*******************/
+    /* PRIVATE METHODS */
+    /*******************/
+
+    private parseXML(text): object {
+        const xml = this.xmlService.FromText(text);
+        const json = this.xmlService.ToJSON(xml);
+        return json;
+    }
+
+    private updateData(): void {
+        this.artists = this.playlistService.artists;        // TODO: implementation
+        this.albums = this.playlistService.albums;
+        this.albumsSupervised = this.playlistService.albums;
+        this.songs = this.playlistService.songs;            // TODO: implementation
     }
 
 } // End class AppComponent

@@ -1,7 +1,7 @@
 
 <div class="content-container">
 
-  <input id="playlist" type="file" accept=".xml" (change)="handleFileInput($event.target.files)">
+  <input id="playlist" type="file" accept=".xml" (change)="onFileUpload($event.target.files)">
 
   <ng-container *ngIf="albums.length > 0">
     <div class="flex list-columns">
