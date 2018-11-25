@@ -12,6 +12,9 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { SongsComponent } from './components/songs/songs.component';
 import { ArtistsComponent } from './components/artists/artists.component';
 import { DataService } from './services/data.service';
+import { ListsComponent } from './components/lists/lists.component';
+import { ListComponent } from './components/lists/list/list.component';
+import { ListItemComponent } from './components/lists/list/list-item/list-item.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +25,9 @@ import { DataService } from './services/data.service';
     AlbumsComponent,
     SongsComponent,
     ArtistsComponent,
+    ListsComponent,
+    ListComponent,
+    ListItemComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule],
   providers: [DataService],

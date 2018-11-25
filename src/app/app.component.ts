@@ -16,14 +16,6 @@ import { Component } from '@angular/core';
 
 import { PlaylistService } from './services/playlist.service';
 import { XmlService } from './services/xml.service';
-
-/**********/
-/* MODELS */
-/**********/
-
-import { Artist } from './models/artist';
-import { Album } from './models/album';
-import { Song } from './models/song';
 import { DataService } from './services/data.service';
 
 ///////////////////////////

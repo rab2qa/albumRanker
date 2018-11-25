@@ -1,12 +1,1 @@
-<ng-container *ngIf="dataService.albums?.initial.length > 0">
-  <div class="flex list-columns">
-    <div>
-      <h1>Initial List</h1>
-      <ranker-albums-list [albums]="dataService.albums.initial"></ranker-albums-list>
-    </div>
-    <div>
-      <h1>User-ranked List</h1>
-      <ranker-albums-list [albums]="dataService.albums.adjusted" [canReorder]="true"></ranker-albums-list>
-    </div>
-  </div>
-</ng-container>
+<ranker-lists [data]="dataService.albums" type="album"></ranker-lists>

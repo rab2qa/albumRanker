@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { PlaylistService } from '../../services/playlist.service';
+import { DataService } from '../../services/data.service';
 
 @Component({
   selector: 'ranker-songs',
@@ -7,6 +7,6 @@ import { PlaylistService } from '../../services/playlist.service';
   styleUrls: ['./songs.component.scss'],
 })
 export class SongsComponent implements OnInit {
-  constructor(public playlistService: PlaylistService) {}
+  constructor(public dataService: DataService) {}
   ngOnInit() {}
 }
