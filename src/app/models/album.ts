@@ -10,12 +10,6 @@
 
 import { Presenter } from '../classes/presenter';
 
-/**************/
-/* INTERFACES */
-/**************/
-
-import { Ratable } from '../interfaces/ratable';
-
 /**********/
 /* MODELS */
 /**********/
@@ -29,7 +23,7 @@ import { Song } from './song';
 //               //
 ///////////////////
 
-export class Album extends Presenter implements Ratable {
+export class Album extends Presenter {
 
     /**************/
     /* PROPERTIES */
@@ -42,15 +36,19 @@ export class Album extends Presenter implements Ratable {
     public tracks: Array<Array<Song>>;
     public starRatings?: number[];
 
-    /******************/
-    /* PUBLIC METHODS */
-    /******************/
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
 
     public constructor(name: string) {
         super();
         this.name = name;
         this.tracks = new Array<Array<Song>>();
     }
+
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
 
     public IsRated(): boolean {
         return !!this.rating;

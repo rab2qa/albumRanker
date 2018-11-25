@@ -1,3 +1,15 @@
+//////////////////////////
+//                      //
+//     DEPENDENCIES     //
+//                      //
+//////////////////////////
+
+/**************/
+/* INTERFACES */
+/**************/
+
+import { Rankable } from "../interfaces/rankable";
+
 /////////////////////
 //                 //
 //     GLOBALS     //
@@ -13,13 +25,22 @@ const MAX_STARS: number = 5;
 ///////////////////
 
 class Cache {
-  public ranking?: number;
-  public stars?: Array<number>;
 
-  constructor() {
-    this.ranking = null;
-    this.stars = null;
-  }
+    /**************/
+    /* PROPERTIES */
+    /**************/
+
+    public ranking?: number;
+    public stars?: Array<number>;
+
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
+
+    constructor() {
+        this.ranking = null;
+        this.stars = null;
+    }
 }
 
 ///////////////////////
@@ -28,7 +49,7 @@ class Cache {
 //                   //
 ///////////////////////
 
-export class Presenter {
+export class Presenter implements Rankable {
 
     /**************/
     /* PROPERTIES */
@@ -42,7 +63,7 @@ export class Presenter {
 
     get ranking(): number { return this.cache.ranking; };
     set ranking(value: number) { this.cache.ranking = value; };
-  
+
     get stars(): Array<number> {
         if (!this.cache.stars) {
             const rating = this.ranking.toFixed(2);
@@ -60,12 +81,12 @@ export class Presenter {
         return this.cache.stars;
     }
 
-    /******************/
-    /* PUBLIC METHODS */
-    /******************/
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
 
     public constructor() {
         this.cache = new Cache();
     }
-  
+
 } // End class Presenter

@@ -123,9 +123,9 @@ export class PlaylistService {
         return this._cache.minAlbumScore;
     }
 
-    /******************/
-    /* PUBLIC METHODS */
-    /******************/
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
 
     public constructor() {
         this._artists = new Array<Artist>();
@@ -133,6 +133,10 @@ export class PlaylistService {
         this._songs = new Array<Song>();
         this._cache = new Cache();
     }
+
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
 
     public FromJSON(playlist): void {
         this.ClearORM();

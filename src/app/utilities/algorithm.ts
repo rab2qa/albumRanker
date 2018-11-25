@@ -6,6 +6,12 @@
 
 export class Algorithm {
 
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
+
+    public constructor() { }
+
     /******************/
     /* PUBLIC METHODS */
     /******************/

@@ -24,10 +24,10 @@ export class Artist extends Presenter {
 
     public name: string;
     public albums: Object;
-  
-    /******************/
-    /* PUBLIC METHODS */
-    /******************/
+
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
 
     public constructor(name: string) {
         super();

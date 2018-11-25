@@ -4,12 +4,12 @@
 //                   //
 ///////////////////////
 
-export interface Ratable {
+export interface Rankable {
    
     /**************/
     /* PROPERTIES */
     /**************/
 
-    rating: number;
+    ranking: number;
 
-} // End interface Ratable
+} // End interface Rankable

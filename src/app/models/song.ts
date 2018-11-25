@@ -10,12 +10,6 @@
 
 import { Presenter } from '../classes/presenter';
 
-/**************/
-/* INTERFACES */
-/**************/
-
-import { Ratable } from '../interfaces/ratable';
-
 /**********/
 /* MODELS */
 /**********/
@@ -29,7 +23,7 @@ import { Album } from './album';
     //              //
     //////////////////
 
-export class Song extends Presenter implements Ratable {
+export class Song extends Presenter {
 
     /**************/
     /* PROPERTIES */
@@ -47,14 +41,18 @@ export class Song extends Presenter implements Ratable {
     public playCount: number;
     public skipCount: number;
 
-    /******************/
-    /* PUBLIC METHODS */
-    /******************/
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
 
     public constructor(init?: Partial<Song>) {
         super();
         Object.assign(this, init);
     }
+
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
 
     public IsRated(): boolean {
         return !!(this.rating);

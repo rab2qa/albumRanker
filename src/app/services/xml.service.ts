@@ -21,11 +21,15 @@ import { Injectable } from '@angular/core';
 })
 export class XmlService {
 
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
+
+    public constructor() { }
+
     /******************/
     /* PUBLIC METHODS */
     /******************/
-
-    public constructor() { }
 
     public FromText(text): object {
         const parser = new DOMParser();
