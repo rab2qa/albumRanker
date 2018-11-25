@@ -68,7 +68,8 @@ export class AppComponent {
         if (file) {
             const fileReader = new FileReader();
             fileReader.onloadend = (e: any) => {
-                const xml = this.xmlService.FromText(e.target.result);
+                const text = e.target.result;
+                const xml = this.xmlService.FromText(text);
                 const json = this.xmlService.ToJSON(xml);
                 this.playlistService.FromJSON(json);
 
