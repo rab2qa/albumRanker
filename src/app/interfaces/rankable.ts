@@ -11,5 +11,6 @@ export interface Rankable {
     /**************/
 
     ranking: number;
+    stars: Array<number>;
 
 } // End interface Rankable
