@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Album } from '../../models/album';
+import { Album } from '../../../models/album';
 import { moveItemInArray, CdkDragDrop } from '@angular/cdk/drag-drop';
 
 @Component({

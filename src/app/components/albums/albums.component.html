@@ -1,0 +1,12 @@
+<ng-container *ngIf="dataService.albums.length > 0">
+  <div class="flex list-columns">
+    <div>
+      <h1>Generated List</h1>
+      <ranker-albums-list [albums]="dataService.albums"></ranker-albums-list>
+    </div>
+    <div>
+      <h1>Supervised List</h1>
+      <ranker-albums-list [albums]="dataService.albumsSupervised" [canReorder]="true"></ranker-albums-list>
+    </div>
+  </div>
+</ng-container>
