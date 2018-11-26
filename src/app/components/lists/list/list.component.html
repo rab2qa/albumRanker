@@ -1,18 +1,16 @@
 <div class="list-header flex">
   <div>
-    <span *ngIf="type === 'Albums'">Artist/Album Title</span>
-    <span *ngIf="type === 'Artists'">Artist</span>
-    <span *ngIf="type === 'Songs'">Artist/Song Title</span>
+    {{ listHeader }}
   </div>
   <div class="text-right">Relative Rating</div>
 </div>
 <ng-container *ngIf="canReorder">
   <div cdkDropList (cdkDropListDropped)="drop($event)">
-    <ranker-list-item *ngFor="let item of data" [item]="item" [type]="type" [canReorder]="canReorder" cdkDrag></ranker-list-item>
+    <ranker-list-item *ngFor="let item of data" [item]="item" [key]="key" [canReorder]="canReorder" cdkDrag></ranker-list-item>
   </div>
 </ng-container>
 <ng-container *ngIf="!canReorder">
   <div>
-    <ranker-list-item *ngFor="let item of data" [item]="item" [type]="type"></ranker-list-item>
+    <ranker-list-item *ngFor="let item of data" [item]="item" [key]="key"></ranker-list-item>
   </div>
 </ng-container>
