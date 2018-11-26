@@ -8,39 +8,45 @@
 /* CLASSES */
 /***********/
 
-import { Multimedia } from '../classes/multimedia';
+import { Presenter } from '../classes/presenter';
 
-////////////////////
-//                //
-//     ARTIST     //
-//                //
-////////////////////
+/**********/
+/* MODELS */
+/**********/
 
-export class Artist extends Multimedia {
+import { Song } from '../models/song';
+
+//////////////////////
+//                  //
+//     PLAYLIST     //
+//                  //
+//////////////////////
+
+export class Playlist extends Presenter {
 
     /**************/
     /* PROPERTIES */
     /**************/
 
-    private _albums: object;
+    private _songs: Array<Song>;
 
     /***************/
     /* CONSTRUCTOR */
     /***************/
 
     public constructor(
-        private _name: string
+        private _name: string,
     ) {
         super();
-        this._albums = new Object();
+        this._songs = new Array<Song>();
     }
 
     /*************/
     /* ACCESSORS */
     /*************/
 
-    get albums(): object { return this._albums; }
-    
     get name(): string { return this._name; }
+    
+    get songs(): Array<Song> { return this._songs; }
 
-} // End class Artist
+} // End class Playlist

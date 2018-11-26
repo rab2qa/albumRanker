@@ -14,9 +14,7 @@ import { Injectable } from '@angular/core';
 /* MODELS */
 /**********/
 
-import { Artist } from '../models/artist';
-import { Album } from '../models/album';
-import { Song } from '../models/song';
+import { Library } from '../models/library';
 
 /////////////////////
 //                 //
@@ -25,39 +23,74 @@ import { Song } from '../models/song';
 /////////////////////
 
 @Injectable({
-  providedIn: 'root',
+    providedIn: 'root',
 })
 export class DataService {
-  /**************/
-  /* PROPERTIES */
-  /**************/
 
-  public albums: {
-    initial: Album[];
-    adjusted: Album[];
-  };
-  public artists: {
-    initial: Artist[];
-    adjusted: Artist[];
-  };
-  public songs: {
-    initial: Song[];
-    adjusted: Song[];
-  };
+    /**************/
+    /* PROPERTIES */
+    /**************/
 
-  /******************/
-  /* PUBLIC METHODS */
-  /******************/
-  public updateData(playlistService): void {
-    this.albums = this.updateEachEntity(playlistService.albums);
-    this.artists = this.updateEachEntity(playlistService.artists);
-    this.songs = this.updateEachEntity(playlistService.songs);
-  }
+    private _library: Library;
 
-  private updateEachEntity(data) {
-    return {
-      initial: [...data],
-      adjusted: [...data],
-    };
-  }
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
+
+    public constructor() { }
+
+    /*************/
+    /* ACCESSORS */
+    /*************/
+
+    get albums(): Object {
+        if (this._library) {
+            return {
+                initial: this._library.albums,
+                adjusted: this._library.albums
+            };
+        }
+    }
+
+    get artists(): Object {
+        if (this._library) {
+            return {
+                initial: this._library.artists,
+                adjusted: this._library.artists
+            };
+        }
+    }
+
+    get playlists(): Object {
+        if (this._library) {
+            return this._library.playlists;
+        }
+    }
+
+    get songs(): Object {
+        if (this._library) {
+            return {
+                initial: this._library.songs,
+                adjusted: this._library.songs
+            };
+        }
+    }
+
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
+
+    public importLibrary(library: Object): boolean {
+        let success: boolean = false;
+
+        try {
+            this._library = new Library(library);
+            success = true;
+        } catch (error) {
+            console.error(error);
+        }
+
+        return success;
+    }
+
 } // End class DataService

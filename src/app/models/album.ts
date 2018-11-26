@@ -8,7 +8,7 @@
 /* CLASSES */
 /***********/
 
-import { Presenter } from '../classes/presenter';
+import { Multimedia } from '../classes/multimedia';
 
 /**************/
 /* INTERFACES */
@@ -29,7 +29,7 @@ import { Song } from './song';
 //               //
 ///////////////////
 
-export class Album extends Presenter implements Ratable {
+export class Album extends Multimedia implements Ratable {
 
     /**************/
     /* PROPERTIES */

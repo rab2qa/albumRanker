@@ -56,6 +56,8 @@ export class XmlService {
                     case "dict":
                         response[key.innerHTML] = this.parseDictionary(value);
                         break;
+                    case "Playlists":
+                        break;
                     case "array":
                         response[key.innerHTML] = this.parseArray(value);
                         break;
@@ -86,6 +88,8 @@ export class XmlService {
                     break;
             }
         });
+
+        return response;
     }
 
 } // End class XmlService

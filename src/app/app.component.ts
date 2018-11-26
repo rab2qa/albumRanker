@@ -11,10 +11,9 @@
 import { Component } from '@angular/core';
 
 /************/
-/* SERVICES */
+/* SERVICES */ 
 /************/
 
-import { PlaylistService } from './services/playlist.service';
 import { XmlService } from './services/xml.service';
 import { DataService } from './services/data.service';
 
@@ -40,7 +39,6 @@ export class AppComponent {
 
   public constructor(
     public xmlService: XmlService,
-    public playlistService: PlaylistService,
     private dataService: DataService
   ) {}
 
@@ -54,13 +52,13 @@ export class AppComponent {
     if (file) {
       const fileReader = new FileReader();
       fileReader.onloadend = (e: any) => {
-        const playlist = this.parseXML(e.target.result);
-        this.playlistService.apply(playlist);
-        this.dataService.updateData(this.playlistService);
+        const library = this.parseXML(e.target.result);
+        this.dataService.importLibrary(library);
       };
       fileReader.readAsText(file);
     }
-  }
+
+  } // end onFileUpload()
 
   /*******************/
   /* PRIVATE METHODS */
@@ -71,4 +69,5 @@ export class AppComponent {
     const json = this.xmlService.toJSON(xml);
     return json;
   }
+
 } // End class AppComponent
