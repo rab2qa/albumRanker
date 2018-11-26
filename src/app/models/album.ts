@@ -35,16 +35,57 @@ export class Album extends Presenter implements Ratable {
     /* PROPERTIES */
     /**************/
 
-    public name: string;
-    public artist: Artist;
-    public releaseDate: Date;
-    public rating: number;
-    public tracks: Array<Array<Song>>;
-    public starRatings?: number[];
+    private _tracks: Array<Array<Song>>;
+
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
+
+    public constructor(
+        private _artist: Artist,
+        private _name: string,
+        private _rating: number,
+        private _year: number
+    ) {
+        super();
+        this._tracks = new Array<Array<Song>>();
+    }
 
     /*************/
     /* ACCESSORS */
     /*************/
+
+    get artist(): Artist { return this._artist; }
+
+    get duration(): number {
+        if (!this.cache.has('duration')) {
+            const duration = this.flatten().reduce((total, track) => {
+                return total + track.duration;
+            }, 0);
+            this.cache.add('duration', duration);
+        }
+        return this.cache.get('duration');
+    }
+
+    get name(): string { return this._name; }
+
+    get playCount(): number {
+        if (!this.cache.has('playCount')) {
+            const playCount = this.flatten().reduce((sum, song) => sum + song.playCount, 0);
+            this.cache.add('playCount', playCount);
+        }
+        return this.cache.get('playCount');
+    }
+
+    get rating(): number { return this._rating; }
+
+    get skipCount(): number {
+        if (!this.cache.has('skipCount')) {
+            const skipCount = this.flatten().reduce((sum, song) => sum + song.skipCount, 0);
+            this.cache.add('skipCount', skipCount);
+        }
+        return this.cache.get('skipCount');
+    }
 
     get topTenSongs(): Array<Song> {
         if (!this.cache.has('topTenSongs')) {
@@ -57,41 +98,9 @@ export class Album extends Presenter implements Ratable {
         return this.cache.get('topTenSongs');
     }
 
-    get duration(): number {
-        if (!this.cache.has('duration')) {
-            const duration = this.flatten().reduce((total, track) => {
-                return total + track.duration;
-            }, 0);
-            this.cache.add('duration', duration);
-        }
-        return this.cache.get('duration');
-    }
+    get tracks(): Array<Array<Song>> { return this._tracks; }
 
-    get playCount(): number {
-        if (!this.cache.has('playCount')) {
-            const playCount = this.flatten().reduce((sum, song) => sum + song.playCount, 0);
-            this.cache.add('playCount', playCount);
-        }
-        return this.cache.get('playCount');
-    }
-
-    get skipCount(): number {
-        if (!this.cache.has('skipCount')) {
-            const skipCount = this.flatten().reduce((sum, song) => sum + song.skipCount, 0);
-            this.cache.add('skipCount', skipCount);
-        }
-        return this.cache.get('skipCount');
-    }
-
-    /***************/
-    /* CONSTRUCTOR */
-    /***************/
-
-    public constructor(name: string) {
-        super();
-        this.name = name;
-        this.tracks = new Array<Array<Song>>();
-    }
+    get year(): number { return this._year; }
 
     /******************/
     /* PUBLIC METHODS */

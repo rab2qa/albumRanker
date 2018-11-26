@@ -20,8 +20,8 @@ import { Ratable } from '../interfaces/ratable';
 /* MODELS */
 /**********/
 
-import { Artist } from './artist';
 import { Album } from './album';
+import { Artist } from './artist';
 
 //////////////////
 //              //
@@ -31,27 +31,34 @@ import { Album } from './album';
 
 export class Song extends Presenter implements Ratable {
 
-    /**************/
-    /* PROPERTIES */
-    /**************/
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
 
-    public id: number;
-    public name: string;
-    public artist: Artist;
-    public album: Album;
-    public genre: string;
-    public duration: number;
-    public releaseDate: Date;
-    public rating: number;
-    public loved: boolean;
-    public playCount: number;
-    public skipCount: number;
+    public constructor(
+        private _album: Album,
+        private _artist: Artist,
+        private _duration: number,
+        private _genre: string,
+        private _id: number,
+        private _loved: boolean,
+        private _name: string,
+        private _playCount: number,
+        private _rating: number,
+        private _releaseDate: Date,
+        private _skipCount: number
+    ) {
+        super();
+    }
 
     /*************/
     /* ACCESSORS */
     /*************/
 
-    public get discNumber(): number {
+    get album(): Album { return this._album; }
+    get artist(): Artist { return this._artist; }
+    
+    get discNumber(): number {
         if (!this.cache.has('discNumber')) {
             for (let i = 0; i < this.album.tracks.length; i++) {
                 for (let j = 0; j < this.album.tracks[i].length; j++) {
@@ -65,7 +72,17 @@ export class Song extends Presenter implements Ratable {
         return this.cache.get('discNumber');
     }
 
-    public get trackNumber(): number {
+    get duration(): number { return this._duration; }
+    get genre(): string { return this._genre; }
+    get id(): number { return this._id; }
+    get loved(): boolean { return this._loved; }
+    get name(): string { return this._name; }
+    get playCount(): number { return this._playCount; }
+    get releaseDate(): Date { return this._releaseDate; }
+    get rating(): number { return this._rating; }
+    get skipCount(): number { return this._skipCount; }
+
+    get trackNumber(): number {
         if (!this.cache.has('trackNumber')) {
             for (let i = 0; i < this.album.tracks.length; i++) {
                 for (let j = 0; j < this.album.tracks[i].length; j++) {
@@ -77,15 +94,6 @@ export class Song extends Presenter implements Ratable {
             }
         }
         return this.cache.get('trackNumber');
-    }
-
-    /***************/
-    /* CONSTRUCTOR */
-    /***************/
-
-    public constructor(init?: Partial<Song>) {
-        super();
-        Object.assign(this, init);
     }
 
     /******************/

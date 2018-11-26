@@ -234,57 +234,71 @@ export class PlaylistService {
 
         for (const key in playlist["Tracks"]) {
             const track = playlist["Tracks"][key];
-            const artistName = track["Artist"];
+
             const albumName = track["Album"];
-            const trackNumber = +track["Track Number"];
+            const albumRating = (track["Album Rating Computed"] === "true") ? 0 : +track["Album Rating"] / 20 || 0;
+            const artistName = track["Artist"];
             const discNumber = +track["Disc Number"] || 1;
+            const duration = +track["Total Time"];
+            const genre = track["Genre"];
+            const id = +track["Track ID"];
+            const loved = track["Loved"] === "true";
+            const name = track["Name"];
+            const playCount = +track["Play Count"] || 0;
+            const rating = +track["Rating"] / 20 || 0;
+            const releaseDate = new Date(track["Release Date"]);
+            const skipCount = +track["Skip Count"] || 0;
+            const trackNumber = +track["Track Number"];
+            const year = track["Year"];
 
-            if (!artists[artistName]) {
-                artists[artistName] = new Artist(artistName);
+            let artist = artists[artistName];
+            if (!artist) {
+                artist = new Artist(artistName);
+                artists[artistName] = artist;
             }
 
-            if (!albums[albumName]) {
-                albums[albumName] = new Album(albumName);
-                if (track["Album Rating Computed"] === "true") {
-                    albums[albumName].rating = 0;
-                } else {
-                    albums[albumName].rating = +track["Album Rating"] / 20 || 0;
-                    if (albums[albumName].rating) { this._cache.albumStarCount[albums[albumName].rating - 1]++; }
-                }
+            let album = albums[albumName];
+            if (!album) {
+                album = this.createAlbum(artist, albumName, albumRating, year);
+                albums[albumName] = album;
             }
 
-            const song = new Song({
-                id: +track["Track ID"],
-                name: track["Name"],
-                artist: artists[artistName],
-                album: albums[albumName],
-                genre: track["Genre"],
-                duration: +track["Total Time"],
-                releaseDate: new Date(track["Release Date"]),
-                rating: +track["Rating"] / 20 || 0,
-                loved: track["Loved"] === "true",
-                playCount: +track["Play Count"] || 0,
-                skipCount: +track["Skip Count"] || 0
-            });
+            const song = this.createSong(album, artist, discNumber, duration, genre, id, loved, name, playCount, rating, releaseDate, skipCount, trackNumber);
             this.songs.push(song);
-
-            // Update Cache
-            if (song.loved) { this._cache.lovedCount++; }
-            if (song.rating) { this._cache.songStarCount[song.rating - 1]++; }
-            this._cache.maxPlayCount = Math.max(song.playCount, this._cache.maxPlayCount);
-            this._cache.maxSkipCount = Math.max(song.skipCount, this._cache.maxSkipCount);
-            this._cache.minPlayCount = Math.min(song.playCount, this._cache.minPlayCount);
-            this._cache.minSkipCount = Math.min(song.skipCount, this._cache.minSkipCount);
-
-            // Update ORM References
-            albums[albumName].tracks[discNumber - 1] = albums[albumName].tracks[discNumber - 1] || new Array<Song>();
-            albums[albumName].tracks[discNumber - 1][trackNumber - 1] = song;
-            artists[artistName].albums[albumName] = albums[albumName];
-            albums[albumName].artist = artists[artistName];
         }
 
         Array.prototype.push.apply(this._artists, Object.values(artists));
         Array.prototype.push.apply(this._albums, Object.values(albums));
+    }
+
+    private createAlbum(artist, albumName, albumRating, year): Album {
+        const album = new Album(artist, albumName, albumRating, year);
+
+        // Update ORM
+        artist.albums[albumName] = album;
+
+        // Update Cache
+        if (album.rating) { this._cache.albumStarCount[album.rating - 1]++; }
+
+        return album;
+    }
+
+    private createSong(album, artist, discNumber, duration, genre, id, loved, name, playCount, rating, releaseDate, skipCount, trackNumber): Song {
+        const song = new Song(album, artist, duration, genre, id, loved, name, playCount, rating, releaseDate, skipCount);
+
+        // Update ORM
+        album.tracks[discNumber - 1] = album.tracks[discNumber - 1] || new Array<Song>();
+        album.tracks[discNumber - 1][trackNumber - 1] = song;
+
+        // Update Cache
+        if (song.loved) { this._cache.lovedCount++; }
+        if (song.rating) { this._cache.songStarCount[song.rating - 1]++; }
+        this._cache.maxPlayCount = Math.max(song.playCount, this._cache.maxPlayCount);
+        this._cache.maxSkipCount = Math.max(song.skipCount, this._cache.maxSkipCount);
+        this._cache.minPlayCount = Math.min(song.playCount, this._cache.minPlayCount);
+        this._cache.minSkipCount = Math.min(song.skipCount, this._cache.minSkipCount);
+
+        return song;
     }
 
     private rankSongs(): void {

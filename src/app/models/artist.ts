@@ -22,17 +22,24 @@ export class Artist extends Presenter {
     /* PROPERTIES */
     /**************/
 
-    public name: string;
-    public albums: Object;
+    private _albums: object;
 
     /***************/
     /* CONSTRUCTOR */
     /***************/
 
-    public constructor(name: string) {
+    public constructor(
+        private _name: string
+    ) {
         super();
-        this.name = name;
-        this.albums = new Object();
+        this._albums = new Object();
     }
+
+    /*************/
+    /* ACCESSORS */
+    /*************/
+
+    get albums(): object { return this._albums; }
+    get name(): string { return this._name; }
 
 } // End class Artist
