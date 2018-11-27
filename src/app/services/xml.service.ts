@@ -36,6 +36,13 @@ export class XmlService {
         return parser.parseFromString(text, "text/xml");
     }
 
+    public parseXML(text: string) {
+        const xml = this.fromText(text);
+        const json = this.toJSON(xml);
+        return json;
+    }
+
+
     public toJSON(xml): object {
         const plist = xml.getElementsByTagName("plist")[0].firstElementChild;
         return this.parseDictionary(plist);
