@@ -21,5 +21,8 @@
     &.active {
       background: $primaryColorLight;
     }
+    &.upload {
+      color: $primaryColorLight;
+    }
   }
 }
