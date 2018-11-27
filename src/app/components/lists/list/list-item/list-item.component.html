@@ -1,4 +1,4 @@
-<div class="item transition" [class.clickable]="key === 'albums' || canReorder" (click)="toggleShowDetails()">
+<div class="item transition" [class.clickable]="key === 'albums' || canReorder" (click)="toggleShowDetails(key)">
   <div class="item-title flex">
     <div>
       <i *ngIf="canReorder" class="sort-icon fa-sort fas"></i>

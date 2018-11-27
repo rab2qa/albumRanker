@@ -14,15 +14,15 @@ export class ListItemComponent implements OnInit {
   public ngOnInit(): void {
     this.listItemTitle = this.setListItemTitle(this.key);
   }
-  public setListItemTitle(key) {
-    if (this.key === 'albums' || this.key === 'songs') {
+  public setListItemTitle(key: string) {
+    if (key === 'albums' || key === 'songs') {
       return `${this.item.artist.name} "${this.item.name}"`;
     } else if (this.key === 'artists') {
       return this.item.name;
     }
   }
-  public toggleShowDetails(): void {
-    if (this.key === 'albums') {
+  public toggleShowDetails(key: string): void {
+    if (key === 'albums') {
       this.showDetails = this.showDetails ? false : true;
     }
   }
