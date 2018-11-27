@@ -1,43 +1,4 @@
-$primaryColor: #00A7FF;
-$sideWidth: 250px;
-
 .main-container {
   // max-width: 1000px;
   // margin: 20px auto;
-}
-.side-container {
-  position: fixed;
-  width: $sideWidth;
-  height: 100%;
-  background: $primaryColor;
-  z-index: 500;
-  padding: 8px;
-}
-.content-container {
-  position: relative;
-  margin-left: $sideWidth;
-  padding: 30px;
-}
-.navigation {
-  padding: 0;
-  list-style: none;
-  > li {
-    display: block;
-    cursor: pointer;
-    outline: none;
-    padding: 8px;
-    margin-bottom: 1px;
-    color: white;
-    border-radius: 3px;
-    i {
-      width: 25px;
-      text-align: center;
-    }
-    &:hover {
-      background: rgba(0, 0, 0, 0.05);
-    }
-    &.active {
-      background: rgba(255, 255, 255, 0.125);
-    }
-  }
 }

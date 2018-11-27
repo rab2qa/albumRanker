@@ -10,11 +10,15 @@ import { DataService } from './services/data.service';
 import { ListsComponent } from './components/lists/lists.component';
 import { ListComponent } from './components/lists/list/list.component';
 import { ListItemComponent } from './components/lists/list/list-item/list-item.component';
+import { LibraryGuard } from './guards/library.guard';
+import { ShellComponent } from './components/shell/shell.component';
+import { UploadComponent } from './components/upload/upload.component';
+import { NavigationComponent } from './components/shell/navigation/navigation.component';
 
 @NgModule({
-  declarations: [AppComponent, StarRatingsComponent, ListsComponent, ListComponent, ListItemComponent],
+  declarations: [AppComponent, StarRatingsComponent, ListsComponent, ListComponent, ListItemComponent, ShellComponent, UploadComponent, NavigationComponent],
   imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule],
-  providers: [DataService],
+  providers: [DataService, LibraryGuard],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

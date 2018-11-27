@@ -1,0 +1,25 @@
+@import 'src/app/styles/variables';
+.navigation {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  > li {
+    display: block;
+    cursor: pointer;
+    outline: none;
+    padding: 8px;
+    margin-bottom: 1px;
+    color: white;
+    border-radius: 3px;
+    i {
+      width: 25px;
+      text-align: center;
+    }
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    &.active {
+      background: rgba(255, 255, 255, 0.125);
+    }
+  }
+}

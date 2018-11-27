@@ -1,0 +1,2 @@
+<input *ngIf="!loading" id="playlist" type="file" accept=".xml" (change)="onFileUpload($event.target.files)">
+  <div *ngIf="loading">loading...</div>
