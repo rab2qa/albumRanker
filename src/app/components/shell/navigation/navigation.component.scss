@@ -15,14 +15,15 @@
       width: 25px;
       text-align: center;
     }
-    &:hover {
-      background: $primaryColorDark;
-    }
     &.active {
       background: $primaryColorLight;
+      pointer-events: none;
     }
     &.upload {
       color: $primaryColorLight;
+    }
+    &:hover {
+      color: $primaryColorDark;
     }
   }
 }

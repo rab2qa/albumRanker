@@ -1,3 +1,4 @@
+@import 'src/app/styles/variables';
 ul.star-ratings {
   margin: 0;
   padding: 0;
@@ -12,6 +13,7 @@ ul.star-ratings {
       left: 0;
       top: 0;
       overflow: hidden;
+      color: $primaryColorDark;
     }
   }
 }
