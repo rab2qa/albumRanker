@@ -1,8 +1,16 @@
 @import url('https://use.fontawesome.com/releases/v5.5.0/css/all.css');
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
 
+html,
+body {
+  height: 100%;
+  margin: 0
+}
 body {
   font-family: 'Noto Sans TC', sans-serif;
+}
+* {
+  box-sizing: border-box
 }
 .text-right {
   text-align: right;
@@ -23,5 +31,5 @@ h1 {
   -o-transition: all 200ms ease-out;
   transition: all 200ms ease-out;
 }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+// body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

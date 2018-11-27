@@ -1,15 +1,25 @@
 
-<div class="content-container">
+<div class="main-container">
 
-  <input *ngIf="!loading" id="playlist" type="file" accept=".xml" (change)="onFileUpload($event.target.files)">
-  <div *ngIf="loading">loading...</div>
+  <div class="side-container">
+    <input *ngIf="!loading" id="playlist" type="file" accept=".xml" (change)="onFileUpload($event.target.files)">
+    <div *ngIf="loading">loading...</div>
+    <ul class="navigation">
+      <li routerLink="albums" routerLinkActive="active">
+        <i class="fa-compact-disc fas"></i> Albums
+      </li>
+      <li routerLink="artists" routerLinkActive="active">
+        <i class="fa-users fas"></i> Artists
+      </li>
+      <li routerLink="songs" routerLinkActive="active">
+        <i class="fa-music fas"></i>
+        Songs
+      </li>
+    </ul>
+  </div>
 
-  <ul class="navigation">
-    <li routerLink="albums" routerLinkActive="active">Albums</li>
-    <li routerLink="artists" routerLinkActive="active">Artists</li>
-    <li routerLink="songs" routerLinkActive="active">Songs</li>
-  </ul>
-
-  <router-outlet></router-outlet>
+  <div class="content-container">
+    <router-outlet></router-outlet>
+  </div>
 
 </div>

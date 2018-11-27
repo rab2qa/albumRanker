@@ -1,24 +1,43 @@
-$primaryColor: #DC1431;
+$primaryColor: #00A7FF;
+$sideWidth: 250px;
 
+.main-container {
+  // max-width: 1000px;
+  // margin: 20px auto;
+}
+.side-container {
+  position: fixed;
+  width: $sideWidth;
+  height: 100%;
+  background: $primaryColor;
+  z-index: 500;
+  padding: 8px;
+}
 .content-container {
-  max-width: 1000px;
-  margin: 20px auto;
+  position: relative;
+  margin-left: $sideWidth;
+  padding: 30px;
 }
 .navigation {
-  margin: 20px 0 0 0;
   padding: 0;
   list-style: none;
   > li {
-    display: inline-block;
+    display: block;
     cursor: pointer;
     outline: none;
-    margin-right: 20px;
-    border-bottom: 2px transparent solid;
+    padding: 8px;
+    margin-bottom: 1px;
+    color: white;
+    border-radius: 3px;
+    i {
+      width: 25px;
+      text-align: center;
+    }
     &:hover {
-      color: #aaa;
+      background: rgba(0, 0, 0, 0.05);
     }
     &.active {
-      border-color: black;
+      background: rgba(255, 255, 255, 0.125);
     }
   }
 }
