@@ -1,5 +1,6 @@
 @import url('https://use.fontawesome.com/releases/v5.5.0/css/all.css');
 @import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
+@import 'src/app/styles/variables';
 
 html,
 body {
@@ -22,7 +23,9 @@ body {
   }
 }
 h1 {
-  font-size: 1.5rem;
+  margin: 0 0 10px 0;
+  font-size: 1.125rem;
+  color: $primaryColorDark;
 }
 
 .transition {
