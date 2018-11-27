@@ -30,6 +30,12 @@ import { DataService } from './services/data.service';
 })
 export class AppComponent {
 
+    /**************/
+    /* PROPERTIES */
+    /**************/
+
+    public loading: boolean = false;
+
     /***************/
     /* CONSTRUCTOR */
     /***************/
@@ -48,12 +54,14 @@ export class AppComponent {
 
         if (file) {
             const fileReader = new FileReader();
+            this.loading = true;
             fileReader.onloadend = (e: any) => {
                 const text = e.target.result;
                 this.parseXML(text).then((library) => {
-                    this.dataService.importLibrary(library);
+                    this.dataService.importLibrary(library).then(success => {
+                        this.loading = false;
+                    });
                 });
-                console.log("Hello!");
             };
             fileReader.readAsText(file);
         }

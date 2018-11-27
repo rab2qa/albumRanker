@@ -1,7 +1,8 @@
 
 <div class="content-container">
 
-  <input id="playlist" type="file" accept=".xml" (change)="onFileUpload($event.target.files)">
+  <input *ngIf="!loading" id="playlist" type="file" accept=".xml" (change)="onFileUpload($event.target.files)">
+  <div *ngIf="loading">loading...</div>
 
   <ul class="navigation">
     <li routerLink="albums" routerLinkActive="active">Albums</li>

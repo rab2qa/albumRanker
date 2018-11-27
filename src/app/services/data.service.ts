@@ -80,11 +80,11 @@ export class DataService {
     /* PUBLIC METHODS */
     /******************/
 
-    public importLibrary(library: Object): boolean {
+    public async importLibrary(library: Object): Promise<boolean> {
         let success: boolean = false;
 
         try {
-            this._library = new Library(library);
+            this._library = await new Library(library);
             success = true;
         } catch (error) {
             console.error(error);
