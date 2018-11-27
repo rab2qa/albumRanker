@@ -7,7 +7,6 @@ export class LibraryGuard {
   constructor(private router: Router, private dataService: DataService) {}
   canActivate(): Promise<boolean> {
     return new Promise(resolve => {
-      console.log(this.dataService.songs);
       if (this.dataService.songs) {
         resolve(true);
       } else {
