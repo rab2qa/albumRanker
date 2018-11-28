@@ -59,7 +59,7 @@ export class Album extends Multimedia implements Ratable {
 
     get duration(): number {
         if (!this.cache.has('duration')) {
-            const duration = this.flatten().reduce((total, track) => {
+            const duration = this.songs.reduce((total, track) => {
                 return total + track.duration;
             }, 0);
             this.cache.add('duration', duration);
@@ -71,7 +71,7 @@ export class Album extends Multimedia implements Ratable {
 
     get playCount(): number {
         if (!this.cache.has('playCount')) {
-            const playCount = this.flatten().reduce((sum, song) => sum + song.playCount, 0);
+            const playCount = this.songs.reduce((sum, song) => sum + song.playCount, 0);
             this.cache.add('playCount', playCount);
         }
         return this.cache.get('playCount');
@@ -81,15 +81,26 @@ export class Album extends Multimedia implements Ratable {
 
     get skipCount(): number {
         if (!this.cache.has('skipCount')) {
-            const skipCount = this.flatten().reduce((sum, song) => sum + song.skipCount, 0);
+            const skipCount = this.songs.reduce((sum, song) => sum + song.skipCount, 0);
             this.cache.add('skipCount', skipCount);
         }
         return this.cache.get('skipCount');
     }
 
+    get songs(): Array<Song> {
+        if (!this.cache.has('songs')) {
+            const songs = this.tracks.reduce((array, disc) => {
+                disc.forEach(track => array.push(track));
+                return array;
+            }, new Array<Song>());
+            this.cache.add('songs', songs);
+        }
+        return this.cache.get('songs');
+    }
+
     get topTenSongs(): Array<Song> {
         if (!this.cache.has('topTenSongs')) {
-            const topTenSongs = this.flatten()
+            const topTenSongs = this.songs
                 .filter(song => song.isRated())
                 .sort((a, b) => b.rating - a.rating)
                 .slice(0, 10);
@@ -106,31 +117,41 @@ export class Album extends Multimedia implements Ratable {
     /* PUBLIC METHODS */
     /******************/
 
-    public isRated(): boolean {
-        return !!this.rating;
-    }
-
     public isEP(): boolean {
-        return this.flatten().length < 10;
+        return this.songs.length >= 5 && this.songs.length < 10;
     }
 
     public isLP(): boolean {
-        return this.flatten().length >= 10;
+        return this.songs.length >= 10;
+    }
+    
+    public isSingle(): boolean {
+        return this.songs.length < 5;
+    }
+
+    public isRated(): boolean {
+        return !!(this.rating || this.hasAllSongsRated());
     }
 
     public getSongsWithRatingOf(rating: number): Array<Song> {
-        return this.flatten().filter(song => song.rating === rating);
+        return this.songs.filter(song => song.rating === rating);
     }
 
     /*******************/
     /* PRIVATE METHODS */
     /*******************/
 
-    private flatten(): Array<Song> {
-        return this.tracks.reduce((a, disc) => {
-            disc.forEach(track => a.push(track));
-            return a;
-        }, new Array<Song>());
+    private hasAllSongsRated(): boolean {
+        return this.songs.filter(song => song.isRated()).length === this.songs.length;
+    }
+
+    private hasSomeSongsRated(): boolean {
+        const ratedSongs = this.songs.filter(song => song.isRated());
+        return ratedSongs.length > 0 && ratedSongs.length < this.songs.length;
+    }
+
+    private hasNoSongsRated(): boolean {
+        return this.songs.filter(song => song.isRated()).length === 0;
     }
 
 } // End class Album
