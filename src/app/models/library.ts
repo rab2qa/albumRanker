@@ -10,12 +10,6 @@
 
 import { Presenter } from '../classes/presenter';
 
-/**************/
-/* INTERFACES */
-/**************/
-
-import { Ratable } from '../interfaces/ratable';
-
 /**********/
 /* MODELS */
 /**********/
@@ -37,10 +31,12 @@ import { Algorithm } from '../utilities/algorithm';
 //                 //
 /////////////////////
 
-const minRating = 0;
-const maxRating = 5;
+const normalizeEP: boolean = false;
 
-const starWeights = [1, 2, 3, 4, 5];
+const minRating: number = 0;
+const maxRating: number = 5;
+
+const starWeights: Array<number> = [Math.pow(2, 0), Math.pow(2, 1), Math.pow(2, 2), Math.pow(2, 3), Math.pow(2, 4)];
 
 export class Library extends Presenter {
 
@@ -77,21 +73,6 @@ export class Library extends Presenter {
         this._songs = new Array<Song>();
 
         this.createLibrary(json);
-        this.updateStarWeights();
-        this.rankSongs();
-        this.rankAlbums();
-        this.rankArtists();
-
-        // this.cache.add('lovedCount', 0);
-
-        // this.cache.add('maxPlayCount', 0);
-        // this.cache.add('minPlayCount', Number.MAX_SAFE_INTEGER);
-
-        // this.cache.add('maxSkipCount', 0);
-        // this.cache.add('minSkipCount', Number.MAX_SAFE_INTEGER);
-
-        // this.cache.add('albumStarCount', [0, 0, 0, 0, 0]);
-        // this.cache.add('songStarCount', [0, 0, 0, 0, 0]);    
     }
 
     /*************/
@@ -102,44 +83,6 @@ export class Library extends Presenter {
 
     get artists(): Array<Artist> { return this._artists; }
 
-    get maxAlbumScore(): number {
-        if (!this.cache.has('maxAlbumScore')) {
-            const maxAlbumScore = this.albums.reduce((max, album) => Math.max(max, this.getAlbumScore(album)), Number.MIN_SAFE_INTEGER);
-            this.cache.add('maxAlbumScore', maxAlbumScore);
-        }
-        return this.cache.get('maxAlbumScore');
-    }
-
-    get maxArtistScore(): number {
-        if (!this.cache.has('maxArtistScore')) {
-            const maxArtistScore = this.artists.reduce((max, artist) => {
-                const artistScore = this.getArtistScore(artist);
-                return artistScore > max ? artistScore : max;
-            }, 0);
-            this.cache.add('maxArtistScore', maxArtistScore);
-        }
-        return this.cache.get('maxArtistScore');
-    }
-
-    get minAlbumScore(): number {
-        if (!this.cache.has('minAlbumScore')) {
-            const minAlbumScore = this.albums.reduce((min, album) => Math.min(min, this.getAlbumScore(album)), Number.MAX_SAFE_INTEGER);
-            this.cache.add('minAlbumScore', minAlbumScore);
-        }
-        return this.cache.get('minAlbumScore');
-    }
-
-    get minArtistScore(): number {
-        if (!this.cache.has('minArtistScore')) {
-            const minArtistScore = this.artists.reduce((min, artist) => {
-                const artistScore = this.getArtistScore(artist);
-                return artistScore < min ? artistScore : min;
-            }, 800);
-            this.cache.add('minArtistScore', minArtistScore);
-        }
-        return this.cache.get('minArtistScore');
-    }
-
     get playlists(): Array<Playlist> { return this._playlists; }
 
     get songs(): Array<Song> { return this._songs; }
@@ -148,45 +91,94 @@ export class Library extends Presenter {
     /* PUBLIC METHODS */
     /******************/
 
-    public getArtistRanking(artist: Artist): number {
-        if (!artist.ranking) {
-            artist.ranking = Algorithm.normalize(this.getArtistScore(artist), this.minArtistScore, this.maxArtistScore, minRating, maxRating);
-        }
-        return artist.ranking;
-    }
-
     public getAlbumRanking(album: Album): number {
+
         if (!album.ranking) {
-            const weights = (album.rating)
-                ? { rating: 0.5, aggregateSongRating: 0.4, aggregatePlayCount: 0.08, aggregateSkipCount: 0.02 }
-                : { rating: 0.0, aggregateSongRating: 0.8, aggregatePlayCount: 0.16, aggregateSkipCount: 0.04 };
+            const albumDivisor = (normalizeEP) ? 10 : album.topTenSongs.length;
+            const aggregateSongRating = album.topTenSongs.reduce((sum, song) => {
+                const starWeight = starWeights[song.rating - 1];
+                const songRanking = this.getSongRanking(song);
 
-            const normalizedAlbumRating = Algorithm.normalize(album.rating, minRating, maxRating);
-            const normalizedAlbumScore = Algorithm.normalize(this.getAlbumScore(album), this.minAlbumScore, this.maxAlbumScore);
+                const normalizedStarWeight = Algorithm.normalize(starWeight, 0, starWeights[starWeights.length - 1], minRating, maxRating);
 
-            const topTenSongs = album.topTenSongs;
-            const aggregatePlayCount = topTenSongs.reduce((sum, song) => sum + song.playCount, 0);
-            const aggregateSkipCount = topTenSongs.reduce((sum, song) => sum + song.skipCount, 0);
-            const normalizedAggregatePlayCount = Algorithm.normalize(aggregatePlayCount, this._minPlayCount * topTenSongs.length, this._maxPlayCount * topTenSongs.length);
-            const normalizedAggregateSkipCount = Algorithm.normalize(aggregateSkipCount, this._minSkipCount * topTenSongs.length, this._maxSkipCount * topTenSongs.length);
+                // return sum + ( (songRanking + normalizedStarWeight) / 2 );
+                return sum + songRanking;
+            }, 0) / albumDivisor;
 
-            const weightedRating = Algorithm.applyWeight(normalizedAlbumRating, weights.rating) + Algorithm.applyWeight(normalizedAlbumScore, weights.aggregateSongRating) + Algorithm.applyWeight(normalizedAggregatePlayCount, weights.aggregatePlayCount) + Algorithm.applyWeight(normalizedAggregateSkipCount, weights.aggregateSkipCount);
-            album.ranking = Algorithm.scale(weightedRating, minRating, maxRating);
+            let result = 0;
+
+            if (album.isRated()) {
+                result =
+                    (album.rating - 1) +
+                    Algorithm.scale(aggregateSongRating, minRating, (maxRating - (maxRating - 1)) / maxRating);
+            } else {
+                result = aggregateSongRating;
+            }
+
+            album.ranking = result;
         }
+
         return album.ranking;
-    }
+
+    } // End getAlbumRanking()
+
+
+    public getArtistRanking(artist: Artist): number {
+
+        if (!artist.ranking) {
+            const albums = Object.values(artist.albums);
+            const aggregateAlbumRating = albums.reduce((sum, album) => sum + this.getAlbumRanking(album), 0) / albums.length;
+            artist.ranking = aggregateAlbumRating;
+        }
+
+        return artist.ranking;
+
+    } // End getArtistRanking()
 
     public getSongRanking(song: Song): number {
+
         if (!song.ranking) {
-            const weights = { rating: 0.8, loved: 0.0, playCount: 0.16, skipCount: 0.04 };
-            const normalizedSongRating = Algorithm.normalize(song.rating, minRating, maxRating);
-            const normalizedPlayCount = Algorithm.normalize(song.playCount, this._minPlayCount, this._maxPlayCount);
-            const normalizedSkipCount = Algorithm.normalize(song.skipCount, this._minSkipCount, this._maxSkipCount);
-            const weightedRating = Algorithm.applyWeight(normalizedSongRating, weights.rating) + Algorithm.applyWeight(normalizedPlayCount, weights.playCount) + Algorithm.applyWeight(1 - normalizedSkipCount, weights.skipCount);
-            song.ranking = Algorithm.scale(weightedRating, minRating, maxRating);
+            const lovedRating = song.loved ? maxRating : minRating;
+            const playRating = Algorithm.normalize(song.playCount, this._minPlayCount, this._maxPlayCount, minRating, maxRating);
+            const skipRating = maxRating - Algorithm.normalize(song.skipCount, this._minSkipCount, this._maxSkipCount, minRating, maxRating);
+
+            let result = 0;
+
+            if (song.rating || song.loved || song.playCount || song.skipCount) {
+                if (song.isRated()) {
+                    const featureWeights = (song.loved)
+                        ? { lovedRating: 0.5, playRating: 0.4, skipRating: 0.1 }
+                        : { lovedRating: 0.0, playRating: 0.8, skipRating: 0.2 };
+                    const weightedRating =
+                        Algorithm.applyWeight(lovedRating, featureWeights.lovedRating) +
+                        Algorithm.applyWeight(playRating, featureWeights.playRating) +
+                        Algorithm.applyWeight(skipRating, featureWeights.skipRating);
+                    result =
+                        (song.rating - 1) + // take a star off
+                        Algorithm.scale(weightedRating, minRating, (maxRating - (maxRating - 1)) / maxRating); // fill the last star
+                } else {
+                    const featureWeights = { playRating: 0.8, skipRating: 0.2 };
+
+                    const weightedRating =
+                        Algorithm.applyWeight(playRating, featureWeights.playRating) +
+                        Algorithm.applyWeight(skipRating, featureWeights.skipRating);
+
+                    if (song.loved) {
+                        result =
+                            (Algorithm.scale(lovedRating, minRating, (maxRating - 1) / maxRating)) +
+                            Algorithm.scale(weightedRating, minRating, (maxRating - (maxRating - 1)) / maxRating);
+                    } else {
+                        result = weightedRating;
+                    }
+                }
+            }
+
+            song.ranking = result;
         }
+
         return song.ranking;
-    }
+
+    } // End getSongRanking()
 
     /*******************/
     /* PRIVATE METHODS */
@@ -307,51 +299,22 @@ export class Library extends Presenter {
             }
         });
 
-        Array.prototype.push.apply(this._albums, Object.values(albums));
-        Array.prototype.push.apply(this._artists, Object.values(artists));
+        this.updateStarWeights();
+
+        Array.prototype.push.apply(this._songs, Object.values(songs).sort((a: Song, b: Song) => { return this.getSongRanking(b) - this.getSongRanking(a); }));
+        Array.prototype.push.apply(this._albums, Object.values(albums).sort((a: Album, b: Album) => { return this.getAlbumRanking(b) - this.getAlbumRanking(a); }));
+        Array.prototype.push.apply(this._artists, Object.values(artists).sort((a: Artist, b: Artist) => { return this.getArtistRanking(b) - this.getArtistRanking(a); }));
+
         Array.prototype.push.apply(this._playlists, Object.values(playlists));
-        Array.prototype.push.apply(this._songs, Object.values(songs));
-    }
-
-    private getArtistScore(artist: Artist): number {
-        return Object.values(artist.albums).reduce((sum, album) => sum + this.getAlbumRanking(album), 0);
-    }
-
-    private getAlbumScore(album: Album): number {
-        return album.topTenSongs.reduce((sum, song) => sum + this.transformRating(song), 0);
-    }
-
-    // private getSongScore(song: Song): number {
-    //     return this.GetSongRanking(song);
-    // }
-
-    private rankAlbums(): void {
-        this.albums.forEach(album => this.getAlbumRanking(album));
-        this._albums = this._albums
-            .filter(album => album.ranking > 0)
-            .sort((a, b) => b.ranking - a.ranking);
-    }
-
-    private rankArtists(): void {
-        this.artists.forEach(artist => this.getArtistRanking(artist));
-        this._artists = this._artists
-            .filter(artist => artist.ranking > 0)
-            .sort((a, b) => b.ranking - a.ranking);
-    }
-
-    private rankSongs(): void {
-        this.songs.forEach(song => this.getSongRanking(song));
-        this.songs.sort((a: Song, b: Song) => { return b.ranking - a.ranking });
-    }
-
-    private transformRating(ratable: Ratable): number {
-        const starIndex = ratable.rating - 1;
-        return Algorithm.linearTransform(ratable.rating, starWeights[starIndex]);
     }
 
     private updateStarWeights(): void {
-        for (let i = 1; i < maxRating; i++) {
-            if (this._songStarCount[i]) { starWeights[i] = Math.max(this._songStarCount[i - 1] / this._songStarCount[i], 1); }
+        for (let i = 2; i < maxRating; i++) {
+            if (this._songStarCount[i]) {
+                const previousStarWeight = starWeights[i - 1];
+                const currentStarMultiplier = this._songStarCount[i - 1] / this._songStarCount[i];
+                starWeights[i] = Math.max(previousStarWeight * currentStarMultiplier, 2);
+            }
         }
     }
 
