@@ -83,7 +83,15 @@ export class Algorithm {
     public static normalize(x: number, min: number, max: number, a?: number, b?: number): number {
         a = a || 0;
         b = b || 1;
-        const result = (x - min) / (max - min);
+
+        let result = 0;
+
+        if (max - min === 0) {
+            console.warn("Attempt to divide by zero.")
+        } else {
+            result = (x - min) / (max - min);
+        }
+
         return this.scale(result, a, b);
     }
 

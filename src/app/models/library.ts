@@ -24,6 +24,7 @@ import { Song } from '../models/song';
 /*************/
 
 import { Algorithm } from '../utilities/algorithm';
+import { Rankable } from '../interfaces/rankable';
 
 /////////////////////
 //                 //
@@ -50,6 +51,7 @@ export class Library extends Presenter {
     private _songs: Array<Song>;
 
     private _likedCount: number = 0;
+    private _dislikedCount: number = 0;
 
     private _maxPlayCount: number = 0;
     private _minPlayCount: number = Number.MAX_SAFE_INTEGER;
@@ -91,98 +93,24 @@ export class Library extends Presenter {
     /* PUBLIC METHODS */
     /******************/
 
-    public getAlbumRanking(album: Album): number {
+    public getRanking(rankable: Rankable): number {
 
-        if (!album.ranking) {
-            const albumDivisor = (normalizeEP) ? 10 : album.topTenSongs.length || 1;
-            const aggregateSongRating = album.topTenSongs.reduce((sum, song) => sum + this.getSongRanking(song), 0) / albumDivisor;
-
-            let result = 0;
-
-            if (album.rating) {
-                result =
-                    (album.rating - 1) +
-                    Algorithm.scale(aggregateSongRating, minRating, (maxRating - (maxRating - 1)) / maxRating);
-            } else {
-                result = aggregateSongRating;
-            }
-
-            album.ranking = result;
+        if (rankable instanceof Artist) {
+            return this.getArtistRanking(<Artist>rankable);
+        } else if (rankable instanceof Album) {
+            return this.getAlbumRanking(<Album>rankable);
+        } else if (rankable instanceof Song) {
+            return this.getSongRanking(<Song>rankable);
         }
 
-        return album.ranking;
-
-    } // End getAlbumRanking()
-
-    public getAlbumRarity(): void {
-        // const starWeight = starWeights[song.rating - 1];
-        // const normalizedStarWeight = Algorithm.normalize(starWeight, 0, starWeights[starWeights.length - 1], minRating, maxRating);
-        // return sum + ( (songRanking + normalizedStarWeight) / 2 );
-    }
-
-    public getArtistRanking(artist: Artist): number {
-
-        if (!artist.ranking) {
-            const albums = Object.values(artist.albums);
-            const aggregateAlbumRating = albums.reduce((sum, album) => sum + this.getAlbumRanking(album), 0) / albums.length;
-            artist.ranking = aggregateAlbumRating;
-        }
-
-        return artist.ranking;
-
-    } // End getArtistRanking()
-
-    public getSongRanking(song: Song): number {
-
-        if (!song.ranking) {
-            const likedRating = song.liked ? maxRating : minRating;
-            const playRating = Algorithm.normalize(song.playCount, this._minPlayCount, this._maxPlayCount, minRating, maxRating);
-            const skipRating = maxRating - Algorithm.normalize(song.skipCount, this._minSkipCount, this._maxSkipCount, minRating, maxRating);
-
-            let result = 0;
-
-            if (song.rating || song.liked || song.playCount || song.skipCount) {
-                if (song.rating) {
-                    const featureWeights = (song.liked)
-                        ? { likedRating: 0.5, playRating: 0.4, skipRating: 0.1 }
-                        : { likedRating: 0.0, playRating: 0.8, skipRating: 0.2 };
-                    const weightedRating =
-                        Algorithm.applyWeight(likedRating, featureWeights.likedRating) +
-                        Algorithm.applyWeight(playRating, featureWeights.playRating) +
-                        Algorithm.applyWeight(skipRating, featureWeights.skipRating);
-                    result =
-                        (song.rating - 1) + // take a star off
-                        Algorithm.scale(weightedRating, minRating, (maxRating - (maxRating - 1)) / maxRating); // fill the last star
-                } else {
-                    const featureWeights = { playRating: 0.8, skipRating: 0.2 };
-
-                    const weightedRating =
-                        Algorithm.applyWeight(playRating, featureWeights.playRating) +
-                        Algorithm.applyWeight(skipRating, featureWeights.skipRating);
-
-                    if (song.liked) {
-                        result =
-                            (Algorithm.scale(likedRating, minRating, (maxRating - 1) / maxRating)) +
-                            Algorithm.scale(weightedRating, minRating, (maxRating - (maxRating - 1)) / maxRating);
-                    } else {
-                        result = weightedRating;
-                    }
-                }
-            }
-
-            song.ranking = result;
-        }
-
-        return song.ranking;
-
-    } // End getSongRanking()
+    } // End getRanking()
 
     /*******************/
     /* PRIVATE METHODS */
     /*******************/
 
     private createAlbum(artist, albumName, albumRating, disliked, liked, year): Album {
-        const album = new Album(artist, albumName, albumRating, disliked, liked, year);
+        const album = new Album(artist, disliked, liked, albumName, albumRating, year);
 
         // Update ORM
         artist.albums[albumName] = album;
@@ -208,6 +136,7 @@ export class Library extends Presenter {
 
         // Update Cache
         if (song.liked) { this._likedCount++; }
+        if (song.disliked) { this._dislikedCount++; }
         if (song.rating) { this._songStarCount[song.rating - 1]++; }
         this._maxPlayCount = Math.max(song.playCount, this._maxPlayCount);
         this._maxSkipCount = Math.max(song.skipCount, this._maxSkipCount);
@@ -246,8 +175,8 @@ export class Library extends Presenter {
                 continue;
             }
 
-            const albumDisliked = track["Album Disliked"];
-            const albumLiked = track["Album Loved"];
+            const albumDisliked = track["Album Disliked"] === "true";
+            const albumLiked = track["Album Loved"] === "true";
             const albumName = track["Album"];
             const albumRating = (track["Album Rating Computed"] === "true") ? 0 : +track["Album Rating"] / 20 || 0;
             const artistName = track["Artist"];
@@ -284,8 +213,8 @@ export class Library extends Presenter {
         json["Playlists"].forEach(jsonPlaylist => {
             // TODO: Add support for Folders and Downloaded Content
             if (!(jsonPlaylist["Folder"] || jsonPlaylist["Name"] === "Downloaded")) {
-                const disliked = jsonPlaylist["Disliked"];
-                const liked = jsonPlaylist["loved"];
+                const disliked = jsonPlaylist["Disliked"] === "true";
+                const liked = jsonPlaylist["Loved"] === "true";
                 const name = jsonPlaylist["Name"];
                 const playlist = new Playlist(disliked, liked, name);
 
@@ -303,11 +232,111 @@ export class Library extends Presenter {
 
         this.updateStarWeights();
 
-        Array.prototype.push.apply(this._songs, Object.values(songs).sort((a: Song, b: Song) => { return this.getSongRanking(b) - this.getSongRanking(a); }));
-        Array.prototype.push.apply(this._albums, Object.values(albums).sort((a: Album, b: Album) => { return this.getAlbumRanking(b) - this.getAlbumRanking(a); }));
-        Array.prototype.push.apply(this._artists, Object.values(artists).sort((a: Artist, b: Artist) => { return this.getArtistRanking(b) - this.getArtistRanking(a); }));
+        Array.prototype.push.apply(this._songs, this.rank(Object.values(songs)));
+        Array.prototype.push.apply(this._albums, this.rank(Object.values(albums)));
+        Array.prototype.push.apply(this._artists, this.rank(Object.values(artists)));
 
         Array.prototype.push.apply(this._playlists, Object.values(playlists));
+    }
+
+    private getAlbumRanking(album: Album): number {
+
+        if (!album.ranking) {
+            const albumDivisor = (normalizeEP) ? 10 : album.topTenSongs.length || 1;
+            const aggregateSongRating = album.topTenSongs.reduce((sum, song) => sum + this.getSongRanking(song), 0) / albumDivisor;
+
+            let result = 0;
+
+            if (album.rating) {
+                result =
+                    (album.rating - 1) +
+                    Algorithm.scale(aggregateSongRating, minRating, (maxRating - (maxRating - 1)) / maxRating);
+            } else {
+                result = aggregateSongRating;
+            }
+
+            album.ranking = result;
+        }
+
+        return album.ranking;
+
+    } // End getAlbumRanking()
+
+    public getAlbumRarity(): void {
+        // const starWeight = starWeights[song.rating - 1];
+        // const normalizedStarWeight = Algorithm.normalize(starWeight, 0, starWeights[starWeights.length - 1], minRating, maxRating);
+        // return sum + ( (songRanking + normalizedStarWeight) / 2 );
+    }
+
+    private getArtistRanking(artist: Artist): number {
+
+        if (!artist.ranking) {
+            const albums = Object.values(artist.albums);
+            const aggregateAlbumRating = albums.reduce((sum, album) => sum + this.getAlbumRanking(album), 0) / albums.length;
+            artist.ranking = aggregateAlbumRating || 0;
+        }
+
+        return artist.ranking;
+
+    } // End getArtistRanking()
+
+    private getSongRanking(song: Song): number {
+
+        if (!song.ranking) {
+            const likedRating = song.liked ? maxRating : minRating;
+            const playRating = Algorithm.normalize(song.playCount, this._minPlayCount, this._maxPlayCount, minRating, maxRating);
+            const skipRating = maxRating - Algorithm.normalize(song.skipCount, this._minSkipCount, this._maxSkipCount, minRating, maxRating);
+
+            let result = 0;
+
+            if (song.rating || song.liked || song.disliked || song.playCount || song.skipCount) {
+                if (song.rating) {
+                    const featureWeights = (song.liked)
+                        ? { likedRating: 0.5, playRating: 0.4, skipRating: 0.1 }
+                        : { likedRating: 0.0, playRating: 0.8, skipRating: 0.2 };
+                    const weightedRating =
+                        Algorithm.applyWeight(likedRating, featureWeights.likedRating) +
+                        Algorithm.applyWeight(playRating, featureWeights.playRating) +
+                        Algorithm.applyWeight(skipRating, featureWeights.skipRating);
+                    result =
+                        (song.rating - 1) + // take a star off
+                        Algorithm.scale(weightedRating, minRating, (maxRating - (maxRating - 1)) / maxRating); // fill the last star
+                } else {
+                    const featureWeights = { playRating: 0.8, skipRating: 0.2 };
+
+                    const weightedRating =
+                        Algorithm.applyWeight(playRating, featureWeights.playRating) +
+                        Algorithm.applyWeight(skipRating, featureWeights.skipRating);
+
+                    if (song.liked) {
+                        result =
+                            (Algorithm.scale(likedRating, minRating, (maxRating - 1) / maxRating)) +
+                            Algorithm.scale(weightedRating, minRating, (maxRating - (maxRating - 1)) / maxRating);
+                    } else if (song.disliked) {
+                    } else {
+                        result = weightedRating;
+                    }
+                }
+            }
+
+            song.ranking = result;
+        }
+
+        return song.ranking;
+
+    } // End getSongRanking()
+
+    private rank(rankables: Array<Rankable>): Array<Rankable> {
+        switch (rankables.length) {
+            case 0:
+                break;
+            case 1:
+                rankables.forEach(rankable => this.getRanking(rankable));
+                break;
+            default:
+                rankables.sort((a: Rankable, b: Rankable) => { return this.getRanking(b) - this.getRanking(a); });
+        }
+        return rankables;
     }
 
     private updateStarWeights(): void {
