@@ -94,20 +94,12 @@ export class Library extends Presenter {
     public getAlbumRanking(album: Album): number {
 
         if (!album.ranking) {
-            const albumDivisor = (normalizeEP) ? 10 : album.topTenSongs.length;
-            const aggregateSongRating = album.topTenSongs.reduce((sum, song) => {
-                const starWeight = starWeights[song.rating - 1];
-                const songRanking = this.getSongRanking(song);
-
-                const normalizedStarWeight = Algorithm.normalize(starWeight, 0, starWeights[starWeights.length - 1], minRating, maxRating);
-
-                // return sum + ( (songRanking + normalizedStarWeight) / 2 );
-                return sum + songRanking;
-            }, 0) / albumDivisor;
+            const albumDivisor = (normalizeEP) ? 10 : album.topTenSongs.length || 1;
+            const aggregateSongRating = album.topTenSongs.reduce((sum, song) => sum + this.getSongRanking(song), 0) / albumDivisor;
 
             let result = 0;
 
-            if (album.isRated()) {
+            if (album.rating) {
                 result =
                     (album.rating - 1) +
                     Algorithm.scale(aggregateSongRating, minRating, (maxRating - (maxRating - 1)) / maxRating);
@@ -122,6 +114,11 @@ export class Library extends Presenter {
 
     } // End getAlbumRanking()
 
+    public getAlbumRarity(): void {
+        // const starWeight = starWeights[song.rating - 1];
+        // const normalizedStarWeight = Algorithm.normalize(starWeight, 0, starWeights[starWeights.length - 1], minRating, maxRating);
+        // return sum + ( (songRanking + normalizedStarWeight) / 2 );
+    }
 
     public getArtistRanking(artist: Artist): number {
 
@@ -145,7 +142,7 @@ export class Library extends Presenter {
             let result = 0;
 
             if (song.rating || song.loved || song.playCount || song.skipCount) {
-                if (song.isRated()) {
+                if (song.rating) {
                     const featureWeights = (song.loved)
                         ? { lovedRating: 0.5, playRating: 0.4, skipRating: 0.1 }
                         : { lovedRating: 0.0, playRating: 0.8, skipRating: 0.2 };
