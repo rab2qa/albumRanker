@@ -10,6 +10,13 @@
 
 import { Presenter } from '../classes/presenter';
 
+/**************/
+/* INTERFACES */
+/**************/
+
+import { Disklikable } from '../interfaces/dislikable';
+import { Likable } from '../interfaces/likable';
+
 /**********/
 /* MODELS */
 /**********/
@@ -22,7 +29,7 @@ import { Song } from '../models/song';
 //                  //
 //////////////////////
 
-export class Playlist extends Presenter {
+export class Playlist extends Presenter implements Likable, Disklikable {
 
     /**************/
     /* PROPERTIES */
@@ -35,6 +42,8 @@ export class Playlist extends Presenter {
     /***************/
 
     public constructor(
+        private _disliked: boolean,
+        private _liked: boolean,
         private _name: string,
     ) {
         super();
@@ -45,6 +54,10 @@ export class Playlist extends Presenter {
     /* ACCESSORS */
     /*************/
 
+    get disliked(): boolean { return this._disliked; }
+
+    get liked(): boolean { return this._disliked; }
+    
     get name(): string { return this._name; }
     
     get songs(): Array<Song> { return this._songs; }

@@ -14,6 +14,8 @@ import { Multimedia } from '../classes/multimedia';
 /* INTERFACES */
 /**************/
 
+import { Disklikable } from '../interfaces/dislikable';
+import { Likable } from '../interfaces/likable';
 import { Ratable } from '../interfaces/ratable';
 
 /**********/
@@ -29,7 +31,7 @@ import { Song } from './song';
 //               //
 ///////////////////
 
-export class Album extends Multimedia implements Ratable {
+export class Album extends Multimedia implements Ratable, Likable, Disklikable {
 
     /**************/
     /* PROPERTIES */
@@ -43,6 +45,8 @@ export class Album extends Multimedia implements Ratable {
 
     public constructor(
         private _artist: Artist,
+        private _disliked: boolean,
+        private _liked: boolean,
         private _name: string,
         private _rating: number,
         private _year: number
@@ -57,6 +61,8 @@ export class Album extends Multimedia implements Ratable {
 
     get artist(): Artist { return this._artist; }
 
+    get disliked(): boolean { return this._disliked; }
+
     get duration(): number {
         if (!this.cache.has('duration')) {
             const duration = this.songs.reduce((total, track) => {
@@ -66,6 +72,8 @@ export class Album extends Multimedia implements Ratable {
         }
         return this.cache.get('duration');
     }
+
+    get liked(): boolean { return this._liked; }
 
     get name(): string { return this._name; }
 

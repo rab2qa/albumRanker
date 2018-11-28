@@ -49,7 +49,7 @@ export class Library extends Presenter {
     private _playlists: Array<Playlist>;
     private _songs: Array<Song>;
 
-    private _lovedCount: number = 0;
+    private _likedCount: number = 0;
 
     private _maxPlayCount: number = 0;
     private _minPlayCount: number = Number.MAX_SAFE_INTEGER;
@@ -135,19 +135,19 @@ export class Library extends Presenter {
     public getSongRanking(song: Song): number {
 
         if (!song.ranking) {
-            const lovedRating = song.loved ? maxRating : minRating;
+            const likedRating = song.liked ? maxRating : minRating;
             const playRating = Algorithm.normalize(song.playCount, this._minPlayCount, this._maxPlayCount, minRating, maxRating);
             const skipRating = maxRating - Algorithm.normalize(song.skipCount, this._minSkipCount, this._maxSkipCount, minRating, maxRating);
 
             let result = 0;
 
-            if (song.rating || song.loved || song.playCount || song.skipCount) {
+            if (song.rating || song.liked || song.playCount || song.skipCount) {
                 if (song.rating) {
-                    const featureWeights = (song.loved)
-                        ? { lovedRating: 0.5, playRating: 0.4, skipRating: 0.1 }
-                        : { lovedRating: 0.0, playRating: 0.8, skipRating: 0.2 };
+                    const featureWeights = (song.liked)
+                        ? { likedRating: 0.5, playRating: 0.4, skipRating: 0.1 }
+                        : { likedRating: 0.0, playRating: 0.8, skipRating: 0.2 };
                     const weightedRating =
-                        Algorithm.applyWeight(lovedRating, featureWeights.lovedRating) +
+                        Algorithm.applyWeight(likedRating, featureWeights.likedRating) +
                         Algorithm.applyWeight(playRating, featureWeights.playRating) +
                         Algorithm.applyWeight(skipRating, featureWeights.skipRating);
                     result =
@@ -160,9 +160,9 @@ export class Library extends Presenter {
                         Algorithm.applyWeight(playRating, featureWeights.playRating) +
                         Algorithm.applyWeight(skipRating, featureWeights.skipRating);
 
-                    if (song.loved) {
+                    if (song.liked) {
                         result =
-                            (Algorithm.scale(lovedRating, minRating, (maxRating - 1) / maxRating)) +
+                            (Algorithm.scale(likedRating, minRating, (maxRating - 1) / maxRating)) +
                             Algorithm.scale(weightedRating, minRating, (maxRating - (maxRating - 1)) / maxRating);
                     } else {
                         result = weightedRating;
@@ -181,8 +181,8 @@ export class Library extends Presenter {
     /* PRIVATE METHODS */
     /*******************/
 
-    private createAlbum(artist, albumName, albumRating, year): Album {
-        const album = new Album(artist, albumName, albumRating, year);
+    private createAlbum(artist, albumName, albumRating, disliked, liked, year): Album {
+        const album = new Album(artist, albumName, albumRating, disliked, liked, year);
 
         // Update ORM
         artist.albums[albumName] = album;
@@ -193,9 +193,9 @@ export class Library extends Presenter {
         return album;
     }
 
-    private createSong(album, artist, discNumber, duration, genre, loved, name, playCount, rating, releaseDate, skipCount, trackNumber): Song {
-        const song = new Song(album, artist, duration, genre, loved, name, playCount, rating, releaseDate, skipCount);
-        // let lovedCount = this.cache.get('lovedCount');
+    private createSong(album, artist, discNumber, disliked, duration, genre, liked, name, playCount, rating, releaseDate, skipCount, trackNumber): Song {
+        const song = new Song(album, artist, disliked, duration, genre, liked, name, playCount, rating, releaseDate, skipCount);
+        // let likedCount = this.cache.get('likedCount');
         // let songStarCount = this.cache.get('songStarCount');
         // let maxPlayCount = this.cache.get('maxPlayCount');
         // let maxSkipCount = this.cache.get('maxSkipCount');
@@ -207,7 +207,7 @@ export class Library extends Presenter {
         album.tracks[discNumber - 1][trackNumber - 1] = song;
 
         // Update Cache
-        if (song.loved) { this._lovedCount++; }
+        if (song.liked) { this._likedCount++; }
         if (song.rating) { this._songStarCount[song.rating - 1]++; }
         this._maxPlayCount = Math.max(song.playCount, this._maxPlayCount);
         this._maxSkipCount = Math.max(song.skipCount, this._maxSkipCount);
@@ -246,13 +246,16 @@ export class Library extends Presenter {
                 continue;
             }
 
+            const albumDisliked = track["Album Disliked"];
+            const albumLiked = track["Album Loved"];
             const albumName = track["Album"];
             const albumRating = (track["Album Rating Computed"] === "true") ? 0 : +track["Album Rating"] / 20 || 0;
             const artistName = track["Artist"];
             const discNumber = +track["Disc Number"] || 1;
+            const disliked = track["Disliked"] === "true";
             const duration = +track["Total Time"];
             const genre = track["Genre"];
-            const loved = track["Loved"] === "true";
+            const liked = track["Loved"] === "true";
             const name = track["Name"];
             const playCount = +track["Play Count"] || 0;
             const rating = +track["Rating"] / 20 || 0;
@@ -270,19 +273,21 @@ export class Library extends Presenter {
 
             let album = albums[albumName];
             if (!album) {
-                album = this.createAlbum(artist, albumName, albumRating, year);
+                album = this.createAlbum(artist, albumName, albumRating, albumDisliked, albumLiked, year);
                 albums[albumName] = album;
             }
 
-            const song = this.createSong(album, artist, discNumber, duration, genre, loved, name, playCount, rating, releaseDate, skipCount, trackNumber);
+            const song = this.createSong(album, artist, discNumber, disliked, duration, genre, liked, name, playCount, rating, releaseDate, skipCount, trackNumber);
             songs[trackId] = song;
         }
 
         json["Playlists"].forEach(jsonPlaylist => {
             // TODO: Add support for Folders and Downloaded Content
             if (!(jsonPlaylist["Folder"] || jsonPlaylist["Name"] === "Downloaded")) {
+                const disliked = jsonPlaylist["Disliked"];
+                const liked = jsonPlaylist["loved"];
                 const name = jsonPlaylist["Name"];
-                const playlist = new Playlist(name);
+                const playlist = new Playlist(disliked, liked, name);
 
                 if (jsonPlaylist["Playlist Items"]) {
                     jsonPlaylist["Playlist Items"].forEach(item => {

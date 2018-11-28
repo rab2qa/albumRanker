@@ -70,7 +70,7 @@ export class DataService {
     get songs(): Object {
         if (this._library) {
             return {
-                initial: this._library.songs.filter(song => song.isRated()),
+                initial: this._library.songs.filter(song => song.isRated()),  // TODO: Separate Rated from Unrated Songs
                 adjusted: this._library.songs.filter(song => song.isRated())
             };
         }
