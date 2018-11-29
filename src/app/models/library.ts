@@ -236,8 +236,9 @@ export class Library extends Presenter {
     private getAlbumRanking(album: Album): number {
 
         if (!album.ranking) {
-            const albumDivisor = (PENALIZE_EP) ? 10 : album.topTenSongs.length || 1;
-            const aggregateSongRating = album.topTenSongs.reduce((sum, song) => sum + this.getSongRanking(song), 0) / albumDivisor;
+            const albumDivisor = (PENALIZE_EP) ? 10 : album.topTenSongs.length;
+            let aggregateSongRating = album.topTenSongs.reduce((sum, song) => sum + this.getSongRanking(song), 0) / albumDivisor;
+            aggregateSongRating = aggregateSongRating || 0; // Handle Divide by Zero Error
 
             let result = 0;
 
@@ -269,9 +270,14 @@ export class Library extends Presenter {
     private getArtistRanking(artist: Artist): number {
 
         if (!artist.ranking) {
+            // const artistScore = artist.songs.reduce((sum, song) => {
+            //     return sum + starWeights[song.rating - 1];
+            // }, 0);
+            // artist.ranking = artistScore;
             const albums = Object.values(artist.albums);
-            const aggregateAlbumRating = albums.reduce((sum, album) => sum + this.getAlbumRanking(album), 0) / albums.length;
-            artist.ranking = aggregateAlbumRating || 0;
+            let aggregateAlbumRating = albums.reduce((sum, album) => sum + this.getAlbumRanking(album), 0) / albums.length;
+            aggregateAlbumRating = aggregateAlbumRating || 0; // Handle Divide by Zero Error
+            artist.ranking = aggregateAlbumRating;
         }
 
         return artist.ranking;
