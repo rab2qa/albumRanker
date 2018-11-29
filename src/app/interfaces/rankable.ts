@@ -1,8 +1,8 @@
-///////////////////////
-//                   //
-//     INTERFACE     //
-//                   //
-///////////////////////
+//////////////////////
+//                  //
+//     RANKABLE     //
+//                  //
+//////////////////////
 
 export interface Rankable {
    
@@ -12,5 +12,11 @@ export interface Rankable {
 
     ranking: number;
     stars: Array<number>;
+    
+    /***********/
+    /* METHODS */
+    /***********/
+
+    isRanked(): boolean;
 
 } // End interface Rankable

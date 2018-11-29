@@ -57,7 +57,7 @@ export class Algorithm {
         h = h || 0;
         return a * Math.pow(b, x + h) + v;
     }
-    
+
     // ---------------------------------------------------
     // APPLY WEIGHT
     // ---------------------------------------------------
@@ -65,7 +65,7 @@ export class Algorithm {
     //  
     // Example:     x = 1, weight = 0.5 -> 0.5
     // ---------------------------------------------------
-    
+
     public static applyWeight(x: number, weight: number): number {
         return x * weight;
     }
@@ -83,7 +83,12 @@ export class Algorithm {
     public static normalize(x: number, min: number, max: number, a?: number, b?: number): number {
         a = a || 0;
         b = b || 1;
-        const result = (x - min) / (max - min);
+
+        let result = 0;
+
+        result = (x - min) / (max - min);
+        result = result || 0; // Handle Divide by Zero error
+
         return this.scale(result, a, b);
     }
 

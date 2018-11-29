@@ -48,4 +48,17 @@ export abstract class Multimedia extends Presenter implements Rankable {
         return this.cache.get('stars');
     }
 
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
+
+    public isRanked(): boolean {
+        return !!(this.ranking);
+    }
+
+    protected Rank(rankables: Array<Rankable>, callback: (r: Rankable) => number) {
+        rankables.sort((a: Rankable, b: Rankable) => callback(b) - callback(a));
+    }
+
+
 } // End class Multimedia

@@ -46,8 +46,8 @@ export class DataService {
     get albums(): Object {
         if (this._library) {
             return {
-                initial: this._library.albums,
-                adjusted: this._library.albums
+                initial: this._library.albums.filter(album => album.isRated() ||  album.hasAllSongsRated()),    // TODO: Separate Complete from Partial Albums
+                adjusted: this._library.albums.filter(album => album.isRated() || album.hasAllSongsRated())
             };
         }
     }
@@ -70,8 +70,8 @@ export class DataService {
     get songs(): Object {
         if (this._library) {
             return {
-                initial: this._library.songs,
-                adjusted: this._library.songs
+                initial: this._library.songs.filter(song => song.isRated()),  // TODO: Separate Rated from Unrated Songs
+                adjusted: this._library.songs.filter(song => song.isRated())
             };
         }
     }
