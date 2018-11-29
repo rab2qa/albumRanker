@@ -42,18 +42,6 @@ export class Library extends Presenter {
     private _playlists: Array<Playlist>;
     private _songs: Array<Song>;
 
-    private _likedCount: number = 0;
-    private _dislikedCount: number = 0;
-
-    private _maxPlayCount: number = 0;
-    private _minPlayCount: number = Number.MAX_SAFE_INTEGER;
-
-    private _maxSkipCount: number = 0;
-    private _minSkipCount: number = Number.MAX_SAFE_INTEGER;
-
-    private _albumStarCount: Array<number> = [0, 0, 0, 0, 0];
-    private _songStarCount: Array<number> = [0, 0, 0, 0, 0];
-
     /***************/
     /* CONSTRUCTOR */
     /***************/
@@ -114,7 +102,7 @@ export class Library extends Presenter {
             if (!artist.albums.find(a => a.name === album.name)) {
                 artist.albums.push(album);
             }
-            
+
             // Create Song
             const song = new Song(track);
             songs[trackId] = song;
@@ -123,22 +111,11 @@ export class Library extends Presenter {
             song.album = album;
             album.tracks[discNumber - 1] = album.tracks[discNumber - 1] || new Array<Song>();
             album.tracks[discNumber - 1][trackNumber - 1] = song;
-
-            // Update Cache
-            if (album.rating) { this._albumStarCount[album.rating - 1]++; }
-            if (song.liked) { this._likedCount++; }
-            if (song.disliked) { this._dislikedCount++; }
-            if (song.rating) { this._songStarCount[song.rating - 1]++; }
-            this._maxPlayCount = Math.max(song.playCount, this._maxPlayCount);
-            this._maxSkipCount = Math.max(song.skipCount, this._maxSkipCount);
-            this._minPlayCount = Math.min(song.playCount, this._minPlayCount);
-            this._minSkipCount = Math.min(song.skipCount, this._minSkipCount);
         }
 
         // Create Playlists
         json["Playlists"].forEach(jsonPlaylist => {
-            // TODO: Add support for Folders and Downloaded Content
-            if (!(jsonPlaylist["Folder"] || jsonPlaylist["Name"] === "Downloaded")) {
+            if (!(jsonPlaylist["Folder"] || jsonPlaylist["Name"] === "Downloaded")) { // TODO: Add support for Folders and Downloaded Content
                 const name = jsonPlaylist["Name"];
                 const playlist = new Playlist(jsonPlaylist);
                 playlist.library = this;
@@ -155,17 +132,10 @@ export class Library extends Presenter {
             }
         });
 
-        this.updateStarWeights();
-
-        this._artists = new Array<Artist>();
-        this._albums = new Array<Album>();
-        this._playlists = new Array<Playlist>();
-        this._songs = new Array<Song>();
-
-        Array.prototype.push.apply(this._songs, Object.values(songs));
-        Array.prototype.push.apply(this._albums, Object.values(albums));
-        Array.prototype.push.apply(this._artists, Object.values(artists));
-        Array.prototype.push.apply(this._playlists, Object.values(playlists));
+        this._artists = Object.values(artists);
+        this._albums = Object.values(albums);
+        this._playlists = Object.values(playlists);
+        this._songs = Object.values(songs);
 
     } // End constructor()
 
@@ -201,18 +171,74 @@ export class Library extends Presenter {
         return this.cache.get('maxSkipCount');
     }
 
-    /*******************/
-    /* PRIVATE METHODS */
-    /*******************/
-
-    private updateStarWeights(): void {
-        for (let i = 2; i < Globals.maxRating; i++) {
-            if (this._songStarCount[i]) {
-                const previousStarWeight = Globals.starWeights[i - 1];
-                const currentStarMultiplier = this._songStarCount[i - 1] / this._songStarCount[i];
-                Globals.starWeights[i] = Math.max(previousStarWeight * currentStarMultiplier, 2);
-            }
+    public getMinPlayCount(): number {
+        if (!this.cache.has('minPlayCount')) {
+            const minPlayCount = this.songs.reduce((min, song) => Math.min(song.playCount, min), Number.MAX_SAFE_INTEGER);
+            this.cache.add('maxPlayCount', minPlayCount);
         }
+        return this.cache.get('minPlayCount');
     }
-    
+
+    public getMinSkipCount(): number {
+        if (!this.cache.has('minSkipCount')) {
+            const minSkipCount = this.songs.reduce((min, song) => Math.min(song.skipCount, min), Number.MAX_SAFE_INTEGER);
+            this.cache.add('minSkipCount', minSkipCount);
+        }
+        return this.cache.get('minSkipCount');
+    }
+
+    public getAlbumStarCount(): Array<number> {
+        if (!this.cache.has('albumStarCount')) {
+            const albumStarCount = this._songs.reduce((array, album) => {
+                array[album.rating - 1]++;
+                return array;
+            }, [0, 0, 0, 0, 0]);
+            this.cache.add('albumStarCount', albumStarCount);
+        }
+        return this.cache.get('albumStarCount');
+    }
+
+    public getSongStarCount(): Array<number> {
+        if (!this.cache.has('songStarCount')) {
+            const songStarCount = this._songs.reduce((array, song) => {
+                array[song.rating - 1]++;
+                return array;
+            }, [0, 0, 0, 0, 0]);
+            this.cache.add('songStarCount', songStarCount);
+        }
+        return this.cache.get('songStarCount');
+    }
+
+    public getAlbumStarWeights(): Array<number> {
+        if (!this.cache.has('albumStarWeights')) {
+            const albumStarCount = this.getSongStarCount();
+            let albumStarWeights: Array<number> = [Math.pow(2, 0), Math.pow(2, 1), Math.pow(2, 2), Math.pow(2, 3), Math.pow(2, 4)];
+            for (let i = 2; i < Globals.maxRating; i++) {
+                if (albumStarCount[i]) {
+                    const previousStarWeight = albumStarWeights[i - 1];
+                    const currentStarMultiplier = albumStarCount[i - 1] / albumStarCount[i];
+                    albumStarWeights[i] = Math.max(previousStarWeight * currentStarMultiplier, 2);
+                }
+            }
+            this.cache.add('albumStarWeights', albumStarWeights);
+        }
+        return this.cache.get('albumStarWeights');
+    }
+
+    public getSongStarWeights(): Array<number> {
+        if (!this.cache.has('songStarWeights')) {
+            const songStarCount = this.getSongStarCount();
+            let songStarWeights: Array<number> = [Math.pow(2, 0), Math.pow(2, 1), Math.pow(2, 2), Math.pow(2, 3), Math.pow(2, 4)];
+            for (let i = 2; i < Globals.maxRating; i++) {
+                if (songStarCount[i]) {
+                    const previousStarWeight = songStarWeights[i - 1];
+                    const currentStarMultiplier = songStarCount[i - 1] / songStarCount[i];
+                    songStarWeights[i] = Math.max(previousStarWeight * currentStarMultiplier, 2);
+                }
+            }
+            this.cache.add('songStarWeights', songStarWeights);
+        }
+        return this.cache.get('songStarWeights');
+    }
+
 } // End class Library

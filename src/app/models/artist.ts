@@ -66,7 +66,7 @@ export class Artist extends Multimedia implements Rankable {
     get ranking(): number {
         if (!this._ranking) {
             // const albumScore = this.songs.reduce((sum, song) => {
-            //     return sum + starWeights[song.rating - 1];
+            //     return sum + this.library.getSongStarWeights()[song.rating - 1];
             // }, 0);
             // this._ranking = albumScore;
             const albums = Object.values(this.albums);
