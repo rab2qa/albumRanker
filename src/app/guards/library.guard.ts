@@ -10,7 +10,7 @@ export class LibraryGuard {
       if (this.dataService.songs) {
         resolve(true);
       } else {
-        this.router.navigate(['/upload']);
+        this.router.navigate(['/import']);
       }
     });
   }

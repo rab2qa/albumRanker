@@ -1,16 +1,22 @@
 <div class="list-header flex">
-  <div>
+  <div class="item-stars item-stars-relative">Relative Rating</div>
+  <div class="item-title-text">
     {{ listHeader }}
   </div>
-  <div class="text-right">Relative Rating</div>
 </div>
 <ng-container *ngIf="canReorder">
-  <div cdkDropList (cdkDropListDropped)="drop($event)">
-    <ranker-list-item *ngFor="let item of data" [item]="item" [key]="key" [canReorder]="canReorder" cdkDrag></ranker-list-item>
+  <div cdkDropList (cdkDropListDropped)="handleItemDropped($event)">
+    <ranker-list-item *ngFor="let item of paginatedData" [item]="item" [key]="key" [canReorder]="canReorder" cdkDrag></ranker-list-item>
   </div>
 </ng-container>
 <ng-container *ngIf="!canReorder">
   <div>
-    <ranker-list-item *ngFor="let item of data" [item]="item" [key]="key"></ranker-list-item>
+    <ranker-list-item *ngFor="let item of paginatedData" [item]="item" [key]="key"></ranker-list-item>
   </div>
 </ng-container>
+<mat-paginator
+  [length]="pagination.length"
+  [pageSize]="pagination.pageSize"
+  [pageSizeOptions]="pagination.pageSizeOptions"
+  (page)="handlePageChange($event)">
+</mat-paginator>

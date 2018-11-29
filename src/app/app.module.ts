@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatPaginatorModule } from '@angular/material/paginator';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -16,8 +17,17 @@ import { UploadComponent } from './components/upload/upload.component';
 import { NavigationComponent } from './components/shell/navigation/navigation.component';
 
 @NgModule({
-  declarations: [AppComponent, StarRatingsComponent, ListsComponent, ListComponent, ListItemComponent, ShellComponent, UploadComponent, NavigationComponent],
-  imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule],
+  declarations: [
+    AppComponent,
+    StarRatingsComponent,
+    ListsComponent,
+    ListComponent,
+    ListItemComponent,
+    ShellComponent,
+    UploadComponent,
+    NavigationComponent,
+  ],
+  imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule, MatPaginatorModule],
   providers: [DataService, LibraryGuard],
   bootstrap: [AppComponent],
 })
