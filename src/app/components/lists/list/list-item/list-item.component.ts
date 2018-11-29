@@ -43,7 +43,9 @@ export class ListItemComponent implements OnInit {
       this.canShowDetails = true;
     } else if (key === 'artists' && item.albums) {
       console.log(item);
-      this.orderedAlbums = this.orderAlbumsByRanking(item.albums);
+      this.orderedAlbums = item.albums.sort((a, b) => {
+        return b.ranking - a.ranking;
+      });
       this.canShowDetails = true;
     }
   }
@@ -53,16 +55,6 @@ export class ListItemComponent implements OnInit {
       return disc.sort((a, b) => {
         return b.ranking - a.ranking;
       });
-    });
-  }
-
-  private orderAlbumsByRanking(albums): Album[] {
-    const array = [];
-    Object.keys(albums).forEach(key => {
-      array.push(albums[key]);
-    });
-    return array.sort((a, b) => {
-      return b.ranking - a.ranking;
     });
   }
 }
