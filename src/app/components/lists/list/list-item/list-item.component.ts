@@ -4,7 +4,7 @@ import { Song } from '../../../../models/song';
 @Component({
   selector: 'ranker-list-item',
   templateUrl: './list-item.component.html',
-  styleUrls: ['./list-item.component.scss'],
+  styleUrls: ['./list-item.component.scss', '../list.component.scss'],
 })
 export class ListItemComponent implements OnInit {
   @Input() item: any;

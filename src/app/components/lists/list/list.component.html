@@ -1,8 +1,8 @@
 <div class="list-header flex">
-  <div>
+  <div class="item-stars item-stars-relative">Relative Rating</div>
+  <div class="item-title-text">
     {{ listHeader }}
   </div>
-  <div class="text-right">Relative Rating</div>
 </div>
 <ng-container *ngIf="canReorder">
   <div cdkDropList (cdkDropListDropped)="handleItemDropped($event)">

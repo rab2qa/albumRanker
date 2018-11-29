@@ -1,21 +1,21 @@
 <div class="item transition" [class.clickable]="key === 'albums' || canReorder" (click)="toggleShowDetails(key)">
   <div class="item-title flex">
-    <div>
+    <div class="item-stars">
+      <ranker-stars [ratings]="item.stars"></ranker-stars>
+    </div>
+    <div class="flex-grow" [class.bold]="showDetails">
       <i *ngIf="canReorder" class="sort-icon fa-sort fas"></i>
       {{ listItemTitle }}
-    </div>
-    <div class="text-right">
-      <ranker-stars [ratings]="item.stars"></ranker-stars>
     </div>
   </div>
   <div class="item-details" *ngIf="showDetails && key === 'albums'">
     <ng-template ngFor let-disc [ngForOf]="orderedTracks" let-d="index">
       <div *ngIf="orderedTracks.length > 1">Disc {{ +d + 1 }}</div>
-      <div *ngFor="let track of disc; let t = index" class="flex">
-        <div>{{ track.name }}</div>
-        <div class="text-right" *ngIf="track.stars">
+      <div *ngFor="let track of disc; let t = index" class="flex album-track">
+        <div class="item-stars" *ngIf="track.stars">
           <ranker-stars [ratings]="track.stars"></ranker-stars>
         </div>
+        <div class="flex-grow">{{ track.name }}</div>
       </div>
     </ng-template>
   </div>
