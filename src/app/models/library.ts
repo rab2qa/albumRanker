@@ -117,8 +117,10 @@ export class Library extends Presenter {
                 albums[albumName] = album;
             }
             album.artist = artist;
-            artist.albums[albumName] = album;
-
+            if (!artist.albums.find(a => a.name === album.name)) {
+                artist.albums.push(album);
+            }
+            
             // Create Song
             const song = new Song(track);
             songs[trackId] = song;

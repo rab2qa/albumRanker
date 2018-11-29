@@ -14,6 +14,7 @@ import { Multimedia } from '../classes/multimedia';
 /* MODELS */
 /**********/
 
+import { Album } from '../models/album';
 import { Song } from '../models/song';
 
 ////////////////////
@@ -28,7 +29,7 @@ export class Artist extends Multimedia {
     /* PROPERTIES */
     /**************/
 
-    private _albums: object;
+    private _albums: Array<Album>;
     private _name: string;
 
     /***************/
@@ -39,7 +40,7 @@ export class Artist extends Multimedia {
         super();
 
         this._name = json["Artist"];
-        this._albums = new Object();
+        this._albums = new Array<Album>();
     }
 
     /*************/
