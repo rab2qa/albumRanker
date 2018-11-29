@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Song } from '../../../../models/song';
-import { R3_PATCH_COMPONENT_DEF_WTIH_SCOPE } from '@angular/core/src/ivy_switch/compiler/ivy_switch_on';
 
 @Component({
   selector: 'ranker-list-item',
@@ -17,7 +16,7 @@ export class ListItemComponent implements OnInit {
 
   public ngOnInit(): void {
     this.listItemTitle = this.setListItemTitle(this.key);
-    this.orderedTracks = this.orderTracksByTrackNumber(this.item.tracks);
+    this.orderedTracks = this.orderTracksByRanking(this.item.tracks);
   }
 
   public setListItemTitle(key: string) {
@@ -27,19 +26,20 @@ export class ListItemComponent implements OnInit {
       return this.item.name;
     }
   }
+
   public toggleShowDetails(key: string): void {
     if (key === 'albums') {
       this.showDetails = this.showDetails ? false : true;
     }
   }
 
-  private orderTracksByTrackNumber(discs) {
+  private orderTracksByRanking(discs): Song[] {
     if (!discs) {
       return;
     }
-    return discs.map(tracks => {
-      return tracks.sort((a, b) => {
-        return a.trackNumber < b.trackNumber;
+    return discs.map(disc => {
+      return disc.sort((a, b) => {
+        return b.ranking - a.ranking;
       });
     });
   }
