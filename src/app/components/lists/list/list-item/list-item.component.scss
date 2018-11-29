@@ -19,6 +19,11 @@
   .bold {
     font-weight: bold;
   }
+  &.showing-details {
+    .item-title {
+      font-size: 1rem;
+    }
+  }
 }
 .album-tracks {
   margin-top: 10px;
