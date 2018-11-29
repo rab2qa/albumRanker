@@ -46,8 +46,8 @@ export class DataService {
     get albums(): Object {
         if (this._library) {
             return {
-                initial: this._library.albums.filter(album => album.isRated()),    // TODO: Separate Complete from Partial Albums
-                adjusted: this._library.albums.filter(album => album.isRated())
+                initial: this._library.albums.filter(album => album.isRated() ||  album.hasAllSongsRated()),    // TODO: Separate Complete from Partial Albums
+                adjusted: this._library.albums.filter(album => album.isRated() || album.hasAllSongsRated())
             };
         }
     }

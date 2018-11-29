@@ -125,6 +125,19 @@ export class Album extends Multimedia implements Ratable, Likable, Disklikable {
     /* PUBLIC METHODS */
     /******************/
 
+    public hasAllSongsRated(): boolean {
+        let response = true;
+
+        this._tracks.forEach(disc => {
+            const ratedTracks = disc.filter(track => track.isRated()).length;
+            if (disc.length === 1 || ratedTracks !== disc.length) {
+                response = false;
+            }
+        });
+
+        return response;
+    }
+
     public isEP(): boolean {
         return this.songs.length >= 5 && this.songs.length < 10;
     }
@@ -138,28 +151,11 @@ export class Album extends Multimedia implements Ratable, Likable, Disklikable {
     }
 
     public isRated(): boolean {
-        return !!(this.rating || this.hasAllSongsRated());
+        return !!(this.rating);
     }
 
     public getSongsWithRatingOf(rating: number): Array<Song> {
         return this.songs.filter(song => song.rating === rating);
-    }
-
-    /*******************/
-    /* PRIVATE METHODS */
-    /*******************/
-
-    private hasAllSongsRated(): boolean {
-        return this.songs.filter(song => song.isRated()).length === this.songs.length;
-    }
-
-    private hasSomeSongsRated(): boolean {
-        const ratedSongs = this.songs.filter(song => song.isRated());
-        return ratedSongs.length > 0 && ratedSongs.length < this.songs.length;
-    }
-
-    private hasNoSongsRated(): boolean {
-        return this.songs.filter(song => song.isRated()).length === 0;
     }
 
 } // End class Album
