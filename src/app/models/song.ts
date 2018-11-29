@@ -77,7 +77,7 @@ export class Song extends Multimedia implements Rankable, Ratable, Likable, Disk
         this._name = json["Name"];
         this._playCount = +json["Play Count"] || 0;
         this._rating = +json["Rating"] / 20 || 0;
-        this._releaseDate = new Date(json["Release Date"]);
+        this._releaseDate = json['Release Date'] ? new Date(json["Release Date"]) : null;
         this._skipCount = +json["Skip Count"] || 0;
 
         this._playlists = new Array<Playlist>();
