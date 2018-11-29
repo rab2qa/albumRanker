@@ -7,7 +7,11 @@ import { ShellComponent } from './components/shell/shell.component';
 
 const routes: Routes = [
   {
-    path: 'upload',
+    path: 'import',
+    component: UploadComponent,
+  },
+  {
+    path: 'reimport',
     component: UploadComponent,
   },
   {

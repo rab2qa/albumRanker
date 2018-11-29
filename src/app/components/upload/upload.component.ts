@@ -9,6 +9,7 @@
 /*************/
 
 import { Component } from '@angular/core';
+import { Location } from '@angular/common';
 
 /************/
 /* SERVICES */
@@ -35,12 +36,25 @@ export class UploadComponent {
   /**************/
 
   public loading: boolean = false;
+  public canCancel: boolean = false;
 
   /***************/
   /* CONSTRUCTOR */
   /***************/
 
-  public constructor(private router: Router, public xmlService: XmlService, private dataService: DataService) {}
+  public constructor(
+    private router: Router,
+    private location: Location,
+    public xmlService: XmlService,
+    private dataService: DataService
+  ) {
+    const libraryXML = localStorage.getItem('libraryXML');
+    if (libraryXML !== null && this.router.url === '/import') {
+      this.handleLibraryData(libraryXML);
+    } else if (this.router.url === '/reimport') {
+      this.canCancel = true;
+    }
+  }
 
   /******************/
   /* PUBLIC METHODS */
@@ -52,15 +66,7 @@ export class UploadComponent {
     if (file) {
       const fileReader = new FileReader();
       this.loading = true;
-      fileReader.onloadend = (e: any) => {
-        const text = e.target.result;
-        this.parseXML(text).then(library => {
-          this.dataService.importLibrary(library).then(success => {
-            this.loading = false;
-            this.router.navigate(['/']);
-          });
-        });
-      };
+      fileReader.onloadend = (e: any) => this.handleLibraryData(e.target.result);
       fileReader.readAsText(file);
     }
   } // end onFileUpload()
@@ -68,6 +74,16 @@ export class UploadComponent {
   /*******************/
   /* PRIVATE METHODS */
   /*******************/
+
+  private handleLibraryData(libraryXML) {
+    this.parseXML(libraryXML).then(library => {
+      this.dataService.importLibrary(library).then(() => {
+        this.loading = false;
+        this.router.navigate(['/']);
+      });
+      localStorage.setItem('libraryXML', libraryXML);
+    });
+  }
 
   private async parseXML(text: string): Promise<Object> {
     return await this.xmlService.parseXML(text);
