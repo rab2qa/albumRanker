@@ -10,6 +10,12 @@
 
 import { Multimedia } from '../classes/multimedia';
 
+/**************/
+/* INTERFACES */
+/**************/
+
+import { Rankable } from '../interfaces/rankable';
+
 /**********/
 /* MODELS */
 /**********/
@@ -24,7 +30,7 @@ import { Song } from '../models/song';
 //                //
 ////////////////////
 
-export class Artist extends Multimedia {
+export class Artist extends Multimedia implements Rankable {
 
     /**************/
     /* PROPERTIES */
@@ -32,6 +38,7 @@ export class Artist extends Multimedia {
 
     private _albums: Array<Album>;
     private _library?: Library;
+    private _ranking?: number;
     private _name: string;
 
     /***************/
@@ -56,6 +63,20 @@ export class Artist extends Multimedia {
 
     get name(): string { return this._name; }
 
+    get ranking(): number {
+        if (!this._ranking) {
+            // const albumScore = this.songs.reduce((sum, song) => {
+            //     return sum + starWeights[song.rating - 1];
+            // }, 0);
+            // this._ranking = albumScore;
+            const albums = Object.values(this.albums);
+            let aggregateAlbumRating = albums.reduce((sum, album) => sum + album.ranking, 0) / albums.length;
+            aggregateAlbumRating = aggregateAlbumRating || 0; // Handle Divide by Zero Error
+            this._ranking = aggregateAlbumRating;
+        }
+        return this._ranking;
+    }
+
     get songs(): Array<Song> {
         if (!this.cache.has('songs')) {
             const songs = new Array<Song>();
@@ -65,6 +86,14 @@ export class Artist extends Multimedia {
             this.cache.add('songs', songs);
         }
         return this.cache.get('songs');
+    }
+
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
+
+    public isRanked(): boolean {
+        return !!(this.ranking);
     }
 
 } // End class Artist

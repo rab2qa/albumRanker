@@ -17,6 +17,7 @@ import { Multimedia } from '../classes/multimedia';
 import { Disklikable } from '../interfaces/dislikable';
 import { Library } from './library';
 import { Likable } from '../interfaces/likable';
+import { Rankable } from '../interfaces/rankable';
 import { Ratable } from '../interfaces/ratable';
 
 /**********/
@@ -26,13 +27,20 @@ import { Ratable } from '../interfaces/ratable';
 import { Artist } from './artist';
 import { Song } from './song';
 
+/************/
+/* UTILTIES */
+/************/
+
+import { Algorithm } from '../utilities/algorithm';
+import { Globals } from '../utilities/globals';
+
 ///////////////////
 //               //
 //     ALBUM     //
 //               //
 ///////////////////
 
-export class Album extends Multimedia implements Ratable, Likable, Disklikable {
+export class Album extends Multimedia implements Rankable, Ratable, Likable, Disklikable {
 
     /**************/
     /* PROPERTIES */
@@ -43,6 +51,7 @@ export class Album extends Multimedia implements Ratable, Likable, Disklikable {
     private _library?: Library;
     private _liked: boolean;
     private _name: string;
+    private _ranking?: number;
     private _rating: number;
     private _tracks: Array<Array<Song>>;
     private _year: number;
@@ -95,6 +104,28 @@ export class Album extends Multimedia implements Ratable, Likable, Disklikable {
             this.cache.add('playCount', playCount);
         }
         return this.cache.get('playCount');
+    }
+
+    get ranking(): number { 
+        if (!this._ranking) {
+            const albumDivisor = (Globals.penalizeEP) ? 10 : this.topTenSongs.length;
+            let aggregateSongRating = this.topTenSongs.reduce((sum, song) => sum + song.ranking, 0) / albumDivisor;
+            aggregateSongRating = aggregateSongRating || 0; // Handle Divide by Zero Error
+
+            let result = 0;
+
+            if (this.rating) {
+                result =
+                    (this.rating - 1) +
+                    Algorithm.scale(aggregateSongRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+            } else {
+                result = aggregateSongRating;
+            }
+
+            this._ranking = result;
+        }
+
+        return this._ranking;
     }
 
     get rating(): number { return this._rating; }
@@ -158,6 +189,10 @@ export class Album extends Multimedia implements Ratable, Likable, Disklikable {
         return this.songs.length >= 10;
     }
     
+    public isRanked(): boolean {
+        return !!(this.ranking);
+    }
+
     public isSingle(): boolean {
         return this.songs.length < 5;
     }

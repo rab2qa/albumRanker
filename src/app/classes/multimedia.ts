@@ -14,7 +14,7 @@ import { Presenter } from './presenter';
 /* INTERFACES */
 /**************/
 
-import { Rankable } from '../interfaces/rankable';
+import { Starable } from '../interfaces/starable';
 
 ////////////////////////
 //                    //
@@ -22,7 +22,7 @@ import { Rankable } from '../interfaces/rankable';
 //                    //
 ////////////////////////
 
-export abstract class Multimedia extends Presenter implements Rankable {
+export abstract class Multimedia extends Presenter implements Starable {
 
     /*************/
     /* ACCESSORS */
@@ -46,18 +46,6 @@ export abstract class Multimedia extends Presenter implements Rankable {
             this.cache.add('stars', array);;
         }
         return this.cache.get('stars');
-    }
-
-    /******************/
-    /* PUBLIC METHODS */
-    /******************/
-
-    public isRanked(): boolean {
-        return !!(this.ranking);
-    }
-
-    protected Rank(rankables: Array<Rankable>, callback: (r: Rankable) => number) {
-        rankables.sort((a: Rankable, b: Rankable) => callback(b) - callback(a));
     }
 
 

@@ -16,6 +16,7 @@ import { Multimedia } from '../classes/multimedia';
 
 import { Disklikable } from '../interfaces/dislikable';
 import { Likable } from '../interfaces/likable';
+import { Rankable } from '../interfaces/rankable';
 import { Ratable } from '../interfaces/ratable';
 
 /**********/
@@ -27,13 +28,20 @@ import { Artist } from './artist';
 import { Library } from './library';
 import { Playlist } from './playlist';
 
+/************/
+/* UTILTIES */
+/************/
+
+import { Algorithm } from '../utilities/algorithm';
+import { Globals } from '../utilities/globals';
+
 //////////////////
 //              //
 //     SONG     //
 //              //
 //////////////////
 
-export class Song extends Multimedia implements Ratable, Likable, Disklikable {
+export class Song extends Multimedia implements Rankable, Ratable, Likable, Disklikable {
 
     /**************/
     /* PROPERTIES */
@@ -49,6 +57,7 @@ export class Song extends Multimedia implements Ratable, Likable, Disklikable {
     private _name: string;
     private _playCount: number;
     private _playlists: Array<Playlist>;
+    private _ranking?: number;
     private _rating: number;
     private _releaseDate: Date;
     private _skipCount: number;
@@ -80,10 +89,10 @@ export class Song extends Multimedia implements Ratable, Likable, Disklikable {
 
     get album(): Album { return this._album; }
     set album(album: Album) { this._album = album; }
-    
+
     get artist(): Artist { return this._artist; }
     set artist(artist: Artist) { this._artist = artist; }
-    
+
     get discNumber(): number {
         if (!this.cache.has('discNumber')) {
             for (let i = 0; i < this.album.tracks.length; i++) {
@@ -97,28 +106,74 @@ export class Song extends Multimedia implements Ratable, Likable, Disklikable {
         }
         return this.cache.get('discNumber');
     }
-    
+
     get disliked(): boolean { return this._disliked; }
-    
+
     get duration(): number { return this._duration; }
 
     get genre(): string { return this._genre; }
-    
+
     get library(): Library { return this._library; }
     set library(library: Library) { this._library = library; }
 
     get liked(): boolean { return this._liked; }
-    
+
     get name(): string { return this._name; }
-    
+
     get playCount(): number { return this._playCount; }
-    
+
     get playlists(): Array<Playlist> { return this._playlists; }
-    
+
     get releaseDate(): Date { return this._releaseDate; }
-    
+
+    get ranking(): number {
+        if (!this._ranking) {
+            const maxPlayCount = this.library.getMaxPlayCount();
+            const maxSkipCount = this.library.getMaxSkipCount();
+            let likeDislikeRating = (this.liked) ? 5 : (this.disliked) ? 0 : null;
+            let playSkipRatio = (this.playCount + (maxSkipCount - this.skipCount)) / (maxPlayCount + maxSkipCount);
+            playSkipRatio = playSkipRatio || 0; // Handle Divide by Zero Error
+            const playSkipRating = Algorithm.scale(playSkipRatio, Globals.minRating, Globals.maxRating);
+
+            let result = 0;
+
+            if (this.rating || this.liked || this.disliked || this.playCount || this.skipCount) {
+                if (this.rating) {
+                    if (this.liked || this.disliked) {
+                        const featureWeights = { likeDislikeRating: 0.5, playSkipRating: 0.5 };
+                        const weightedRating =
+                            Algorithm.applyWeight(likeDislikeRating, featureWeights.likeDislikeRating) +
+                            Algorithm.applyWeight(playSkipRating, featureWeights.playSkipRating);
+                        result =
+                            (this.rating - 1) + // take a star off
+                            Algorithm.scale(weightedRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
+                    } else {
+                        result =
+                            (this.rating - 1) + // take a star off
+                            Algorithm.scale(playSkipRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
+                    }
+                } else {
+                    if (this.liked) {
+                        result =
+                            Algorithm.scale(Globals.maxRating, Globals.minRating, (Globals.maxRating - 1) / Globals.maxRating) +
+                            Algorithm.scale(playSkipRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+                    } else if (this.disliked) {
+                        result = Algorithm.scale(playSkipRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+                    } else {
+                        result = playSkipRating;
+                    }
+                }
+            }
+
+            // Update the Model
+            this._ranking = result;
+        }
+
+        return this._ranking;
+    }
+
     get rating(): number { return this._rating; }
-    
+
     get skipCount(): number { return this._skipCount; }
 
     get trackNumber(): number {
@@ -138,6 +193,10 @@ export class Song extends Multimedia implements Ratable, Likable, Disklikable {
     /******************/
     /* PUBLIC METHODS */
     /******************/
+
+    public isRanked(): boolean {
+        return !!(this.ranking);
+    }
 
     public isRated(): boolean {
         return !!(this.rating);
