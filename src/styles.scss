@@ -19,7 +19,7 @@ body {
 }
 .flex {
   display: flex;
-  > div {
+  > .flex-grow {
     flex-grow: 1;
   }
 }

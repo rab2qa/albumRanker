@@ -8,6 +8,7 @@
     <i class="fas fa-spinner fa-spin"></i>
     Importing...
   </div>
+  <div *ngIf="canCancel" class="cancel-import" (click)="location.back()">Cancel Import</div>
 </div>
 
 <input #file type="file" accept=".xml" (change)="onFileUpload($event.target.files)">
