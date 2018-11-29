@@ -29,15 +29,16 @@ export class Artist extends Multimedia {
     /**************/
 
     private _albums: object;
+    private _name: string;
 
     /***************/
     /* CONSTRUCTOR */
     /***************/
 
-    public constructor(
-        private _name: string
-    ) {
+    public constructor(json: Object) {
         super();
+
+        this._name = json["Artist"];
         this._albums = new Object();
     }
 

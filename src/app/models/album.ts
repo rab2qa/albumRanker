@@ -37,21 +37,27 @@ export class Album extends Multimedia implements Ratable, Likable, Disklikable {
     /* PROPERTIES */
     /**************/
 
+    private _artist?: Artist;
+    private _disliked: boolean;
+    private _liked: boolean;
+    private _name: string;
+    private _rating: number;
     private _tracks: Array<Array<Song>>;
+    private _year: number;
 
     /***************/
     /* CONSTRUCTOR */
     /***************/
 
-    public constructor(
-        private _artist: Artist,
-        private _disliked: boolean,
-        private _liked: boolean,
-        private _name: string,
-        private _rating: number,
-        private _year: number
-    ) {
+    public constructor(json: Object) {
         super();
+
+        this._disliked= json["Album Disliked"] === "true";
+        this._name = json["Album"];
+        this._rating = (json["Album Rating Computed"] === "true") ? 0 : +json["Album Rating"] / 20 || 0;
+        this._liked = json["Loved"] === "true";
+        this._year = json["Year"];
+
         this._tracks = new Array<Array<Song>>();
     }
 
@@ -60,7 +66,8 @@ export class Album extends Multimedia implements Ratable, Likable, Disklikable {
     /*************/
 
     get artist(): Artist { return this._artist; }
-
+    set artist(artist: Artist) { this._artist = artist; }
+    
     get disliked(): boolean { return this._disliked; }
 
     get duration(): number {

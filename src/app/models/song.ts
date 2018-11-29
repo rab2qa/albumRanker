@@ -38,26 +38,37 @@ export class Song extends Multimedia implements Ratable, Likable, Disklikable {
     /* PROPERTIES */
     /**************/
 
+    private _album?: Album;
+    private _artist?: Artist;
+    private _disliked: boolean;
+    private _duration: number;
+    private _genre: string;
+    private _liked: boolean;
+    private _name: string;
+    private _playCount: number;
     private _playlists: Array<Playlist>;
+    private _rating: number;
+    private _releaseDate: Date;
+    private _skipCount: number;
+
 
     /***************/
     /* CONSTRUCTOR */
     /***************/
 
-    public constructor(
-        private _album: Album,
-        private _artist: Artist,
-        private _disliked: boolean,
-        private _duration: number,
-        private _genre: string,
-        private _liked: boolean,
-        private _name: string,
-        private _playCount: number,
-        private _rating: number,
-        private _releaseDate: Date,
-        private _skipCount: number
-    ) {
+    public constructor(json: Object) {
         super();
+
+        this._disliked = json["Disliked"] === "true";
+        this._duration = +json["Total Time"];
+        this._genre = json["Genre"];
+        this._liked = json["Loved"] === "true";
+        this._name = json["Name"];
+        this._playCount = +json["Play Count"] || 0;
+        this._rating = +json["Rating"] / 20 || 0;
+        this._releaseDate = new Date(json["Release Date"]);
+        this._skipCount = +json["Skip Count"] || 0;
+
         this._playlists = new Array<Playlist>();
     }
 
@@ -66,8 +77,10 @@ export class Song extends Multimedia implements Ratable, Likable, Disklikable {
     /*************/
 
     get album(): Album { return this._album; }
-
+    set album(album: Album) { this._album = album; }
+    
     get artist(): Artist { return this._artist; }
+    set artist(artist: Artist) { this._artist = artist; }
     
     get discNumber(): number {
         if (!this.cache.has('discNumber')) {

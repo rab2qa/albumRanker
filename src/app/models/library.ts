@@ -69,13 +69,107 @@ export class Library extends Presenter {
     public constructor(json: Object) {
         super();
 
+        const artists = {};
+        const albums = {};
+        const playlists = {};
+        const songs = {};
+
+        for (const key in json["Tracks"]) {
+
+            const track = json["Tracks"][key];
+            const albumName = track["Album"];
+            const artistName = track["Artist"];
+            const discNumber = +track["Disc Number"] || 1;
+            const trackId: string = track["Track ID"];
+            const trackNumber = +track["Track Number"];
+
+            if (track["Movie"] === "true") {
+                // TODO: Add support for Movies
+                continue;
+            }
+
+            if (track["TV Show"] === "true") {
+                // TODO: Add support for TV Shows
+                continue;
+            }
+
+            if (track["Audiobook"] === "true") {
+                // TODO: Add support for Audiobooks
+                continue;
+            }
+
+            if (track["Podcast"] === "true") {
+                // TODO: Add support for Podcasts
+                continue;
+            }
+
+            // Create Artist
+            let artist = artists[artistName];
+            if (!artist) {
+                artist = new Artist(track);
+                artists[artistName] = artist;
+            }
+
+            // Create Album
+            let album = albums[albumName];
+            if (!album) {
+                album = new Album(track);
+                albums[albumName] = album;
+            }
+            album.artist = artist;
+            artist.albums[albumName] = album;
+
+            // Create Song
+            const song = new Song(track);
+            songs[trackId] = song;
+            song.artist = artist;
+            song.album = album;
+            album.tracks[discNumber - 1] = album.tracks[discNumber - 1] || new Array<Song>();
+            album.tracks[discNumber - 1][trackNumber - 1] = song;
+
+            // Update Cache
+            if (album.rating) { this._albumStarCount[album.rating - 1]++; }
+            if (song.liked) { this._likedCount++; }
+            if (song.disliked) { this._dislikedCount++; }
+            if (song.rating) { this._songStarCount[song.rating - 1]++; }
+            this._maxPlayCount = Math.max(song.playCount, this._maxPlayCount);
+            this._maxSkipCount = Math.max(song.skipCount, this._maxSkipCount);
+            this._minPlayCount = Math.min(song.playCount, this._minPlayCount);
+            this._minSkipCount = Math.min(song.skipCount, this._minSkipCount);
+        }
+
+        // Create Playlists
+        json["Playlists"].forEach(jsonPlaylist => {
+            // TODO: Add support for Folders and Downloaded Content
+            if (!(jsonPlaylist["Folder"] || jsonPlaylist["Name"] === "Downloaded")) {
+                const name = jsonPlaylist["Name"];
+                const playlist = new Playlist(jsonPlaylist);
+
+                if (jsonPlaylist["Playlist Items"]) {
+                    jsonPlaylist["Playlist Items"].forEach(item => {
+                        const itemId = item["Track ID"];
+                        const song = songs[itemId];
+                        if (song) { playlist.songs.push(song); }
+                        if (songs[itemId]) { songs[itemId].playlists.push(playlist); }
+                    });
+                }
+                playlists[name] = playlist;
+            }
+        });
+
+        this.updateStarWeights();
+
         this._artists = new Array<Artist>();
         this._albums = new Array<Album>();
         this._playlists = new Array<Playlist>();
         this._songs = new Array<Song>();
 
-        this.createLibrary(json);
-    }
+        Array.prototype.push.apply(this._songs, this.rank(Object.values(songs)));
+        Array.prototype.push.apply(this._albums, this.rank(Object.values(albums)));
+        Array.prototype.push.apply(this._artists, this.rank(Object.values(artists)));
+        Array.prototype.push.apply(this._playlists, Object.values(playlists));
+
+    } // End constructor()
 
     /*************/
     /* ACCESSORS */
@@ -109,130 +203,6 @@ export class Library extends Presenter {
     /* PRIVATE METHODS */
     /*******************/
 
-    private createAlbum(artist, albumName, albumRating, disliked, liked, year): Album {
-        const album = new Album(artist, disliked, liked, albumName, albumRating, year);
-
-        // Update ORM
-        artist.albums[albumName] = album;
-
-        // Update Cache
-        if (album.rating) { this._albumStarCount[album.rating - 1]++; }
-
-        return album;
-    }
-
-    private createSong(album, artist, discNumber, disliked, duration, genre, liked, name, playCount, rating, releaseDate, skipCount, trackNumber): Song {
-        const song = new Song(album, artist, disliked, duration, genre, liked, name, playCount, rating, releaseDate, skipCount);
-
-        // Update ORM
-        album.tracks[discNumber - 1] = album.tracks[discNumber - 1] || new Array<Song>();
-        album.tracks[discNumber - 1][trackNumber - 1] = song;
-
-        // Update Cache
-        if (song.liked) { this._likedCount++; }
-        if (song.disliked) { this._dislikedCount++; }
-        if (song.rating) { this._songStarCount[song.rating - 1]++; }
-        this._maxPlayCount = Math.max(song.playCount, this._maxPlayCount);
-        this._maxSkipCount = Math.max(song.skipCount, this._maxSkipCount);
-        this._minPlayCount = Math.min(song.playCount, this._minPlayCount);
-        this._minSkipCount = Math.min(song.skipCount, this._minSkipCount);
-
-        return song;
-    }
-
-    private createLibrary(json: Object) {
-        const artists = {};
-        const albums = {};
-        const playlists = {};
-        const songs = {};
-
-        for (const key in json["Tracks"]) {
-            const track = json["Tracks"][key];
-
-            if (track["Movie"] === "true") {
-                // TODO: Add support for Movies
-                continue;
-            }
-
-            if (track["TV Show"] === "true") {
-                // TODO: Add support for TV Shows
-                continue;
-            }
-
-            if (track["Audiobook"] === "true") {
-                // TODO: Add support for Audiobooks
-                continue;
-            }
-
-            if (track["Podcast"] === "true") {
-                // TODO: Add support for Podcasts
-                continue;
-            }
-
-            const albumDisliked = track["Album Disliked"] === "true";
-            const albumLiked = track["Album Loved"] === "true";
-            const albumName = track["Album"];
-            const albumRating = (track["Album Rating Computed"] === "true") ? 0 : +track["Album Rating"] / 20 || 0;
-            const artistName = track["Artist"];
-            const discNumber = +track["Disc Number"] || 1;
-            const disliked = track["Disliked"] === "true";
-            const duration = +track["Total Time"];
-            const genre = track["Genre"];
-            const liked = track["Loved"] === "true";
-            const name = track["Name"];
-            const playCount = +track["Play Count"] || 0;
-            const rating = +track["Rating"] / 20 || 0;
-            const releaseDate = new Date(track["Release Date"]);
-            const skipCount = +track["Skip Count"] || 0;
-            const trackCount = +track["Track Count"] || 0;
-            const trackId: string = track["Track ID"];
-            const trackNumber = +track["Track Number"];
-            const year = track["Year"];
-
-            let artist = artists[artistName];
-            if (!artist) {
-                artist = new Artist(artistName);
-                artists[artistName] = artist;
-            }
-
-            let album = albums[albumName];
-            if (!album) {
-                album = this.createAlbum(artist, albumName, albumRating, albumDisliked, albumLiked, year);
-                albums[albumName] = album;
-            }
-
-            const song = this.createSong(album, artist, discNumber, disliked, duration, genre, liked, name, playCount, rating, releaseDate, skipCount, trackNumber);
-            songs[trackId] = song;
-        }
-
-        json["Playlists"].forEach(jsonPlaylist => {
-            // TODO: Add support for Folders and Downloaded Content
-            if (!(jsonPlaylist["Folder"] || jsonPlaylist["Name"] === "Downloaded")) {
-                const disliked = jsonPlaylist["Disliked"] === "true";
-                const liked = jsonPlaylist["Loved"] === "true";
-                const name = jsonPlaylist["Name"];
-                const playlist = new Playlist(disliked, liked, name);
-
-                if (jsonPlaylist["Playlist Items"]) {
-                    jsonPlaylist["Playlist Items"].forEach(item => {
-                        const itemId = item["Track ID"];
-                        const song = songs[itemId];
-                        if (song) { playlist.songs.push(song); }
-                        if (songs[itemId]) { songs[itemId].playlists.push(playlist); }
-                    });
-                }
-                playlists[name] = playlist;
-            }
-        });
-
-        this.updateStarWeights();
-
-        Array.prototype.push.apply(this._songs, this.rank(Object.values(songs)));
-        Array.prototype.push.apply(this._albums, this.rank(Object.values(albums)));
-        Array.prototype.push.apply(this._artists, this.rank(Object.values(artists)));
-        Array.prototype.push.apply(this._playlists, Object.values(playlists));
-    }
-
     private getAlbumRanking(album: Album): number {
 
         if (!album.ranking) {
@@ -256,16 +226,6 @@ export class Library extends Presenter {
         return album.ranking;
 
     } // End getAlbumRanking()
-
-    public getSongRarity(song: Song): number {
-        const starWeight = starWeights[song.rating - 1];
-        // const normalizedStarWeight = Algorithm.normalize(starWeight, 0, starWeights[starWeights.length - 1], minRating, maxRating);
-        return starWeight * (song.liked ? 2 : 1) * (song.disliked ? 0.5 : 1); // + song.playCount - song.skipCount;
-    }
-
-    public getAlbumRarity(album: Album): number {
-        return album.topTenSongs.reduce((sum, song) => sum + this.getSongRarity(song), 0);
-    }
 
     private getArtistRanking(artist: Artist): number {
 
@@ -355,5 +315,5 @@ export class Library extends Presenter {
             }
         }
     }
-
+    
 } // End class Library
