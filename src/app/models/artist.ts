@@ -15,6 +15,7 @@ import { Multimedia } from '../classes/multimedia';
 /**********/
 
 import { Album } from '../models/album';
+import { Library } from '../models/library';
 import { Song } from '../models/song';
 
 ////////////////////
@@ -30,6 +31,7 @@ export class Artist extends Multimedia {
     /**************/
 
     private _albums: Array<Album>;
+    private _library?: Library;
     private _name: string;
 
     /***************/
@@ -49,6 +51,9 @@ export class Artist extends Multimedia {
 
     get albums(): object { return this._albums; }
     
+    get library(): Library { return this._library; }
+    set library(library: Library) { this._library = library; }
+
     get name(): string { return this._name; }
 
     get songs(): Array<Song> {

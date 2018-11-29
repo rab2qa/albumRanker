@@ -21,6 +21,7 @@ import { Likable } from '../interfaces/likable';
 /* MODELS */
 /**********/
 
+import { Library } from '../models/library';
 import { Song } from '../models/song';
 
 //////////////////////
@@ -36,6 +37,7 @@ export class Playlist extends Presenter implements Likable, Disklikable {
     /**************/
 
     private _disliked: boolean;
+    private _library?: Library;
     private _liked: boolean;
     private _name: string;
     private _songs: Array<Song>;
@@ -59,6 +61,9 @@ export class Playlist extends Presenter implements Likable, Disklikable {
     /*************/
 
     get disliked(): boolean { return this._disliked; }
+
+    get library(): Library { return this._library; }
+    set library(library: Library) { this._library = library; }
 
     get liked(): boolean { return this._disliked; }
     

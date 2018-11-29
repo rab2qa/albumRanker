@@ -15,6 +15,7 @@ import { Multimedia } from '../classes/multimedia';
 /**************/
 
 import { Disklikable } from '../interfaces/dislikable';
+import { Library } from './library';
 import { Likable } from '../interfaces/likable';
 import { Ratable } from '../interfaces/ratable';
 
@@ -39,6 +40,7 @@ export class Album extends Multimedia implements Ratable, Likable, Disklikable {
 
     private _artist?: Artist;
     private _disliked: boolean;
+    private _library?: Library;
     private _liked: boolean;
     private _name: string;
     private _rating: number;
@@ -79,6 +81,9 @@ export class Album extends Multimedia implements Ratable, Likable, Disklikable {
         }
         return this.cache.get('duration');
     }
+
+    get library(): Library { return this._library; }
+    set library(library: Library) { this._library = library; }
 
     get liked(): boolean { return this._liked; }
 

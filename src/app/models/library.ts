@@ -107,6 +107,7 @@ export class Library extends Presenter {
             let artist = artists[artistName];
             if (!artist) {
                 artist = new Artist(track);
+                artist.library = this;
                 artists[artistName] = artist;
             }
 
@@ -114,6 +115,7 @@ export class Library extends Presenter {
             let album = albums[albumName];
             if (!album) {
                 album = new Album(track);
+                album.library = this;
                 albums[albumName] = album;
             }
             album.artist = artist;
@@ -124,6 +126,7 @@ export class Library extends Presenter {
             // Create Song
             const song = new Song(track);
             songs[trackId] = song;
+            song.library = this;
             song.artist = artist;
             song.album = album;
             album.tracks[discNumber - 1] = album.tracks[discNumber - 1] || new Array<Song>();
@@ -146,6 +149,7 @@ export class Library extends Presenter {
             if (!(jsonPlaylist["Folder"] || jsonPlaylist["Name"] === "Downloaded")) {
                 const name = jsonPlaylist["Name"];
                 const playlist = new Playlist(jsonPlaylist);
+                playlist.library = this;
 
                 if (jsonPlaylist["Playlist Items"]) {
                     jsonPlaylist["Playlist Items"].forEach(item => {

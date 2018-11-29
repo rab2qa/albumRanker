@@ -24,6 +24,7 @@ import { Ratable } from '../interfaces/ratable';
 
 import { Album } from './album';
 import { Artist } from './artist';
+import { Library } from './library';
 import { Playlist } from './playlist';
 
 //////////////////
@@ -43,6 +44,7 @@ export class Song extends Multimedia implements Ratable, Likable, Disklikable {
     private _disliked: boolean;
     private _duration: number;
     private _genre: string;
+    private _library?: Library;
     private _liked: boolean;
     private _name: string;
     private _playCount: number;
@@ -102,6 +104,9 @@ export class Song extends Multimedia implements Ratable, Likable, Disklikable {
 
     get genre(): string { return this._genre; }
     
+    get library(): Library { return this._library; }
+    set library(library: Library) { this._library = library; }
+
     get liked(): boolean { return this._liked; }
     
     get name(): string { return this._name; }
