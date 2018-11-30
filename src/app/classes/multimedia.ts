@@ -29,7 +29,6 @@ export abstract class Multimedia extends Presenter implements Starable {
     /*************/
 
     get ranking(): number { return this.cache.get('ranking'); };
-    set ranking(value: number) { this.cache.add('ranking', value); };
 
     get stars(): Array<number> {
         if (!this.cache.has('stars')) {
