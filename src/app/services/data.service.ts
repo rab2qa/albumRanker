@@ -46,8 +46,12 @@ export class DataService {
     get albums(): Object {
         if (this._library) {
             return {
-                initial: this._library.albums.filter(album => album.isRated() ||  album.hasAllSongsRated()).sort((a, b) => b.ranking - a.ranking),    // TODO: Separate Complete from Partial Albums
-                adjusted: this._library.albums.filter(album => album.isRated() || album.hasAllSongsRated()).sort((a, b) => b.ranking - a.ranking)
+                initial: this._library.albums
+                    .filter(album => album.isRated() || album.hasAllSongsRated())   // TODO: Separate Complete from Partially Rated Albums
+                    .sort((a, b) => b.ranking - a.ranking), 
+                adjusted: this._library.albums
+                    .filter(album => album.isRated() || album.hasAllSongsRated())
+                    .sort((a, b) => b.ranking - a.ranking)
             };
         }
     }
@@ -70,8 +74,12 @@ export class DataService {
     get songs(): Object {
         if (this._library) {
             return {
-                initial: this._library.songs.filter(song => song.isRated()).sort((a, b) => b.ranking - a.ranking),  // TODO: Separate Rated from Unrated Songs
-                adjusted: this._library.songs.filter(song => song.isRated()).sort((a, b) => b.ranking - a.ranking)
+                initial: this._library.songs
+                    .filter(song => song.isRated()) // TODO: Separate Rated from Unrated Songs
+                    .sort((a, b) => b.ranking - a.ranking), 
+                adjusted: this._library.songs
+                    .filter(song => song.isRated())
+                    .sort((a, b) => b.ranking - a.ranking)
             };
         }
     }

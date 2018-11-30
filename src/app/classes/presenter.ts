@@ -10,14 +10,6 @@
 
 import { Cache } from "../utilities/cache";
 
-/////////////////////
-//                 //
-//     GLOBALS     //
-//                 //
-/////////////////////
-
-const MAX_STARS: number = 5;
-
 ///////////////////////
 //                   //
 //     PRESENTER     //
