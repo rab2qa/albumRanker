@@ -60,8 +60,8 @@ export class Container<T> implements Pagable {
 
     get page(): Array<T> {
         const start = this.paginationOptions.pageSize * this.paginationOptions.pageIndex;
-        const end = start + this.paginationOptions.pageSize - 1;
-        return this._data.filter((element, index) => index >= start && index <= end);
+        const end = start + this.paginationOptions.pageSize;
+        return this._data.slice(start, end);
     }
 
     /******************/
