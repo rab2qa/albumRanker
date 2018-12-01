@@ -16,7 +16,7 @@ import { ShellComponent } from './components/shell/shell.component';
 import { UploadComponent } from './components/upload/upload.component';
 import { NavigationComponent } from './components/shell/navigation/navigation.component';
 import { LibraryComponent } from './components/library/library.component';
-import { ContainerComponent } from './components/container/container.component';
+import { RankablesComponent } from './components/rankables/rankables.component';
 import { MultimediaComponent } from './components/multimedia/multimedia.component';
 
 @NgModule({
@@ -30,7 +30,7 @@ import { MultimediaComponent } from './components/multimedia/multimedia.componen
         UploadComponent,
         NavigationComponent,
         LibraryComponent,
-        ContainerComponent,
+        RankablesComponent,
         MultimediaComponent,
     ],
     imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule, MatPaginatorModule],

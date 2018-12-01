@@ -6,15 +6,15 @@
 </div>
 <ng-container *ngIf="canReorder">
     <div cdkDropList (cdkDropListDropped)="handleItemDropped($event)">
-        <ranker-multimedia *ngFor="let item of container.page" [item]="item" [canReorder]="canReorder"
+        <ranker-multimedia *ngFor="let item of rankables.page" [item]="item" [canReorder]="canReorder"
             cdkDrag></ranker-multimedia>
     </div>
 </ng-container>
 <ng-container *ngIf="!canReorder">
     <div>
-        <ranker-multimedia *ngFor="let item of container.page" [item]="item"></ranker-multimedia>
+        <ranker-multimedia *ngFor="let item of rankables.page" [item]="item"></ranker-multimedia>
     </div>
 </ng-container>
-<mat-paginator [length]="container.paginationOptions.length" [pageSize]="container.paginationOptions.pageSize" [pageSizeOptions]="container.paginationOptions.pageSizeOptions"
-    (page)="container.onPageChange($event)">
+<mat-paginator [length]="rankables.paginationOptions.length" [pageSize]="rankables.paginationOptions.pageSize" [pageSizeOptions]="rankables.paginationOptions.pageSizeOptions"
+    (page)="rankables.onPageChange($event)">
 </mat-paginator>

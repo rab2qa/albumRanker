@@ -33,7 +33,7 @@ import { Song } from './../../models/song';
 @Component({
     selector: 'ranker-multimedia',
     templateUrl: './multimedia.component.html',
-    styleUrls: ['./multimedia.component.scss', '../container/container.component.scss'],
+    styleUrls: ['./multimedia.component.scss', '../rankables/rankables.component.scss'],
 })
 export class MultimediaComponent implements OnInit {
 

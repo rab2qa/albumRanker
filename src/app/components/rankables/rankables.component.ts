@@ -15,13 +15,13 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 /* CLASSES */
 /***********/
 
-import { Container } from './../../classes/container';
+import { Container } from '../../classes/container';
 
 /**************/
 /* INTERFACES */
 /**************/
 
-import { Rankable } from './../../interfaces/rankable';
+import { Rankable } from '../../interfaces/rankable';
 
 ///////////////////////
 //                   //
@@ -30,13 +30,13 @@ import { Rankable } from './../../interfaces/rankable';
 ///////////////////////
 
 @Component({
-    selector: 'ranker-container',
-    templateUrl: './container.component.html',
-    styleUrls: ['./container.component.scss'],
+    selector: 'ranker-rankables',
+    templateUrl: './rankables.component.html',
+    styleUrls: ['./rankables.component.scss'],
 })
-export class ContainerComponent implements OnInit {
+export class RankablesComponent implements OnInit {
 
-    @Input() container: Container<Rankable>;
+    @Input() rankables: Container<Rankable>;
     @Input() canReorder: boolean = false;
 
     /**************/
@@ -50,7 +50,7 @@ export class ContainerComponent implements OnInit {
     /******************/
 
     public ngOnInit(): void {
-        this.listHeader = this.setListHeader(this.container.name);
+        this.listHeader = this.setListHeader(this.rankables.name);
     }
 
     public setListHeader(name) {
@@ -65,8 +65,8 @@ export class ContainerComponent implements OnInit {
 
     public handleItemDropped(event: CdkDragDrop<string[]>): void {
         if (this.canReorder) {
-            moveItemInArray(this.container.page, event.previousIndex, event.currentIndex);
+            moveItemInArray(this.rankables.page, event.previousIndex, event.currentIndex);
         }
     }
 
-} // End class ContainerComponent
+} // End class RankablesComponent

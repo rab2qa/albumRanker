@@ -44,7 +44,7 @@ export class Container<T> implements Pagable {
     /***************/
 
     public constructor(
-        public name: string,
+        private _name: string,
         private _data: Array<T>
     ) {
         this.paginationOptions = new PaginationOptions(null, false, false, this._data.length, 0, defaultPageSize, [10, 25, 50, 100], true, null, null);
@@ -64,6 +64,8 @@ export class Container<T> implements Pagable {
         return this._data.slice(start, end);
     }
 
+    get name(): string { return this._name; }
+
     /******************/
     /* PUBLIC METHODS */
     /******************/
@@ -71,15 +73,6 @@ export class Container<T> implements Pagable {
     public onPageChange(event: PageEvent): void {
         this.paginationOptions.pageIndex = event.pageIndex;
         this.paginationOptions.pageSize = event.pageSize;
-    }
-
-    public sort(): void {
-        try {
-            const data = this._data as unknown as Array<Rankable>
-            data.sort((a, b) => b.ranking - a.ranking);
-        } catch(error) {
-            console.log("Error trying to sort container." + error);
-        }
     }
 
 }  // End class Container

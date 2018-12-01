@@ -94,9 +94,9 @@ export class DataService {
 
         try {
             this._library = await new Library(library);
-            this._library.artists.sort();
-            this._library.albums.sort();
-            this._library.songs.sort();
+            this._library.artists.all.sort((a, b) => b.ranking - a.ranking);
+            this._library.albums.all.sort((a, b) => b.ranking - a.ranking);
+            this._library.songs.all.sort((a, b) => b.ranking - a.ranking);
             success = true;
         } catch (error) {
             console.error(error);
