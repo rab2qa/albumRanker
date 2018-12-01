@@ -1,0 +1,35 @@
+<div class="item transition" [class.clickable]="canShowDetails || canReorder" [class.showing-details]="showDetails" (click)="toggleShowDetails()">
+    <div class="item-title flex">
+      <div class="item-stars">
+        <ranker-stars [ratings]="item.stars"></ranker-stars>
+      </div>
+      <div class="flex-grow" [class.bold]="showDetails">
+        <i *ngIf="canReorder" class="sort-icon fa-sort fas"></i>
+        {{ listItemTitle }}
+      </div>
+    </div>
+    <div class="item-details" *ngIf="canShowDetails && showDetails">
+      <ng-container *ngIf="key === 'albums'">
+        <ng-template ngFor let-disc [ngForOf]="orderedTracks" let-d="index">
+          <div *ngIf="orderedTracks.length > 1">Disc {{ +d + 1 }}</div>
+          <div *ngFor="let track of disc; let t = index" class="flex album-track">
+            <div class="item-stars" *ngIf="track.stars">
+              <ranker-stars [ratings]="track.stars"></ranker-stars>
+            </div>
+            <div class="flex-grow">{{ track.name }}</div>
+          </div>
+        </ng-template>
+      </ng-container>
+      <ng-container *ngIf="key === 'artists'">
+        <ng-template ngFor let-album [ngForOf]="orderedAlbums" let-d="index">
+          <div class="flex album-track">
+            <div class="item-stars" *ngIf="album.stars">
+              <ranker-stars [ratings]="album.stars"></ranker-stars>
+            </div>
+            <div class="flex-grow">{{ album.name }}</div>
+          </div>
+        </ng-template>
+      </ng-container>
+    </div>
+  </div>
+  

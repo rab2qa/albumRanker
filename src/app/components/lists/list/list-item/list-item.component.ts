@@ -8,9 +8,11 @@ import { Album } from '../../../../models/album';
   styleUrls: ['./list-item.component.scss', '../list.component.scss'],
 })
 export class ListItemComponent implements OnInit {
+
   @Input() item: any;
   @Input() key: string;
   @Input() canReorder: boolean = false;
+
   public listItemTitle: string;
   public showDetails: boolean = false;
   public canShowDetails: boolean = false;
@@ -57,4 +59,5 @@ export class ListItemComponent implements OnInit {
       });
     });
   }
-}
+
+} // End class ListItemComponent

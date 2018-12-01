@@ -8,6 +8,7 @@
 /* CLASSES */
 /***********/
 
+import { Container } from '../classes/container';
 import { Presenter } from '../classes/presenter';
 
 /**********/
@@ -37,10 +38,10 @@ export class Library extends Presenter {
     /* PROPERTIES */
     /**************/
 
-    private _artists: Array<Artist>;
-    private _albums: Array<Album>;
-    private _playlists: Array<Playlist>;
-    private _songs: Array<Song>;
+    private _artists: Container<Artist>;
+    private _albums: Container<Album>;
+    private _playlists: Container<Playlist>;
+    private _songs: Container<Song>;
 
     /***************/
     /* CONSTRUCTOR */
@@ -132,10 +133,10 @@ export class Library extends Presenter {
             }
         });
 
-        this._artists = Object.values(artists);
-        this._albums = Object.values(albums);
-        this._playlists = Object.values(playlists);
-        this._songs = Object.values(songs);
+        this._artists = new Container("Artists", <Array<Artist>>Object.values(artists));
+        this._albums = new Container("Albums", <Array<Album>>Object.values(albums));
+        this._playlists = new Container("Playlists", <Array<Playlist>>Object.values(playlists));
+        this._songs = new Container("Songs", <Array<Song>>Object.values(songs));
 
     } // End constructor()
 
@@ -143,13 +144,13 @@ export class Library extends Presenter {
     /* ACCESSORS */
     /*************/
 
-    get albums(): Array<Album> { return this._albums; }
+    get albums(): Container<Album> { return this._albums; }
 
-    get artists(): Array<Artist> { return this._artists; }
+    get artists(): Container<Artist> { return this._artists; }
 
-    get playlists(): Array<Playlist> { return this._playlists; }
+    get playlists(): Container<Playlist> { return this._playlists; }
 
-    get songs(): Array<Song> { return this._songs; }
+    get songs(): Container<Song> { return this._songs; }
 
     /******************/
     /* PUBLIC METHODS */
@@ -157,7 +158,7 @@ export class Library extends Presenter {
 
     public getMaxPlayCount(): number {
         if (!this.cache.has('maxPlayCount')) {
-            const maxPlayCount = this.songs.reduce((max, song) => Math.max(song.playCount, max), 0);
+            const maxPlayCount = this.songs.all.reduce((max, song) => Math.max(song.playCount, max), 0);
             this.cache.add('maxPlayCount', maxPlayCount);
         }
         return this.cache.get('maxPlayCount');
@@ -165,7 +166,7 @@ export class Library extends Presenter {
 
     public getMaxSkipCount(): number {
         if (!this.cache.has('maxSkipCount')) {
-            const maxSkipCount = this.songs.reduce((max, song) => Math.max(song.skipCount, max), 0);
+            const maxSkipCount = this.songs.all.reduce((max, song) => Math.max(song.skipCount, max), 0);
             this.cache.add('maxSkipCount', maxSkipCount);
         }
         return this.cache.get('maxSkipCount');
@@ -173,7 +174,7 @@ export class Library extends Presenter {
 
     public getMinPlayCount(): number {
         if (!this.cache.has('minPlayCount')) {
-            const minPlayCount = this.songs.reduce((min, song) => Math.min(song.playCount, min), Number.MAX_SAFE_INTEGER);
+            const minPlayCount = this.songs.all.reduce((min, song) => Math.min(song.playCount, min), Number.MAX_SAFE_INTEGER);
             this.cache.add('maxPlayCount', minPlayCount);
         }
         return this.cache.get('minPlayCount');
@@ -181,7 +182,7 @@ export class Library extends Presenter {
 
     public getMinSkipCount(): number {
         if (!this.cache.has('minSkipCount')) {
-            const minSkipCount = this.songs.reduce((min, song) => Math.min(song.skipCount, min), Number.MAX_SAFE_INTEGER);
+            const minSkipCount = this.songs.all.reduce((min, song) => Math.min(song.skipCount, min), Number.MAX_SAFE_INTEGER);
             this.cache.add('minSkipCount', minSkipCount);
         }
         return this.cache.get('minSkipCount');
@@ -189,7 +190,7 @@ export class Library extends Presenter {
 
     public getAlbumStarCounts(): Array<number> {
         if (!this.cache.has('albumStarCounts')) {
-            const albumStarCounts = this._songs.reduce((starCounts, album) => {
+            const albumStarCounts = this.songs.all.reduce((starCounts, album) => {
                 const starIndex = album.rating - 1;
                 starCounts[starIndex]++;
                 return starCounts;
@@ -201,7 +202,7 @@ export class Library extends Presenter {
 
     public getSongStarCounts(): Array<number> {
         if (!this.cache.has('songStarCounts')) {
-            const songStarCounts = this._songs.reduce((starCounts, song) => {
+            const songStarCounts = this.songs.all.reduce((starCounts, song) => {
                 const starIndex = song.rating - 1;
                 starCounts[starIndex]++;
                 return starCounts;

@@ -15,20 +15,26 @@ import { LibraryGuard } from './guards/library.guard';
 import { ShellComponent } from './components/shell/shell.component';
 import { UploadComponent } from './components/upload/upload.component';
 import { NavigationComponent } from './components/shell/navigation/navigation.component';
+import { LibraryComponent } from './components/library/library.component';
+import { ContainerComponent } from './components/container/container.component';
+import { MultimediaComponent } from './components/multimedia/multimedia.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    StarRatingsComponent,
-    ListsComponent,
-    ListComponent,
-    ListItemComponent,
-    ShellComponent,
-    UploadComponent,
-    NavigationComponent,
-  ],
-  imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule, MatPaginatorModule],
-  providers: [DataService, LibraryGuard],
-  bootstrap: [AppComponent],
+    declarations: [
+        AppComponent,
+        StarRatingsComponent,
+        // ListsComponent,
+        // ListComponent,
+        // ListItemComponent,
+        ShellComponent,
+        UploadComponent,
+        NavigationComponent,
+        LibraryComponent,
+        ContainerComponent,
+        MultimediaComponent,
+    ],
+    imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule, MatPaginatorModule],
+    providers: [DataService, LibraryGuard],
+    bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }
