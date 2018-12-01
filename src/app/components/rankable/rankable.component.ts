@@ -10,19 +10,19 @@
 
 import { Component, Input, OnInit } from '@angular/core';
 
-/***********/
-/* CLASSES */
-/***********/
+/**************/
+/* INTERFACES */
+/**************/
 
-import { Multimedia } from 'src/app/classes/multimedia';
+import { Rankable } from 'src/app/interfaces/rankable';
 
 /**********/
 /* MODELS */
 /**********/
 
-import { Album } from './../../models/album';
-import { Artist } from './../../models/artist';
-import { Song } from './../../models/song';
+import { Album } from '../../models/album';
+import { Artist } from '../../models/artist';
+import { Song } from '../../models/song';
 
 ///////////////////////
 //                   //
@@ -31,13 +31,13 @@ import { Song } from './../../models/song';
 ///////////////////////
 
 @Component({
-    selector: 'ranker-multimedia',
-    templateUrl: './multimedia.component.html',
-    styleUrls: ['./multimedia.component.scss', '../rankables/rankables.component.scss'],
+    selector: 'ranker-rankable',
+    templateUrl: './rankable.component.html',
+    styleUrls: ['./rankable.component.scss', '../rankables/rankables.component.scss'],
 })
-export class MultimediaComponent implements OnInit {
+export class RankableComponent implements OnInit {
 
-    @Input() item: Multimedia;
+    @Input() rankable: Rankable;
     @Input() canReorder: boolean = false;
 
     /**************/
@@ -58,18 +58,18 @@ export class MultimediaComponent implements OnInit {
     }
 
     public itemIsAlbum(): boolean {
-        return this.item instanceof Album;
+        return this.rankable instanceof Album;
     }
 
     public itemIsArtist(): boolean {
-        return this.item instanceof Artist;
+        return this.rankable instanceof Artist;
     }
     
     public setListItemTitle() {
-        if (this.item instanceof Album || this.item instanceof Song) {
-            this.listItemTitle = `${this.item.artist.name} "${this.item.name}"`;
-        } else if (this.item instanceof Artist) {
-            this.listItemTitle = this.item.name;
+        if (this.rankable instanceof Album || this.rankable instanceof Song) {
+            this.listItemTitle = `${this.rankable.artist.name} "${this.rankable.name}"`;
+        } else if (this.rankable instanceof Artist) {
+            this.listItemTitle = this.rankable.name;
         }
     }
 
@@ -84,9 +84,9 @@ export class MultimediaComponent implements OnInit {
     /*******************/
 
     private createItemDetails(): void {
-        if ((this.item instanceof Album && this.item.tracks) || (this.item instanceof Artist && this.item.albums)) {
+        if ((this.rankable instanceof Album && this.rankable.tracks) || (this.rankable instanceof Artist && this.rankable.albums)) {
             this.canShowDetails = true;
         }
     }
 
-} // End class MultimediaComponent
+} // End class RankablesComponent

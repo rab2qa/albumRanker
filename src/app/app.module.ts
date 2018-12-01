@@ -17,7 +17,7 @@ import { UploadComponent } from './components/upload/upload.component';
 import { NavigationComponent } from './components/shell/navigation/navigation.component';
 import { LibraryComponent } from './components/library/library.component';
 import { RankablesComponent } from './components/rankables/rankables.component';
-import { MultimediaComponent } from './components/multimedia/multimedia.component';
+import { RankableComponent } from './components/rankable/rankable.component';
 
 @NgModule({
     declarations: [
@@ -31,7 +31,7 @@ import { MultimediaComponent } from './components/multimedia/multimedia.componen
         NavigationComponent,
         LibraryComponent,
         RankablesComponent,
-        MultimediaComponent,
+        RankableComponent,
     ],
     imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule, MatPaginatorModule],
     providers: [DataService, LibraryGuard],
