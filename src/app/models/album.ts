@@ -63,7 +63,7 @@ export class Album extends Multimedia implements Rankable, Ratable, Likable, Dis
     public constructor(json: Object) {
         super();
 
-        this._disliked= json["Album Disliked"] === "true";
+        this._disliked = json["Album Disliked"] === "true";
         this._name = json["Album"];
         this._rating = (json["Album Rating Computed"] === "true") ? 0 : +json["Album Rating"] / 20 || 0;
         this._liked = json["Loved"] === "true";
@@ -78,7 +78,7 @@ export class Album extends Multimedia implements Rankable, Ratable, Likable, Dis
 
     get artist(): Artist { return this._artist; }
     set artist(artist: Artist) { this._artist = artist; }
-    
+
     get disliked(): boolean { return this._disliked; }
 
     get duration(): number {
@@ -106,7 +106,7 @@ export class Album extends Multimedia implements Rankable, Ratable, Likable, Dis
         return this.cache.get('playCount');
     }
 
-    get ranking(): number { 
+    get ranking(): number {
         if (!this._ranking) {
             const albumDivisor = (Globals.penalizeEP) ? 10 : this.topTenSongs.length;
             let aggregateSongRating = this.topTenSongs.reduce((sum, song) => sum + song.ranking, 0) / albumDivisor;
@@ -188,7 +188,7 @@ export class Album extends Multimedia implements Rankable, Ratable, Likable, Dis
     public isLP(): boolean {
         return this.songs.length >= 10;
     }
-    
+
     public isRanked(): boolean {
         return !!(this.ranking);
     }

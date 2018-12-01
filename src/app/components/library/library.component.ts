@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { DataService } from '../../services/data.service';
 import { features } from 'src/environments/environment';
-import { Library } from 'src/app/models/library';
 
 @Component({
     selector: 'ranker-library',

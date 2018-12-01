@@ -133,10 +133,15 @@ export class Library extends Presenter {
             }
         });
 
-        this._artists = new Container("Artists", <Array<Artist>>Object.values(artists));
-        this._albums = new Container("Albums", <Array<Album>>Object.values(albums));
-        this._playlists = new Container("Playlists", <Array<Playlist>>Object.values(playlists));
-        this._songs = new Container("Songs", <Array<Song>>Object.values(songs));
+        this._artists = new Container("Artists", Object.values(artists));
+        this._albums = new Container("Albums", Object.values(albums));
+        this._playlists = new Container("Playlists", Object.values(playlists));
+        this._songs = new Container("Songs", Object.values(songs));
+
+        this.artists.all.sort((a, b) => b.ranking - a.ranking);
+        this.artists.all.forEach(artist => artist.albums.sort((a, b) => b.ranking - a.ranking));
+        this.albums.all.sort((a, b) => b.ranking - a.ranking);
+        this.songs.all.sort((a, b) => b.ranking - a.ranking);
 
     } // End constructor()
 
