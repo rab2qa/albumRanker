@@ -8,9 +8,6 @@ import { AppComponent } from './app.component';
 import { StarRatingsComponent } from './components/stars/stars.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DataService } from './services/data.service';
-import { ListsComponent } from './components/lists/lists.component';
-import { ListComponent } from './components/lists/list/list.component';
-import { ListItemComponent } from './components/lists/list/list-item/list-item.component';
 import { LibraryGuard } from './guards/library.guard';
 import { ShellComponent } from './components/shell/shell.component';
 import { UploadComponent } from './components/upload/upload.component';
@@ -22,16 +19,13 @@ import { RankableComponent } from './components/rankable/rankable.component';
 @NgModule({
     declarations: [
         AppComponent,
+        LibraryComponent,
+        NavigationComponent,
+        RankableComponent,
+        RankablesComponent,
         StarRatingsComponent,
-        // ListsComponent,
-        // ListComponent,
-        // ListItemComponent,
         ShellComponent,
         UploadComponent,
-        NavigationComponent,
-        LibraryComponent,
-        RankablesComponent,
-        RankableComponent,
     ],
     imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule, MatPaginatorModule],
     providers: [DataService, LibraryGuard],

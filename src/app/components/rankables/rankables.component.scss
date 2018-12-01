@@ -2,12 +2,12 @@
     font-size: 0.75rem;
     margin: 0 0 10px;
   }
-  .item-stars {
+  .rankable-stars {
     width: 100px;
-    &.item-stars-relative {
+    &.rankable-stars-relative {
       width: 115px;
     }
   }
-  .item-title-text {
+  .rankable-title-text {
     flex-grow: 1;
   }

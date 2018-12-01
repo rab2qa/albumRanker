@@ -50,15 +50,15 @@ export class RankablesComponent implements OnInit {
     /******************/
 
     public ngOnInit(): void {
-        this.listHeader = this.setListHeader(this.rankables.name);
+        this.listHeader = this.setListHeader(this.rankables.name.toLowerCase());
     }
 
     public setListHeader(name) {
-        if (name.toLowerCase() === 'albums') {
+        if (name === 'albums') {
             return 'Artist/Album Title';
-        } else if (name.toLowerCase() === 'artists') {
+        } else if (name === 'artists') {
             return 'Artist';
-        } else if (name.toLowerCase() === 'songs') {
+        } else if (name === 'songs') {
             return 'Artist/Song Title';
         }
     }

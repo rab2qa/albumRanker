@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { ListsComponent } from './components/lists/lists.component';
 import { LibraryGuard } from './guards/library.guard';
 import { UploadComponent } from './components/upload/upload.component';
 import { ShellComponent } from './components/shell/shell.component';

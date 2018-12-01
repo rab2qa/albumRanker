@@ -15,7 +15,6 @@ import { PageEvent } from '@angular/material';
 /**************/
 
 import { Pagable, PaginationOptions } from '../interfaces/pagable';
-import { Rankable } from '../interfaces/rankable';
 
 /////////////////////
 //                 //
