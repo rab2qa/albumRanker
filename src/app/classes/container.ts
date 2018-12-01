@@ -59,7 +59,7 @@ export class Container<T> implements Pagable {
     }
 
     get page(): Array<T> {
-        const start = this.paginationOptions.pageSize * this.paginationOptions.pageIndex;
+        const start = this.paginationOptions.pageSize * (this.paginationOptions.pageIndex - 1);
         const end = start + this.paginationOptions.pageSize - 1;
         return this._data.filter((T, index) => index >= start && index <= end);
     }

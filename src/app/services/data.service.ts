@@ -10,12 +10,6 @@
 
 import { Injectable } from '@angular/core';
 
-/***********/
-/* CLASSES */
-/***********/
-
-import { Container } from '../classes/container';
-
 /**********/
 /* MODELS */
 /**********/
@@ -58,48 +52,6 @@ export class DataService {
         }
     }
 
-    // get albums(): Object {
-    //     if (this._library) {
-    //         const fullyRankedAlbumsByRanking = this._library.albums
-    //         .filter(album => album.isRated() || album.hasAllSongsRated())   // TODO: Separate Complete from Partially Rated Albums
-    //         .sort((a, b) => b.ranking - a.ranking);
-    //         return {
-    //             initial: new Container("Albums", fullyRankedAlbumsByRanking),
-    //             adjusted: new Container("Albums", fullyRankedAlbumsByRanking)
-    //         };
-    //     }
-    // }
-
-    // get artists(): Object {
-    //     if (this._library) {
-    //         const artistsByRanking = this._library.artists.sort((a, b) => b.ranking - a.ranking);
-    //         return {
-    //             initial: new Container("Artists", artistsByRanking),
-    //             adjusted: new Container("Artists", artistsByRanking)
-    //         };
-    //     }
-    // }
-
-    // get playlists(): Object {
-    //     if (this._library) {
-    //         const playlists = this._library.playlists;
-    //         return new Container("Playlists", playlists);
-    //     }
-    // }
-
-    // get songs(): Object {
-    //     if (this._library) {
-    //         const ratedSongsByRanking = this._library.songs
-    //         .filter(song => song.isRated()) // TODO: Separate Rated from Unrated Songs
-    //         .sort((a, b) => b.ranking - a.ranking);
-    //         return {
-    //             initial: new Container("Songs", ratedSongsByRanking), 
-    //             adjusted: new Container("Songs", ratedSongsByRanking)
-    //         };
-    //     }
-    // }
-
-
     get albums(): Object {
         if (this._library) {
             return {
@@ -132,7 +84,6 @@ export class DataService {
             };
         }
     }
-
 
     /******************/
     /* PUBLIC METHODS */

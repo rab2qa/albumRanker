@@ -47,5 +47,4 @@ export abstract class Multimedia extends Presenter implements Starable {
         return this.cache.get('stars');
     }
 
-
 } // End class Multimedia

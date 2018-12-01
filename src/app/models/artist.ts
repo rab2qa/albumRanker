@@ -56,7 +56,7 @@ export class Artist extends Multimedia implements Rankable {
     /* ACCESSORS */
     /*************/
 
-    get albums(): object { return this._albums; }
+    get albums(): Array<Album> { return this._albums; }
     
     get library(): Library { return this._library; }
     set library(library: Library) { this._library = library; }

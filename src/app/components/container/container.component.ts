@@ -1,6 +1,33 @@
+//////////////////////////
+//                      //
+//     DEPENDENCIES     //
+//                      //
+//////////////////////////
+
+/*************/
+/* FRAMEWORK */
+/*************/
+
 import { Component, OnInit, Input } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+
+/***********/
+/* CLASSES */
+/***********/
+
 import { Container } from './../../classes/container';
+
+/**************/
+/* INTERFACES */
+/**************/
+
+import { Rankable } from './../../interfaces/rankable';
+
+///////////////////////
+//                   //
+//     COMPONENT     //
+//                   //
+///////////////////////
 
 @Component({
     selector: 'ranker-container',
@@ -9,10 +36,18 @@ import { Container } from './../../classes/container';
 })
 export class ContainerComponent implements OnInit {
 
-    @Input() container: Container<any>;
+    @Input() container: Container<Rankable>;
     @Input() canReorder: boolean = false;
 
+    /**************/
+    /* PROPERTIES */
+    /**************/
+
     public listHeader: string;
+
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
 
     public ngOnInit(): void {
         this.listHeader = this.setListHeader(this.container.name);

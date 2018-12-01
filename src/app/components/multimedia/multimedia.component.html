@@ -9,19 +9,18 @@
       </div>
     </div>
     <div class="item-details" *ngIf="canShowDetails && showDetails">
-      <ng-container *ngIf="key === 'albums'">
-        <ng-template ngFor let-disc [ngForOf]="orderedTracks" let-d="index">
-          <div *ngIf="orderedTracks.length > 1">Disc {{ +d + 1 }}</div>
-          <div *ngFor="let track of disc; let t = index" class="flex album-track">
-            <div class="item-stars" *ngIf="track.stars">
-              <ranker-stars [ratings]="track.stars"></ranker-stars>
+      <ng-container *ngIf="itemIsAlbum()">
+        <ng-template ngFor let-song [ngForOf]="item.songs" let-d="index">
+          <div class="flex album-track">
+            <div class="item-stars" *ngIf="song.stars">
+              <ranker-stars [ratings]="song.stars"></ranker-stars>
             </div>
-            <div class="flex-grow">{{ track.name }}</div>
+            <div class="flex-grow">{{ song.name }}</div>
           </div>
         </ng-template>
       </ng-container>
-      <ng-container *ngIf="key === 'artists'">
-        <ng-template ngFor let-album [ngForOf]="orderedAlbums" let-d="index">
+      <ng-container *ngIf="itemIsArtist()">
+        <ng-template ngFor let-album [ngForOf]="item.albums" let-d="index">
           <div class="flex album-track">
             <div class="item-stars" *ngIf="album.stars">
               <ranker-stars [ratings]="album.stars"></ranker-stars>

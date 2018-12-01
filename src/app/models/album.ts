@@ -142,7 +142,7 @@ export class Album extends Multimedia implements Rankable, Ratable, Likable, Dis
         if (!this.cache.has('songs')) {
             const songs = this.tracks.reduce((array, disc) => {
                 disc.forEach(track => array.push(track));
-                return array;
+                return array.sort((a, b) => b.ranking - a.ranking);
             }, new Array<Song>());
             this.cache.add('songs', songs);
         }
