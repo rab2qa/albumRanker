@@ -3,7 +3,9 @@
 /* FRAMEWORK */
 /*************/
 
-import { PageEvent } from '@angular/material';
+import { PageEvent, ThemePalette } from '@angular/material';
+import { EventEmitter } from '@angular/core';
+import { Observable } from 'rxjs';
 
 ////////////////////////////////
 //                            //
@@ -14,16 +16,16 @@ import { PageEvent } from '@angular/material';
 export class PaginationOptions {
 
     constructor(
-        //public color: ThemePalette
-        public disabled: boolean,
-        public hidePageSize: boolean,
-        public length: number,
-        public pageIndex: number,
-        public pageSize: number,
-        public pageSizeOptions: number[],
-        public showFirstLastButtons: boolean
-        // public page: EventEmitter<PageEvent>
-        // public initialized: Observable<void>
+        public color?: ThemePalette,
+        public disabled?: boolean,
+        public hidePageSize?: boolean,
+        public length?: number,
+        public pageIndex?: number,
+        public pageSize?: number,
+        public pageSizeOptions?: number[],
+        public showFirstLastButtons?: boolean,
+        public page?: EventEmitter<PageEvent>,
+        public initialized?: Observable<void>
     ) { }
 
 } // End class PaginationOptions

@@ -47,7 +47,7 @@ export class Container<T> implements Pagable {
         public name: string,
         private _data: Array<T>
     ) {
-        this.paginationOptions = new PaginationOptions(false, false, this._data.length, 0, defaultPageSize, [10, 25, 50, 100], true);
+        this.paginationOptions = new PaginationOptions(null, false, false, this._data.length, 0, defaultPageSize, [10, 25, 50, 100], true, null, null);
     }
 
     /*************/
@@ -61,7 +61,7 @@ export class Container<T> implements Pagable {
     get page(): Array<T> {
         const start = this.paginationOptions.pageSize * this.paginationOptions.pageIndex;
         const end = start + this.paginationOptions.pageSize - 1;
-        return this._data.filter((T, index) => index >= start && index <= end);
+        return this._data.filter((element, index) => index >= start && index <= end);
     }
 
     /******************/
@@ -73,7 +73,7 @@ export class Container<T> implements Pagable {
         this.paginationOptions.pageSize = event.pageSize;
     }
 
-    public sort() {
+    public sort(): void {
         try {
             const data = this._data as unknown as Array<Rankable>
             data.sort((a, b) => b.ranking - a.ranking);
