@@ -4,8 +4,6 @@
 /*************/
 
 import { PageEvent, ThemePalette } from '@angular/material';
-import { EventEmitter } from '@angular/core';
-import { Observable } from 'rxjs';
 
 ////////////////////////////////
 //                            //
@@ -24,8 +22,8 @@ export class PaginationOptions {
         public pageSize?: number,
         public pageSizeOptions?: number[],
         public showFirstLastButtons?: boolean,
-        public page?: EventEmitter<PageEvent>,
-        public initialized?: Observable<void>
+        // public page?: EventEmitter<PageEvent>,
+        // public initialized?: Observable<void>
     ) { }
 
 } // End class PaginationOptions

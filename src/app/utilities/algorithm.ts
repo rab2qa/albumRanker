@@ -36,7 +36,7 @@ export class Algorithm {
     // EXPONENTIAL TRANSFORM 
     // ------------------------------------------------------------------------------
     // Algorithm:   Transforms a given positve input (x) into an exponential function
-    //              Optional: b = base
+    //              Optional: b = base (default is e)
     //              Optional: a = coefficient
     //              Optional: v = vertical shift
     //              Optional: h = horizontal shift

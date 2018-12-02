@@ -46,7 +46,7 @@ export class Container<T> implements Pagable {
         private _name: string,
         private _data: Array<T>
     ) {
-        this.paginationOptions = new PaginationOptions(null, false, false, this._data.length, 0, defaultPageSize, [10, 25, 50, 100], true, null, null);
+        this.paginationOptions = new PaginationOptions(null, false, false, this._data.length, 0, defaultPageSize, [10, 25, 50, 100], true);
     }
 
     /*************/
