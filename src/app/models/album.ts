@@ -107,19 +107,21 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     }
 
     get ranking(): number {
-        if (!this._ranking && this.isRankable()) {
-            const albumDivisor = (Globals.penalizeEP) ? 10 : this.topTenSongs.length;
-            let aggregateSongRating = this.topTenSongs.reduce((sum, song) => sum + song.ranking, 0) / albumDivisor;
-            aggregateSongRating = aggregateSongRating || 0; // Handle Divide by Zero Error
-
+        if (!this._ranking) {
             let result = 0;
 
-            if (this.rating) {
-                result =
-                    (this.rating - 1) +
-                    Algorithm.scale(aggregateSongRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
-            } else {
-                result = aggregateSongRating;
+            if (this.isRankable()) {
+                const albumDivisor = (Globals.penalizeEP) ? 10 : this.topTenSongs.length;
+                let aggregateSongRating = this.topTenSongs.reduce((sum, song) => sum + song.ranking, 0) / albumDivisor;
+                aggregateSongRating = aggregateSongRating || 0; // Handle Divide by Zero Error
+
+                if (this.rating) {
+                    result =
+                        (this.rating - 1) +
+                        Algorithm.scale(aggregateSongRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+                } else {
+                    result = aggregateSongRating;
+                }
             }
 
             this._ranking = result;
@@ -176,6 +178,7 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     /* PUBLIC METHODS */
     /******************/
 
+    // TODO: This method needs to short-circuit for performance increase
     public hasAllSongsRated(): boolean {
         let response = true;
 
@@ -190,11 +193,11 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     }
 
     public isEP(): boolean {
-        return this.songs.length >= 5 && this.songs.length < 10;
+        return (this.songs.length >= 5 && this.songs.length < 10) && this.songs.reduce((sum, song) => sum + song.duration, 0) <= Globals.thirtyMinutes;
     }
 
     public isLP(): boolean {
-        return this.songs.length >= 10;
+        return this.songs.length >= 10 || this.songs.reduce((sum, song) => sum + song.duration, 0) > Globals.thirtyMinutes;
     }
 
     public isRankable(): boolean {
