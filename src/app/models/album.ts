@@ -196,6 +196,7 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     /* PUBLIC METHODS */
     /******************/
 
+    // TODO: This method needs to short-circuit for performance increase
     public hasAllSongsRated(): boolean {
         return !!(this.songs.find(song => !song.isRated()));
     }
