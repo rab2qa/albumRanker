@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { LibraryGuard } from './guards/library.guard';
-import { UploadComponent } from './components/upload/upload.component';
-import { ShellComponent } from './components/shell/shell.component';
-import { LibraryComponent } from './components/library/library.component';
+import { LibraryGuard } from '../guards/library.guard';
+import { UploadComponent } from '../components/upload/upload.component';
+import { ShellComponent } from '../components/shell/shell.component';
+import { LibraryComponent } from '../components/library/library.component';
 
 const routes: Routes = [
     {
