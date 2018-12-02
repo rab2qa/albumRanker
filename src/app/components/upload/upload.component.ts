@@ -26,66 +26,68 @@ import { Router } from '@angular/router';
 ///////////////////////////
 
 @Component({
-  selector: 'ranker-upload',
-  templateUrl: './upload.component.html',
-  styleUrls: ['./upload.component.scss'],
+    selector: 'ranker-upload',
+    templateUrl: './upload.component.html',
+    styleUrls: ['./upload.component.scss'],
 })
 export class UploadComponent {
-  /**************/
-  /* PROPERTIES */
-  /**************/
 
-  public loading: boolean = false;
-  public canCancel: boolean = false;
+    /**************/
+    /* PROPERTIES */
+    /**************/
 
-  /***************/
-  /* CONSTRUCTOR */
-  /***************/
+    public loading: boolean = false;
+    public canCancel: boolean = false;
 
-  public constructor(
-    private router: Router,
-    private location: Location,
-    public xmlService: XmlService,
-    private dataService: DataService
-  ) {
-    const libraryXML = localStorage.getItem('libraryXML');
-    if (libraryXML !== null && this.router.url === '/import') {
-      this.handleLibraryData(libraryXML);
-    } else if (this.router.url === '/reimport') {
-      this.canCancel = true;
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
+
+    public constructor(
+        private router: Router,
+        private location: Location,
+        public xmlService: XmlService,
+        private dataService: DataService
+    ) {
+        const libraryXML = localStorage.getItem('libraryXML');
+        if (libraryXML !== null && this.router.url === '/import') {
+            this.handleLibraryData(libraryXML);
+        } else if (this.router.url === '/reimport') {
+            this.canCancel = true;
+        }
     }
-  }
 
-  /******************/
-  /* PUBLIC METHODS */
-  /******************/
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
 
-  public onFileUpload(files: FileList) {
-    const file = files.item(0);
+    public onFileUpload(files: FileList) {
+        const file = files.item(0);
 
-    if (file) {
-      const fileReader = new FileReader();
-      this.loading = true;
-      fileReader.onloadend = (e: any) => this.handleLibraryData(e.target.result);
-      fileReader.readAsText(file);
+        if (file) {
+            const fileReader = new FileReader();
+            this.loading = true;
+            fileReader.onloadend = (e: any) => this.handleLibraryData(e.target.result);
+            fileReader.readAsText(file);
+        }
+    } // end onFileUpload()
+
+    /*******************/
+    /* PRIVATE METHODS */
+    /*******************/
+
+    private handleLibraryData(libraryXML) {
+        this.parseXML(libraryXML).then(library => {
+            this.dataService.importLibrary(library).then(() => {
+                this.loading = false;
+                this.router.navigate(['/']);
+            });
+            localStorage.setItem('libraryXML', libraryXML);
+        });
     }
-  } // end onFileUpload()
 
-  /*******************/
-  /* PRIVATE METHODS */
-  /*******************/
-
-  private handleLibraryData(libraryXML) {
-    this.parseXML(libraryXML).then(library => {
-      this.dataService.importLibrary(library).then(() => {
-        this.loading = false;
-        this.router.navigate(['/']);
-      });
-      localStorage.setItem('libraryXML', libraryXML);
-    });
-  }
-
-  private async parseXML(text: string): Promise<Object> {
-    return await this.xmlService.parseXML(text);
-  }
-} // End class AppComponent
+    private async parseXML(text: string): Promise<Object> {
+        return await this.xmlService.parseXML(text);
+    }
+    
+} // End class UploadComponent

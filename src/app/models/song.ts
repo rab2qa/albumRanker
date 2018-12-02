@@ -8,7 +8,7 @@
 /* CLASSES */
 /***********/
 
-import { Multimedia } from '../classes/multimedia';
+import { Presenter } from '../classes/presenter';
 
 /**************/
 /* INTERFACES */
@@ -41,7 +41,7 @@ import { Globals } from '../utilities/globals';
 //              //
 //////////////////
 
-export class Song extends Multimedia implements Rankable, Ratable, Likable, Disklikable {
+export class Song extends Presenter implements Rankable, Ratable, Likable, Disklikable {
 
     /**************/
     /* PROPERTIES */
@@ -175,6 +175,14 @@ export class Song extends Multimedia implements Rankable, Ratable, Likable, Disk
     get rating(): number { return this._rating; }
 
     get skipCount(): number { return this._skipCount; }
+
+    get stars(): Array<number> {
+        if (!this.cache.has('stars')) {
+            const stars = Globals.rankingToStars(this.ranking);
+            this.cache.add('stars', stars);;
+        }
+        return this.cache.get('stars');
+    }
 
     get trackNumber(): number {
         if (!this.cache.has('trackNumber')) {
