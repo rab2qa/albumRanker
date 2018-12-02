@@ -1,0 +1,13 @@
+.list-header {
+    font-size: 0.75rem;
+    margin: 0 0 10px;
+  }
+  .rankable-stars {
+    width: 100px;
+    &.rankable-stars-relative {
+      width: 115px;
+    }
+  }
+  .rankable-title-text {
+    flex-grow: 1;
+  }

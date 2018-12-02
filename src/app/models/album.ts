@@ -8,7 +8,7 @@
 /* CLASSES */
 /***********/
 
-import { Multimedia } from '../classes/multimedia';
+import { Presenter } from '../classes/presenter';
 
 /**************/
 /* INTERFACES */
@@ -40,7 +40,7 @@ import { Globals } from '../utilities/globals';
 //               //
 ///////////////////
 
-export class Album extends Multimedia implements Rankable, Ratable, Likable, Disklikable {
+export class Album extends Presenter implements Rankable, Ratable, Likable, Disklikable {
 
     /**************/
     /* PROPERTIES */
@@ -63,7 +63,7 @@ export class Album extends Multimedia implements Rankable, Ratable, Likable, Dis
     public constructor(json: Object) {
         super();
 
-        this._disliked= json["Album Disliked"] === "true";
+        this._disliked = json["Album Disliked"] === "true";
         this._name = json["Album"];
         this._rating = (json["Album Rating Computed"] === "true") ? 0 : +json["Album Rating"] / 20 || 0;
         this._liked = json["Loved"] === "true";
@@ -78,7 +78,7 @@ export class Album extends Multimedia implements Rankable, Ratable, Likable, Dis
 
     get artist(): Artist { return this._artist; }
     set artist(artist: Artist) { this._artist = artist; }
-    
+
     get disliked(): boolean { return this._disliked; }
 
     get duration(): number {
@@ -106,8 +106,8 @@ export class Album extends Multimedia implements Rankable, Ratable, Likable, Dis
         return this.cache.get('playCount');
     }
 
-    get ranking(): number { 
-        if (!this._ranking) {
+    get ranking(): number {
+        if (!this._ranking && this.isRankable()) {
             const albumDivisor = (Globals.penalizeEP) ? 10 : this.topTenSongs.length;
             let aggregateSongRating = this.topTenSongs.reduce((sum, song) => sum + song.ranking, 0) / albumDivisor;
             aggregateSongRating = aggregateSongRating || 0; // Handle Divide by Zero Error
@@ -142,11 +142,19 @@ export class Album extends Multimedia implements Rankable, Ratable, Likable, Dis
         if (!this.cache.has('songs')) {
             const songs = this.tracks.reduce((array, disc) => {
                 disc.forEach(track => array.push(track));
-                return array;
+                return array.sort((a, b) => b.ranking - a.ranking);
             }, new Array<Song>());
             this.cache.add('songs', songs);
         }
         return this.cache.get('songs');
+    }
+
+    get stars(): Array<number> {
+        if (!this.cache.has('stars')) {
+            const stars = Globals.rankingToStars(this.ranking);
+            this.cache.add('stars', stars);;
+        }
+        return this.cache.get('stars');
     }
 
     get topTenSongs(): Array<Song> {
@@ -188,7 +196,10 @@ export class Album extends Multimedia implements Rankable, Ratable, Likable, Dis
     public isLP(): boolean {
         return this.songs.length >= 10;
     }
-    
+
+    public isRankable(): boolean {
+        return !!(this.rating || this.liked || this.disliked || this.songs.find(song => song.isRankable()));
+    }
     public isRanked(): boolean {
         return !!(this.ranking);
     }

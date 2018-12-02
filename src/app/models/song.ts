@@ -8,7 +8,7 @@
 /* CLASSES */
 /***********/
 
-import { Multimedia } from '../classes/multimedia';
+import { Presenter } from '../classes/presenter';
 
 /**************/
 /* INTERFACES */
@@ -41,7 +41,7 @@ import { Globals } from '../utilities/globals';
 //              //
 //////////////////
 
-export class Song extends Multimedia implements Rankable, Ratable, Likable, Disklikable {
+export class Song extends Presenter implements Rankable, Ratable, Likable, Disklikable {
 
     /**************/
     /* PROPERTIES */
@@ -137,7 +137,7 @@ export class Song extends Multimedia implements Rankable, Ratable, Likable, Disk
 
             let result = 0;
 
-            if (this.rating || this.liked || this.disliked || this.playCount || this.skipCount) {
+            if (this.isRankable()) {
                 if (this.rating) {
                     if (this.liked || this.disliked) {
                         const featureWeights = { likeDislikeRating: 0.5, playSkipRating: 0.5 };
@@ -176,6 +176,14 @@ export class Song extends Multimedia implements Rankable, Ratable, Likable, Disk
 
     get skipCount(): number { return this._skipCount; }
 
+    get stars(): Array<number> {
+        if (!this.cache.has('stars')) {
+            const stars = Globals.rankingToStars(this.ranking);
+            this.cache.add('stars', stars);;
+        }
+        return this.cache.get('stars');
+    }
+
     get trackNumber(): number {
         if (!this.cache.has('trackNumber')) {
             for (let i = 0; i < this.album.tracks.length; i++) {
@@ -196,6 +204,10 @@ export class Song extends Multimedia implements Rankable, Ratable, Likable, Disk
 
     public isRanked(): boolean {
         return !!(this.ranking);
+    }
+
+    public isRankable(): boolean {
+        return !!(this.rating || this.liked || this.disliked || this.playCount || this.skipCount);
     }
 
     public isRated(): boolean {

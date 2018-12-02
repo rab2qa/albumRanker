@@ -1,0 +1,30 @@
+.rankable {
+    padding: 12px 15px;
+    background: #eee;
+    font-size: 0.875rem;
+    margin-bottom: 2px;
+    &.clickable {
+      cursor: pointer;
+      &:hover {
+        transform: scale(1.0125, 1.0125);
+      }
+    }
+    .rankable-details {
+      margin-top: 5px;
+    }
+    .sort-icon {
+      color: #bbb;
+      margin-right: 5px;
+    }
+    .bold {
+      font-weight: bold;
+    }
+    &.showing-details {
+      .rankable-title {
+        font-size: 1rem;
+      }
+    }
+  }
+  .album-tracks {
+    margin-top: 10px;
+  }

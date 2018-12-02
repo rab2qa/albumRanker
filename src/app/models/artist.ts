@@ -8,7 +8,7 @@
 /* CLASSES */
 /***********/
 
-import { Multimedia } from '../classes/multimedia';
+import { Presenter } from '../classes/presenter';
 
 /**************/
 /* INTERFACES */
@@ -24,13 +24,19 @@ import { Album } from '../models/album';
 import { Library } from '../models/library';
 import { Song } from '../models/song';
 
+/*************/
+/* UTILITIES */
+/*************/
+
+import { Globals } from '../utilities/globals';
+
 ////////////////////
 //                //
 //     ARTIST     //
 //                //
 ////////////////////
 
-export class Artist extends Multimedia implements Rankable {
+export class Artist extends Presenter implements Rankable {
 
     /**************/
     /* PROPERTIES */
@@ -56,7 +62,7 @@ export class Artist extends Multimedia implements Rankable {
     /* ACCESSORS */
     /*************/
 
-    get albums(): object { return this._albums; }
+    get albums(): Array<Album> { return this._albums; }
     
     get library(): Library { return this._library; }
     set library(library: Library) { this._library = library; }
@@ -88,10 +94,21 @@ export class Artist extends Multimedia implements Rankable {
         return this.cache.get('songs');
     }
 
+    get stars(): Array<number> {
+        if (!this.cache.has('stars')) {
+            const stars = Globals.rankingToStars(this.ranking);
+            this.cache.add('stars', stars);;
+        }
+        return this.cache.get('stars');
+    }
+
     /******************/
     /* PUBLIC METHODS */
     /******************/
 
+    public isRankable(): boolean {
+        return true;
+    }
     public isRanked(): boolean {
         return !!(this.ranking);
     }

@@ -1,0 +1,12 @@
+<ng-container *ngIf="library">
+    <div class="flex list-columns">
+        <div class="flex-grow">
+            <h1 *ngIf="features.user_ranking">Initial {{ name }}</h1>
+            <ranker-rankables [rankables]="library.initial[key]"></ranker-rankables>
+        </div>
+        <div class="flex-grow" *ngIf="features.user_ranking">
+            <h1>User-ranked {{ name }}</h1>
+            <ranker-rankables [rankables]="library.adjusted[key]" [canReorder]="true"></ranker-rankables>
+        </div>
+    </div>
+</ng-container>

@@ -1,0 +1,22 @@
+<div class="list-header flex">
+    <div class="rankable-stars rankable-stars-relative">Relative Rating</div>
+    <div class="rankable-title-text">
+        {{ listHeader }}
+    </div>
+</div>
+<ng-container *ngIf="canReorder">
+    <div cdkDropList (cdkDropListDropped)="handleItemDropped($event)">
+        <ranker-rankable *ngFor="let rankable of rankables.page" [rankable]="rankable" [canReorder]="canReorder"
+            cdkDrag></ranker-rankable>
+    </div>
+</ng-container>
+<ng-container *ngIf="!canReorder">
+    <div>
+        <ranker-rankable *ngFor="let rankable of rankables.page" [rankable]="rankable"></ranker-rankable>
+    </div>
+</ng-container>
+<mat-paginator [disabled]="rankables.paginationOptions.disabled" [hidePageSize]="rankables.paginationOptions.hidePageSize"
+    [length]="rankables.paginationOptions.length" [pageIndex]="rankables.paginationOptions.pageIndex" [pageSize]="rankables.paginationOptions.pageSize"
+    [pageSizeOptions]="rankables.paginationOptions.pageSizeOptions" [showFirstLastButtons]="rankables.paginationOptions.showFirstLastButtons"
+    (page)="rankables.onPageChange($event)">
+</mat-paginator>
