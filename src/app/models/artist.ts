@@ -106,6 +106,9 @@ export class Artist extends Presenter implements Rankable {
     /* PUBLIC METHODS */
     /******************/
 
+    public isRankable(): boolean {
+        return true;
+    }
     public isRanked(): boolean {
         return !!(this.ranking);
     }

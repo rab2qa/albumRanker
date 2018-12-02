@@ -137,7 +137,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
 
             let result = 0;
 
-            if (this.rating || this.liked || this.disliked || this.playCount || this.skipCount) {
+            if (this.isRankable()) {
                 if (this.rating) {
                     if (this.liked || this.disliked) {
                         const featureWeights = { likeDislikeRating: 0.5, playSkipRating: 0.5 };
@@ -204,6 +204,10 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
 
     public isRanked(): boolean {
         return !!(this.ranking);
+    }
+
+    public isRankable(): boolean {
+        return !!(this.rating || this.liked || this.disliked || this.playCount || this.skipCount);
     }
 
     public isRated(): boolean {

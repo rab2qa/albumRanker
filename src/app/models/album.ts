@@ -107,7 +107,7 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     }
 
     get ranking(): number {
-        if (!this._ranking) {
+        if (!this._ranking && this.isRankable()) {
             const albumDivisor = (Globals.penalizeEP) ? 10 : this.topTenSongs.length;
             let aggregateSongRating = this.topTenSongs.reduce((sum, song) => sum + song.ranking, 0) / albumDivisor;
             aggregateSongRating = aggregateSongRating || 0; // Handle Divide by Zero Error
@@ -197,6 +197,9 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
         return this.songs.length >= 10;
     }
 
+    public isRankable(): boolean {
+        return !!(this.rating || this.liked || this.disliked || this.songs.find(song => song.isRankable()));
+    }
     public isRanked(): boolean {
         return !!(this.ranking);
     }
