@@ -1,3 +1,4 @@
+@import 'src/app/styles/variables';
 input {
   display: none;
 }
@@ -10,5 +11,10 @@ input {
 }
 .cancel-import {
   cursor: pointer;
-  margin-top: 5px;
+  margin-top: 15px;
+  font-size: 0.75rem;
+  color: $gray;
+  &:hover {
+    color: black;
+  }
 }
