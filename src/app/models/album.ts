@@ -33,6 +33,7 @@ import { Song } from './song';
 
 import { Algorithm } from '../utilities/algorithm';
 import { Globals } from '../utilities/globals';
+import { Settings } from '../utilities/settings';
 
 ///////////////////
 //               //
@@ -65,8 +66,8 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
 
         this._disliked = json["Album Disliked"] === "true";
         this._name = json["Album"];
-        this._rating = (json["Album Rating Computed"] === "true") ? 0 : +json["Album Rating"] / 20 || 0;
-        this._liked = json["Loved"] === "true";
+        this._rating = (json["Album Rating Computed"] === "true") ? Globals.defaultRating : +json["Album Rating"] / 20 || Globals.defaultRating;
+        this._liked = json["Album Loved"] === "true";
         this._year = json["Year"];
 
         this._tracks = new Array<Array<Song>>();
@@ -107,26 +108,36 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     }
 
     get ranking(): number {
-        if (!this._ranking) {
-            let result = 0;
-
-            if (this.isRankable()) {
-                const albumDivisor = (Globals.penalizeEP) ? 10 : this.topTenSongs.length;
-                let aggregateSongRating = this.topTenSongs.reduce((sum, song) => sum + song.ranking, 0) / albumDivisor;
-                aggregateSongRating = aggregateSongRating || 0; // Handle Divide by Zero Error
-
-                if (this.rating) {
-                    result =
-                        (this.rating - 1) +
-                        Algorithm.scale(aggregateSongRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+        if (!this.isRanked()) {
+            let response = Globals.defaultRating;
+            if (this.isRated()) {
+                if (this.isLiked() || this.isDisliked()) {
+                    const features = [
+                        { value: this.getLikeDislikeRating(), weight: 0.5 },
+                        { value: this.getAggregateSongRating(), weight: 0.5 }
+                    ];
+                    const weightedRating = features.reduce((sum, feature) => sum + Algorithm.applyWeight(feature.value, feature.weight), 0);
+                    response =
+                        (this._rating - 1) + // take a star off
+                        Algorithm.scale(weightedRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
                 } else {
-                    result = aggregateSongRating;
+                    response =
+                        (this._rating - 1) + // take a star off
+                        Algorithm.scale(this.getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
+                }
+            } else {
+                if (this.isLiked()) {
+                    response =
+                        Algorithm.scale(Globals.maxRating, Globals.minRating, (Globals.maxRating - 1) / Globals.maxRating) +
+                        Algorithm.scale(this.getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+                } else if (this.isDisliked()) {
+                    response = Algorithm.scale(this.getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+                } else {
+                    response = this.getAggregateSongRating();
                 }
             }
-
-            this._ranking = result;
+            this._ranking = response;
         }
-
         return this._ranking;
     }
 
@@ -162,8 +173,7 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     get topTenSongs(): Array<Song> {
         if (!this.cache.has('topTenSongs')) {
             const topTenSongs = this.songs
-                .filter(song => song.isRated())
-                .sort((a, b) => b.rating - a.rating)
+                .sort((a, b) => b.ranking - a.ranking)
                 .slice(0, 10);
             this.cache.add('topTenSongs', topTenSongs);
         }
@@ -172,28 +182,34 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
 
     get tracks(): Array<Array<Song>> { return this._tracks; }
 
+    get value(): number {
+        if (Settings.distributeAggregateValues) {
+            return this.getTotalValue();
+        } else {
+            return this.getAverageValue();
+        }
+    }
+
     get year(): number { return this._year; }
 
     /******************/
     /* PUBLIC METHODS */
     /******************/
 
-    // TODO: This method needs to short-circuit for performance increase
     public hasAllSongsRated(): boolean {
-        let response = true;
+        return !!(this.songs.find(song => !song.isRated()));
+    }
 
-        this._tracks.forEach(disc => {
-            const ratedTracks = disc.filter(track => track.isRated()).length;
-            if (disc.length === 1 || ratedTracks !== disc.length) {
-                response = false;
-            }
-        });
-
-        return response;
+    public isDisliked(): boolean {
+        return !Settings.ignoreLikesAndDislikes && this._disliked;
     }
 
     public isEP(): boolean {
         return (this.songs.length >= 5 && this.songs.length < 10) && this.songs.reduce((sum, song) => sum + song.duration, 0) <= Globals.thirtyMinutes;
+    }
+
+    public isLiked(): boolean {
+        return !Settings.ignoreLikesAndDislikes && this._liked;
     }
 
     public isLP(): boolean {
@@ -203,8 +219,9 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     public isRankable(): boolean {
         return !!(this.rating || this.liked || this.disliked || this.songs.find(song => song.isRankable()));
     }
+
     public isRanked(): boolean {
-        return !!(this.ranking);
+        return Number.isFinite(this._ranking);
     }
 
     public isSingle(): boolean {
@@ -212,11 +229,56 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     }
 
     public isRated(): boolean {
-        return !!(this.rating);
+        return !Settings.ignoreAlbumRatings && Number.isFinite(this._rating);
+    }
+
+    public getAverageValue(): number {
+        let response = this.getTotalValue() / this.songs.length || 0;
+        return response;
     }
 
     public getSongsWithRatingOf(rating: number): Array<Song> {
         return this.songs.filter(song => song.rating === rating);
+    }
+
+    public getTotalValue(): number {
+        const response = this.songs.reduce((sum, song) => sum + song.value, 0);
+        return response;
+    }
+
+    /*******************/
+    /* PRIVATE METHODS */
+    /*******************/
+
+    private getAggregateSongRating(): number {
+        const albumDivisor = (Settings.distributeAggregateValues) ? 10 : this.topTenSongs.length;
+        let aggregateSongRating = this.topTenSongs.reduce((sum, song) => sum + song.ranking, 0) / albumDivisor;
+        const response = Number.isFinite(aggregateSongRating) ? aggregateSongRating : 0;
+        return response;
+    }
+
+    private getWeightedRating(): number {
+        let response = Globals.defaultRating;
+
+        if (this.isRated()) {
+            const starWeights = this.library.getAlbumStarWeights();
+            const weightedRating = starWeights[this.rating - 1];
+            response = weightedRating;
+        }
+
+        return response;
+    }
+
+    private getLikeDislikeRating(): number {
+        let response = Globals.maxRating / 2;
+
+        if (this.isLiked()) {
+            response = Globals.maxRating;
+        } else if (this.isDisliked) {
+            response = Globals.minRating;
+        }
+
+        return response;
     }
 
 } // End class Album
