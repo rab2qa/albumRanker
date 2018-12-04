@@ -8,12 +8,13 @@ ul.star-ratings {
     display: inline-block;
     position: relative;
     color: #aaa;
+    font-size: 0.75rem;
     .star-rating-fill {
       position: absolute;
       left: 0;
       top: 0;
       overflow: hidden;
-      color: $primaryColorDark;
+      color: $primaryColor;
     }
   }
 }
