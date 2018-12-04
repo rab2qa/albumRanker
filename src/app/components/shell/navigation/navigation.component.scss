@@ -1,26 +1,27 @@
 @import 'src/app/styles/variables';
 .navigation {
-  margin: 0;
+  margin: 10px 0 0;
   padding: 0;
   list-style: none;
   > li {
     display: block;
     cursor: pointer;
     outline: none;
-    padding: 10px 8px;
+    padding: 10px 20px 10px 0;
     margin-bottom: 2px;
-    color: white;
+    color: #999;
     border-radius: $borderRadius;
     i {
       width: 25px;
-      text-align: center;
+      // text-align: center;
     }
     &.active {
-      background: $primaryColorLight;
+      color: $primaryColor;
       pointer-events: none;
     }
     &.upload {
-      color: $primaryColorLight;
+      opacity: 0.6;
+      font-size: 0.75rem;
     }
     &:hover {
       color: $primaryColorDark;
