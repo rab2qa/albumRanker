@@ -18,8 +18,6 @@ export class Globals {
     
     public static get minRating(): number { return 0; }
 
-    public static get provideDefaultRating(): boolean { return true; }
-    
     public static get thirtyMinutes(): number { return 30 * 60 * 1000; }
 
     /******************/

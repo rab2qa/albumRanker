@@ -224,7 +224,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     }
 
     public isRankable(): boolean {
-        const response = Globals.provideDefaultRating || !!(this._rating || this._liked || this._disliked || this._playCount || this._skipCount);
+        const response = Settings.provideDefaultRating || !!(this._rating || this._liked || this._disliked || this._playCount || this._skipCount);
         return response;
     }
 
