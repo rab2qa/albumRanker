@@ -1,15 +1,17 @@
 @import url('https://use.fontawesome.com/releases/v5.5.0/css/all.css');
-@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
+// @import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700|Roboto:400,400i,700,700i|Roboto+Slab:400');
 @import 'src/app/styles/variables';
 
 html,
 body {
-  height: 100%;
   margin: 0
 }
 body {
-  font-family: 'Noto Sans TC', sans-serif;
+  font-family: 'Roboto', sans-serif;
   font-size: 14px;
+  // background: #eee;
+  height: 100%;
 }
 * {
   box-sizing: border-box;
@@ -46,7 +48,13 @@ h1 {
     background: #666;
   }
 }
-
+.main-container {
+  max-width: $containerMaxWidth;
+  margin: 0 auto;
+}
+.clickable {
+  cursor: pointer;
+}
 .transition {
   -webkit-transition: all 200ms ease-out;
   -moz-transition: all 200ms ease-out;

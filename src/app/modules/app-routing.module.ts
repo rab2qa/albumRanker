@@ -6,53 +6,53 @@ import { ShellComponent } from '../components/shell/shell.component';
 import { LibraryComponent } from '../components/library/library.component';
 
 const routes: Routes = [
-    {
-        path: 'import',
-        component: UploadComponent,
-    },
-    {
-        path: 'reimport',
-        component: UploadComponent,
-    },
-    {
+  {
+    path: 'import',
+    component: UploadComponent,
+  },
+  {
+    path: 'reimport',
+    component: UploadComponent,
+  },
+  {
+    path: '',
+    component: ShellComponent,
+    canActivate: [LibraryGuard],
+    children: [
+      {
         path: '',
-        component: ShellComponent,
+        redirectTo: 'albums',
+        pathMatch: 'full',
+      },
+      {
+        path: 'albums',
+        component: LibraryComponent,
+        data: {
+          key: 'albums',
+        },
+      },
+      {
+        path: 'artists',
+        component: LibraryComponent,
         canActivate: [LibraryGuard],
-        children: [
-            {
-                path: '',
-                redirectTo: 'albums',
-                pathMatch: 'full',
-            },
-            {
-                path: 'albums',
-                component: LibraryComponent,
-                data: {
-                    key: 'albums',
-                },
-            },
-            {
-                path: 'artists',
-                component: LibraryComponent,
-                canActivate: [LibraryGuard],
-                data: {
-                    key: 'artists',
-                },
-            },
-            {
-                path: 'songs',
-                component: LibraryComponent,
-                canActivate: [LibraryGuard],
-                data: {
-                    key: 'songs',
-                },
-            },
-        ],
-    },
+        data: {
+          key: 'artists',
+        },
+      },
+      {
+        path: 'songs',
+        component: LibraryComponent,
+        canActivate: [LibraryGuard],
+        data: {
+          key: 'songs',
+        },
+      },
+    ],
+  },
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(routes)],
-    exports: [RouterModule],
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

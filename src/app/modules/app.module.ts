@@ -11,24 +11,26 @@ import { DataService } from '../services/data.service';
 import { LibraryGuard } from '../guards/library.guard';
 import { ShellComponent } from '../components/shell/shell.component';
 import { UploadComponent } from '../components/upload/upload.component';
+import { HeaderComponent } from '../components/shell/header/header.component';
 import { NavigationComponent } from '../components/shell/navigation/navigation.component';
 import { LibraryComponent } from '../components/library/library.component';
 import { RankablesComponent } from '../components/rankables/rankables.component';
 import { RankableComponent } from '../components/rankable/rankable.component';
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        LibraryComponent,
-        NavigationComponent,
-        RankableComponent,
-        RankablesComponent,
-        StarRatingsComponent,
-        ShellComponent,
-        UploadComponent,
-    ],
-    imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule, MatPaginatorModule],
-    providers: [DataService, LibraryGuard],
-    bootstrap: [AppComponent],
+  declarations: [
+    AppComponent,
+    LibraryComponent,
+    NavigationComponent,
+    RankableComponent,
+    RankablesComponent,
+    StarRatingsComponent,
+    ShellComponent,
+    UploadComponent,
+    HeaderComponent,
+  ],
+  imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule, MatPaginatorModule],
+  providers: [DataService, LibraryGuard],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

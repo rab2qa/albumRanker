@@ -1,13 +1,15 @@
+@import 'src/app/styles/variables';
+
 .list-header {
-    font-size: 0.75rem;
-    margin: 0 0 10px;
-  }
-  .rankable-stars {
-    width: 100px;
-    &.rankable-stars-relative {
-      width: 115px;
-    }
-  }
-  .rankable-title-text {
-    flex-grow: 1;
-  }
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  font-family: 'Roboto Condensed', sans-serif;
+  color: $gray;
+  margin: 0 0 10px;
+}
+.rankable-stars {
+  width: 90px;
+}
+.rankable-title-text {
+  flex-grow: 1;
+}
