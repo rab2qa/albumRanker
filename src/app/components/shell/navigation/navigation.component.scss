@@ -7,16 +7,20 @@
     display: block;
     cursor: pointer;
     outline: none;
-    padding: 10px 20px 10px 0;
+    padding: 10px 10px 10px 0;
     margin-bottom: 2px;
-    color: #999;
+    color: $gray;
     border-radius: $borderRadius;
+    font-size: 1rem;
+    // border-top-left-radius: 30px;
+    // border-bottom-left-radius: 30px;
     i {
-      width: 25px;
+      width: 30px;
       // text-align: center;
     }
     &.active {
       color: $primaryColor;
+      // background: white;
       pointer-events: none;
     }
     &.upload {
@@ -24,7 +28,7 @@
       font-size: 0.75rem;
     }
     &:hover {
-      color: $primaryColorDark;
+      color: $grayDark;
     }
   }
 }
