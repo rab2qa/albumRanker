@@ -4,9 +4,17 @@
   width: 100%;
   top: 0;
   z-index: 500;
-  background: $primaryColorDark;
+  background: $primaryColor;
+  // background: white;
+  // border-bottom: 2px $gray solid;
+  box-shadow: 2px 2px 2px rgba(0,0,0,0.025);
   color: white;
   padding: 8px 0;
+}
+.app-title {
+  font-size: 1.125rem;
+  font-family: 'Roboto Slab', sans-serif;
+  text-transform: lowercase;
 }
 .settings-links {
   margin: 0;
@@ -14,10 +22,10 @@
   list-style: none;
   > li {
     font-size: 0.625rem;
-    padding: 3px;
+    padding: 6px;
     display: inline-block;
     &:hover {
-      color: $primaryColorLight;
+      color: $primaryColorDark;
     }
   }
 }
