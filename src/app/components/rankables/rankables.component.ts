@@ -44,7 +44,7 @@ export class RankablesComponent implements OnInit {
   /**************/
   /* PROPERTIES */
   /**************/
-
+  public pageData: Rankable[];
   public listHeader: ListHeader;
 
   /******************/
@@ -52,6 +52,7 @@ export class RankablesComponent implements OnInit {
   /******************/
 
   public ngOnInit(): void {
+    this.setPageData();
     this.listHeader = this.setListHeader(this.rankables.name.toLowerCase());
   }
 
@@ -70,5 +71,9 @@ export class RankablesComponent implements OnInit {
         rankableTitle: 'Artist/Song Title',
       };
     }
+  }
+
+  public setPageData() {
+    this.pageData = this.rankables.page;
   }
 } // End class RankablesComponent

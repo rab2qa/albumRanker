@@ -7,9 +7,9 @@
         {{ listHeader.secondary }}
     </div>
 </div>
-<ranker-rankable *ngFor="let rankable of rankables.page" [rankable]="rankable"></ranker-rankable>
+<ranker-rankable *ngFor="let rankable of pageData" [rankable]="rankable"></ranker-rankable>
 <mat-paginator [disabled]="rankables.paginationOptions.disabled" [hidePageSize]="rankables.paginationOptions.hidePageSize"
     [length]="rankables.paginationOptions.length" [pageIndex]="rankables.paginationOptions.pageIndex" [pageSize]="rankables.paginationOptions.pageSize"
     [pageSizeOptions]="rankables.paginationOptions.pageSizeOptions" [showFirstLastButtons]="rankables.paginationOptions.showFirstLastButtons"
-    (page)="rankables.onPageChange($event)">
+    (page)="rankables.onPageChange($event); setPageData();">
 </mat-paginator>
