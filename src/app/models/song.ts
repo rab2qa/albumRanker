@@ -50,17 +50,20 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
 
     private _album?: Album;
     private _artist?: Artist;
-    private _disliked: boolean;
+    private _disabled?: boolean;
+    private _disliked?: boolean;
     private _duration: number;
-    private _genre: string;
+    private _explicit?: boolean;
+    private _genre?: string;
     private _library?: Library;
-    private _liked: boolean;
+    private _liked?: boolean;
     private _name: string;
     private _playCount: number;
     private _playlists: Array<Playlist>;
     private _ranking?: number;
     private _rating: number;
-    private _releaseDate: Date;
+    private _ratingComputed?: boolean;
+    private _releaseDate?: Date;
     private _skipCount: number;
 
 
@@ -71,13 +74,16 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     public constructor(json: Object) {
         super();
 
-        this._disliked = json["Disliked"] === "true";
+        this._disabled = (json["Disabled"] === "true");
+        this._disliked = (json["Disliked"] === "true");
         this._duration = +json["Total Time"];
+        this._explicit = (json["Explicit"] === "true");
         this._genre = json["Genre"];
-        this._liked = json["Loved"] === "true";
+        this._liked = (json["Loved"] === "true");
         this._name = json["Name"];
         this._playCount = +json["Play Count"] || 0;
-        this._rating = (json["Rating Computed"] === "true") ? Globals.defaultRating : +json["Rating"] / 20 || Globals.defaultRating;
+        this._rating = +json["Rating"] / 20 || Globals.defaultRating;
+        this._ratingComputed = (json["Rating Computed"] === "true");
         this._releaseDate = json['Release Date'] ? new Date(json["Release Date"]) : null;
         this._skipCount = +json["Skip Count"] || 0;
 
@@ -127,41 +133,9 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
 
     get releaseDate(): Date { return this._releaseDate; }
 
-    get ranking(): number {
-        if (!this._ranking) {
-            let response = Globals.defaultRating;
-            if (this.isRated()) {
-                if (this.isLiked() || this.isDisliked()) {
-                    const features = [
-                        { value: this.getLikeDislikeRating(), weight: 0.5 },
-                        { value: this.getPlaySkipRating(), weight: 0.5 }
-                    ];
-                    const weightedRating = features.reduce((sum, feature) => sum + Algorithm.applyWeight(feature.value, feature.weight), 0);
-                    response =
-                        (this._rating - 1) + // take a star off
-                        Algorithm.scale(weightedRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
-                } else {
-                    response =
-                        (this._rating - 1) + // take a star off
-                        Algorithm.scale(this.getPlaySkipRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
-                }
-            } else {
-                if (this.isLiked()) {
-                    response =
-                        Algorithm.scale(Globals.maxRating, Globals.minRating, (Globals.maxRating - 1) / Globals.maxRating) +
-                        Algorithm.scale(this.getPlaySkipRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
-                } else if (this.isDisliked()) {
-                    response = Algorithm.scale(this.getPlaySkipRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
-                } else {
-                    response = this.getPlaySkipRating();
-                }
-            }
-            this._ranking = response;
-        }
-        return this._ranking;
-    }
+    get ranking(): number { return this.getContinuousRating(); }
 
-    get rating(): number { return this._rating; }
+    get rating(): number { return this.getDiscreteRating(); }
 
     get skipCount(): number { return this._skipCount; }
 
@@ -192,9 +166,9 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
             let value = 0;
             if (this.isRated()) {
                 const starWeights = this._library.getSongStarWeights();
-                const starIndex = this._rating - 1;
+                const starIndex = this.getDiscreteRating() - 1;
                 const likeDislikeMultiplier = this._liked ? 2 : this._disliked ? 0.5 : 1;
-                const playSkipMultiplier = 1 + this.getPlaySkipRatio();
+                const playSkipMultiplier = 1 + this.getRelativePlaySkipRatio();
                 const weightedRating = starWeights[starIndex];
                 value = weightedRating * likeDislikeMultiplier * playSkipMultiplier;
             }
@@ -224,84 +198,104 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     }
 
     public isRankable(): boolean {
-        const response = Settings.provideDefaultRating || !!(this._rating || this._liked || this._disliked || this._playCount || this._skipCount);
+        const response = Settings.provideDefaultRating || !!(this.getDiscreteRating() || this._liked || this._disliked || this._playCount || this._skipCount);
         return response;
     }
 
     public isRated(): boolean {
-        return Number.isFinite(this._rating);
+        return Number.isFinite(this.getDiscreteRating());
     }
 
     /*******************/
     /* PRIVATE METHODS */
     /*******************/
 
-    private getWeightedRating(): number {
-        let response = Globals.defaultRating;
+    // -------------------- PLAY METRICS -------------------- //
 
-        if (this.isRated()) {
-            const starWeights = this._library.getSongStarWeights();
-            let starIndex = this._rating - 1;
-            if (!Number.isInteger(starIndex)) {
-                starIndex = Math.floor(this._rating) - 1;
-                console.warn('Attempt to access an array with a non-integer index.');
-            }
-            if (starIndex < Globals.minRating || starIndex > Globals.maxRating) {
-                throw new RangeError("Variable starIndex is not a valid array index.");
-            }
-            response = starWeights[starIndex];
+    private getRelativePlayRatio(): number {
+        let response = 1;
+
+        const playRatio = this._playCount / this.library.getMaxPlayCount();
+        if (Number.isFinite(playRatio)) { 
+            response = playRatio; 
         }
 
         return response;
     }
 
-    private getPlaySkipRatio(): number {
-        let response = 0.5;
+    // -------------------- SKIP METRICS -------------------- //
 
-        const maxPlayCount = this.library.getMaxPlayCount();
-        const maxSkipCount = this.library.getMaxSkipCount();
-        const playSkipRatio = (this.playCount + (maxSkipCount - this.skipCount)) / (maxPlayCount + maxSkipCount);
-        if (Number.isFinite(playSkipRatio)) { response = playSkipRatio; }
-
-        return response;
-    }
-
-    private getPlaySkipRating(): number {
-        const playSkipRating = Algorithm.scale(this.getPlaySkipRatio(), Globals.minRating, Globals.maxRating);
-        return playSkipRating;
-    }
-
-    private getPlayRatio(): number {
-        let response = 1;
-
-        const playRatio = this._playCount / this.library.getMaxPlayCount();
-        if (Number.isFinite(playRatio)) { response = playRatio; }
-
-        return response;
-    }
-
-    private getSkipRatio(): number {
+    private getRelativeSkipRatio(): number {
         let response = 1;
 
         const skipRatio = this._skipCount / this.library.getMaxSkipCount();
-        if (Number.isFinite(skipRatio)) { response = skipRatio; }
+        if (Number.isFinite(skipRatio)) { 
+            response = skipRatio; 
+        }
+
+        return response;
+    }
+
+    // -------------------- PLAY / SKIP METRICS -------------------- //
+
+    private getPlaySkipMultiplier(): number {
+        let response = 1;
+
+        if (!Settings.ignorePlays && !Settings.ignoreSkips) {
+            response = 1 + this.getRelativePlaySkipRatio();
+        }
+
+        return response;
+    }
+
+    private getAbsolutePlaySkipRatio(): number {
+        let response = 1;
+
+        const absolutePlaySkipRatio = this._playCount / (this._playCount + this._skipCount);
+        if (Number.isFinite(absolutePlaySkipRatio)) {
+            response = absolutePlaySkipRatio;
+        }
 
         return response;
     }
 
     private getAbsolutePlaySkipRating(): number {
-        const playSkipRatio = this._playCount - this._skipCount;
-        const playSkipRating = Algorithm.scale(playSkipRatio, Globals.minRating, Globals.maxRating);
-        return playSkipRating;
+        const absolutePlaySkipRating = Algorithm.scale(this.getAbsolutePlaySkipRatio(), Globals.minRating, Globals.maxRating);
+        return absolutePlaySkipRating;
+    }
+
+    private getRelativePlaySkipRatio(): number {
+        let response = 0.5;
+
+        const maxPlayCount = this.library.getMaxPlayCount();
+        const maxSkipCount = this.library.getMaxSkipCount();
+        const playSkipRatio = (this.playCount + (maxSkipCount - this.skipCount)) / (maxPlayCount + maxSkipCount);
+        if (Number.isFinite(playSkipRatio)) {
+            response = playSkipRatio;
+        }
+
+        return response;
     }
 
     private getRelativePlaySkipRating(): number {
-        const maxPlayCount = this.library.getMaxPlayCount();
-        const maxSkipCount = this.library.getMaxSkipCount();
-        let relativePlaySkipRatio = (this.playCount + (maxSkipCount - this.skipCount)) / (maxPlayCount + maxSkipCount);
-        relativePlaySkipRatio = relativePlaySkipRatio || 0; // Handle Divide by Zero Error
-        const relativePlaySkipRating = Algorithm.scale(relativePlaySkipRatio, Globals.minRating, Globals.maxRating);
-        return relativePlaySkipRating;
+        const playSkipRating = Algorithm.scale(this.getRelativePlaySkipRatio(), Globals.minRating, Globals.maxRating);
+        return playSkipRating;
+    }
+
+    // -------------------- LIKE / DISLIKE METRICS -------------------- //
+
+    private getLikeDislikeMultiplier(): number {
+        let response = 1;
+
+        if (!Settings.ignoreLikesAndDislikes) {
+            if (this.isLiked()) {
+                response = 2;
+            } else if (this.isDisliked()) {
+                response = 0.5;
+            }
+        }
+
+        return response;
     }
 
     private getLikeDislikeRating(): number {
@@ -311,6 +305,77 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
             response = Globals.maxRating;
         } else if (this.isDisliked) {
             response = Globals.minRating;
+        }
+
+        return response;
+    }
+
+    // -------------------- RATING METRICS -------------------- //
+
+    private getDiscreteRating(): number {
+        let response = Globals.defaultRating;
+
+        if (Settings.ignoreComputedRatings) {
+            if (this._ratingComputed) {
+                response = Globals.defaultRating;
+            } else {
+                response = this._rating;
+            }
+        } else {
+            response = this._rating;
+        }
+
+        return response;
+    }
+
+    private getContinuousRating(): number {
+        if (!this.cache.has('continuousRating')) {
+            let continuousRating = Globals.defaultRating;
+            if (this.isRated()) {
+                if (this.isLiked() || this.isDisliked()) {
+                    const features = [
+                        { value: this.getLikeDislikeRating(), weight: 0.5 },
+                        { value: this.getRelativePlaySkipRating(), weight: 0.5 }
+                    ];
+                    const weightedRating = features.reduce((sum, feature) => sum + Algorithm.applyWeight(feature.value, feature.weight), 0);
+                    continuousRating =
+                        (this.getDiscreteRating() - 1) + // take a star off
+                        Algorithm.scale(weightedRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
+                } else {
+                    continuousRating =
+                        (this.getDiscreteRating() - 1) + // take a star off
+                        Algorithm.scale(this.getRelativePlaySkipRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
+                }
+            } else {
+                if (this.isLiked()) {
+                    continuousRating =
+                        Algorithm.scale(Globals.maxRating, Globals.minRating, (Globals.maxRating - 1) / Globals.maxRating) +
+                        Algorithm.scale(this.getRelativePlaySkipRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+                } else if (this.isDisliked()) {
+                    continuousRating = Algorithm.scale(this.getRelativePlaySkipRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+                } else {
+                    continuousRating = this.getRelativePlaySkipRating();
+                }
+            }
+            this.cache.add('continuousRating', continuousRating);
+        }
+        return this.cache.get('continuousRating');
+    }
+
+    private getRelativeRating(): number {
+        let response = Globals.defaultRating;
+
+        if (this.isRated()) {
+            const starWeights = this._library.getSongStarWeights();
+            let starIndex = this.getDiscreteRating() - 1;
+            if (!Number.isInteger(starIndex)) {
+                starIndex = Math.floor(starIndex);
+                console.warn('Attempt to access an array with a non-integer index.');
+            }
+            if (starIndex < Globals.minRating || starIndex > Globals.maxRating) {
+                throw new RangeError("Variable starIndex: " + starIndex + " is not a valid array index for starWeights: " + starWeights.length);
+            }
+            response = starWeights[starIndex];
         }
 
         return response;

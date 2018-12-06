@@ -72,8 +72,7 @@ export class Artist extends Presenter implements Rankable {
 
     get ranking(): number {
         if (!this._ranking) {
-            const albums = Object.values(this.albums);
-            let aggregateAlbumRating = albums.reduce((sum, album) => sum + album.ranking, 0) / albums.length;
+            let aggregateAlbumRating = this._albums.reduce((sum, album) => sum + album.ranking, 0) / this._albums.length;
             aggregateAlbumRating = aggregateAlbumRating || 0; // Handle Divide by Zero Error
             this._ranking = aggregateAlbumRating;
         }
@@ -100,11 +99,13 @@ export class Artist extends Presenter implements Rankable {
     }
 
     get value(): number {
-        if (Settings.distributeAggregateValues) {
-            return this.getTotalValue();
-        } else {
-            return this.getAverageValue();
-        }
+        // if (Settings.distributeAggregateValues) {
+        //     return this.getTotalValue();
+        // } else {
+        //     return this.getAverageValue();
+        // }
+        return this.getTotalValue();
+
     }
 
     /******************/

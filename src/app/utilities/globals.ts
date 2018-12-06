@@ -24,6 +24,14 @@ export class Globals {
     /* PUBLIC METHODS */
     /******************/
 
+    public static newStarArray(): Array<number> {
+        let starArray = new Array<number>(this.maxRating);
+        for (let i = 0; i < this.maxRating; i++) {
+            starArray[i] = 0;
+        }
+        return starArray;
+    }
+
     public static rankingToStars(ranking: number): Array<number> {
         const fixedRanking = ranking.toFixed(2);
         const array = [0, 0, 0, 0, 0];
