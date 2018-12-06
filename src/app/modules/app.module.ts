@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatPaginatorModule } from '@angular/material/paginator';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from '../components/app/app.component';
 import { StarRatingsComponent } from '../components/stars/stars.component';

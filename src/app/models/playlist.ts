@@ -24,6 +24,12 @@ import { Likable } from '../interfaces/likable';
 import { Library } from '../models/library';
 import { Song } from '../models/song';
 
+/*************/
+/* UTILITIES */
+/*************/
+
+import { Settings } from '../utilities/settings';
+
 //////////////////////
 //                  //
 //     PLAYLIST     //
@@ -70,5 +76,17 @@ export class Playlist extends Presenter implements Likable, Disklikable {
     get name(): string { return this._name; }
     
     get songs(): Array<Song> { return this._songs; }
+
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
+
+    public isDisliked(): boolean {
+        return !Settings.ignoreLikesAndDislikes && this._disliked;
+    }
+
+    public isLiked(): boolean {
+        return !Settings.ignoreLikesAndDislikes && this._liked;
+    }
 
 } // End class Playlist
