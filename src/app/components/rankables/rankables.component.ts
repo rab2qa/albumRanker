@@ -9,7 +9,6 @@
 /*************/
 
 import { Component, OnInit, Input } from '@angular/core';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 /***********/
 /* CLASSES */
@@ -23,6 +22,11 @@ import { Container } from '../../classes/container';
 
 import { Rankable } from '../../interfaces/rankable';
 
+interface ListHeader {
+  rankableTitle: string;
+  secondary?: string;
+}
+
 ///////////////////////
 //                   //
 //     COMPONENT     //
@@ -30,43 +34,41 @@ import { Rankable } from '../../interfaces/rankable';
 ///////////////////////
 
 @Component({
-    selector: 'ranker-rankables',
-    templateUrl: './rankables.component.html',
-    styleUrls: ['./rankables.component.scss'],
+  selector: 'ranker-rankables',
+  templateUrl: './rankables.component.html',
+  styleUrls: ['./rankables.component.scss'],
 })
 export class RankablesComponent implements OnInit {
+  @Input() rankables: Container<Rankable>;
 
-    @Input() rankables: Container<Rankable>;
-    @Input() canReorder: boolean = false;
+  /**************/
+  /* PROPERTIES */
+  /**************/
 
-    /**************/
-    /* PROPERTIES */
-    /**************/
+  public listHeader: ListHeader;
 
-    public listHeader: string;
+  /******************/
+  /* PUBLIC METHODS */
+  /******************/
 
-    /******************/
-    /* PUBLIC METHODS */
-    /******************/
+  public ngOnInit(): void {
+    this.listHeader = this.setListHeader(this.rankables.name.toLowerCase());
+  }
 
-    public ngOnInit(): void {
-        this.listHeader = this.setListHeader(this.rankables.name.toLowerCase());
+  public setListHeader(name): ListHeader {
+    if (name === 'albums') {
+      return {
+        rankableTitle: 'Artist/Album Title',
+        secondary: 'Year',
+      };
+    } else if (name === 'artists') {
+      return {
+        rankableTitle: 'Artist',
+      };
+    } else if (name === 'songs') {
+      return {
+        rankableTitle: 'Artist/Song Title',
+      };
     }
-
-    public setListHeader(name) {
-        if (name === 'albums') {
-            return 'Artist/Album Title';
-        } else if (name === 'artists') {
-            return 'Artist';
-        } else if (name === 'songs') {
-            return 'Artist/Song Title';
-        }
-    }
-
-    public handleItemDropped(event: CdkDragDrop<string[]>): void {
-        if (this.canReorder) {
-            moveItemInArray(this.rankables.page, event.previousIndex, event.currentIndex);
-        }
-    }
-
+  }
 } // End class RankablesComponent
