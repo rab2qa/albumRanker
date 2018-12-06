@@ -31,62 +31,62 @@ import { Song } from '../../models/song';
 ///////////////////////
 
 @Component({
-    selector: 'ranker-rankable',
-    templateUrl: './rankable.component.html',
-    styleUrls: ['./rankable.component.scss', '../rankables/rankables.component.scss'],
+  selector: 'ranker-rankable',
+  templateUrl: './rankable.component.html',
+  styleUrls: ['./rankable.component.scss', '../rankables/rankables.component.scss'],
 })
 export class RankableComponent implements OnInit {
+  @Input() rankable: Rankable;
 
-    @Input() rankable: Rankable;
-    @Input() canReorder: boolean = false;
+  /**************/
+  /* PROPERTIES */
+  /**************/
 
-    /**************/
-    /* PROPERTIES */
-    /**************/
+  public listItemTitle: string;
+  public showDetails: boolean = false;
+  public canShowDetails: boolean = false;
 
-    public listItemTitle: string;
-    public showDetails: boolean = false;
-    public canShowDetails: boolean = false;
+  /******************/
+  /* PUBLIC METHODS */
+  /******************/
 
-    /******************/
-    /* PUBLIC METHODS */
-    /******************/
+  public ngOnInit(): void {
+    this.setListItemTitle();
+    this.createItemDetails();
+  }
 
-    public ngOnInit(): void {
-        this.setListItemTitle();
-        this.createItemDetails();
+  public itemIsAlbum(): boolean {
+    return this.rankable instanceof Album;
+  }
+
+  public itemIsArtist(): boolean {
+    return this.rankable instanceof Artist;
+  }
+
+  public setListItemTitle() {
+    if (this.rankable instanceof Album || this.rankable instanceof Song) {
+      this.listItemTitle = `${this.rankable.artist.name} "${this.rankable.name}"`;
+    } else if (this.rankable instanceof Artist) {
+      this.listItemTitle = this.rankable.name;
     }
+  }
 
-    public itemIsAlbum(): boolean {
-        return this.rankable instanceof Album;
+  public toggleShowDetails(): void {
+    if (this.canShowDetails) {
+      this.showDetails = !this.showDetails;
     }
+  }
 
-    public itemIsArtist(): boolean {
-        return this.rankable instanceof Artist;
+  /*******************/
+  /* PRIVATE METHODS */
+  /*******************/
+
+  private createItemDetails(): void {
+    if (
+      (this.rankable instanceof Album && this.rankable.tracks) ||
+      (this.rankable instanceof Artist && this.rankable.albums)
+    ) {
+      this.canShowDetails = true;
     }
-    
-    public setListItemTitle() {
-        if (this.rankable instanceof Album || this.rankable instanceof Song) {
-            this.listItemTitle = `${this.rankable.artist.name} "${this.rankable.name}"`;
-        } else if (this.rankable instanceof Artist) {
-            this.listItemTitle = this.rankable.name;
-        }
-    }
-
-    public toggleShowDetails(): void {
-        if (this.canShowDetails) {
-            this.showDetails = !this.showDetails;
-        }
-    }
-
-    /*******************/
-    /* PRIVATE METHODS */
-    /*******************/
-
-    private createItemDetails(): void {
-        if ((this.rankable instanceof Album && this.rankable.tracks) || (this.rankable instanceof Artist && this.rankable.albums)) {
-            this.canShowDetails = true;
-        }
-    }
-
+  }
 } // End class RankablesComponent
