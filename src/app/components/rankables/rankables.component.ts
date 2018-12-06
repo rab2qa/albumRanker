@@ -73,7 +73,7 @@ export class RankablesComponent implements OnInit {
     }
   }
 
-  public setPageData() {
+  public setPageData(): void {
     this.pageData = this.rankables.page;
   }
 } // End class RankablesComponent
