@@ -6,7 +6,6 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./stars.component.scss'],
 })
 export class StarRatingsComponent implements OnInit {
-  @Input() ratings: any[];
   @Input() ranking: number;
   public stars: number[];
 
