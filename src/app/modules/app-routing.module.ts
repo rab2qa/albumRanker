@@ -34,7 +34,6 @@ const routes: Routes = [
       {
         path: 'artists',
         component: LibraryComponent,
-        canActivate: [LibraryGuard],
         data: {
           key: 'artists',
         },
@@ -42,7 +41,6 @@ const routes: Routes = [
       {
         path: 'songs',
         component: LibraryComponent,
-        canActivate: [LibraryGuard],
         data: {
           key: 'songs',
         },
