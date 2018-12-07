@@ -164,14 +164,6 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
         return this.cache.get('songs');
     }
 
-    get stars(): Array<number> {
-        if (!this.cache.has('stars')) {
-            const stars = Globals.rankingToStars(this.ranking);
-            this.cache.add('stars', stars);;
-        }
-        return this.cache.get('stars');
-    }
-
     get topTenSongs(): Array<Song> {
         if (!this.cache.has('topTenSongs')) {
             const topTenSongs = this.songs

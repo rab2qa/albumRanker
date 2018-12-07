@@ -1,9 +1,9 @@
-<ul class="star-ratings">
-  <ng-template ngFor let-starRating [ngForOf]="ratings">
+<ul class="star-rankings">
+  <ng-template ngFor let-star [ngForOf]="stars">
     <li>
-      <i class="star-rating fa-star far"></i>
-      <div class="star-rating-fill" [style.width.%]="starRating">
-        <i class="star-rating fa-star fas"></i>
+      <i class="star-ranking fa-star far"></i>
+      <div class="star-ranking-fill" [style.width.%]="star">
+        <i class="star-ranking fa-star fas"></i>
       </div>
     </li>
   </ng-template>
