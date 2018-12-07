@@ -139,14 +139,6 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
 
     get skipCount(): number { return this._skipCount; }
 
-    get stars(): Array<number> {
-        if (!this.cache.has('stars')) {
-            const stars = Globals.rankingToStars(this.ranking);
-            this.cache.add('stars', stars);;
-        }
-        return this.cache.get('stars');
-    }
-
     get trackNumber(): number {
         if (!this.cache.has('trackNumber')) {
             for (let i = 0; i < this.album.tracks.length; i++) {

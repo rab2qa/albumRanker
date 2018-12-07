@@ -1,7 +1,7 @@
 <div class="rankable transition" [class.clickable]="canShowDetails" [class.showing-details]="showDetails" (click)="toggleShowDetails()">
     <div class="rankable-title transition flex">
       <div class="rankable-stars">
-        <ranker-stars [ratings]="rankable.stars"></ranker-stars>
+        <ranker-stars [rankable]="rankable"></ranker-stars>
       </div>
       <div class="flex-grow" [class.bold]="showDetails">
         {{ listItemTitle }}
@@ -14,8 +14,8 @@
       <ng-container *ngIf="itemIsAlbum()">
         <ng-template ngFor let-song [ngForOf]="rankable.songs" let-d="index">
           <div class="flex album-track">
-            <div class="rankable-stars" *ngIf="song.stars">
-              <ranker-stars [ratings]="song.stars"></ranker-stars>
+            <div class="rankable-stars" *ngIf="song.ranking">
+              <ranker-stars [rankable]="song"></ranker-stars>
             </div>
             <div class="flex-grow">{{ song.name }}</div>
           </div>
@@ -24,8 +24,8 @@
       <ng-container *ngIf="itemIsArtist()">
         <ng-template ngFor let-album [ngForOf]="rankable.albums" let-d="index">
           <div class="flex album-track">
-            <div class="rankable-stars" *ngIf="album.stars">
-              <ranker-stars [ratings]="album.stars"></ranker-stars>
+            <div class="rankable-stars" *ngIf="album.ranking">
+              <ranker-stars [rankable]="album"></ranker-stars>
             </div>
             <div class="flex-grow">{{ album.name }}</div>
           </div>
