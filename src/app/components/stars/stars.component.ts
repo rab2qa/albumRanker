@@ -1,4 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Rankable } from 'src/app/interfaces/rankable';
+import { Cache } from 'src/app/utilities/cache';
+import { Album } from 'src/app/models/album';
+import { Artist } from 'src/app/models/artist';
+import { Song } from 'src/app/models/song';
+
+const cache = new Cache();
 
 @Component({
   selector: 'ranker-stars',
@@ -6,11 +13,21 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./stars.component.scss'],
 })
 export class StarRatingsComponent implements OnInit {
-  @Input() ranking: number;
+  @Input() rankable: Rankable;
   public stars: number[];
+  private cacheKey: string;
 
   ngOnInit() {
-    this.stars = this.rankingToStars(this.ranking);
+    this.cacheKey = this.generateCacheKey(this.rankable);
+    this.stars = this.getStars(this.rankable);
+  }
+
+  public getStars(rankable): number[] {
+    if (!cache.has(this.cacheKey)) {
+      const stars = this.rankingToStars(rankable.ranking);
+      cache.add(this.cacheKey, stars);
+    }
+    return cache.get(this.cacheKey);
   }
 
   public rankingToStars(ranking: number): number[] {
@@ -25,5 +42,15 @@ export class StarRatingsComponent implements OnInit {
       array[ratingWhole] = ratingDecimal;
     }
     return array;
+  }
+
+  private generateCacheKey(rankable): string {
+    if (rankable instanceof Album) {
+      return '(Album) ' + rankable.name;
+    } else if (rankable instanceof Artist) {
+      return '(Artist) ' + rankable.name;
+    } else if (rankable instanceof Song) {
+      return '(Song) ' + rankable.name;
+    }
   }
 }
