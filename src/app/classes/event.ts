@@ -21,6 +21,8 @@ import { Selectable } from "../interfaces/selectable";
 /*************/
 
 import { EventType } from "../utilities/enums";
+import { Container } from "./container";
+import { Rankable } from "../interfaces/rankable";
 
 ///////////////////
 //               //
@@ -40,6 +42,20 @@ export class Event {
     }
 
 }; // end class Event
+
+// export class ContainerEvent<T> extends Event {
+//     type: EventType;
+//     callback: (target: Container<T>) => void;
+//     target: Container<T>;
+
+//     constructor(eventType: EventType, callback: (target: Container<T>) => void, target: Container<T>) {
+//         super();
+//         this.type = eventType;
+//         this.callback = callback;
+//         this.target = target;
+//     }
+
+// }; // end class Event
 
 ////////////////////
 //                //

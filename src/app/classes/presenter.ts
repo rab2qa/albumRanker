@@ -74,21 +74,6 @@ export abstract class Presenter implements Observable, Selectable {
 
     // -------------------- IMPLEMENT THE SELECTABLE INTERFACE -------------------- //
 
-    public isActive(value?: boolean): boolean {
-        if (value !== undefined && this._status.active !== value) {     // are we changing state?
-            this.isAvailable(value);                                    // make anything we deactivate unavailable, and activate available
-            this._status.active = value;                              // make the state change
-            if (this.notify) {                                          // do we implement the Observable interface?
-                this.notify(this, EventType.Active);                    // update listeners to the state change
-            }
-        }
-        return this._status.active;
-    };
-
-    public toggleActive(): void {
-        this.isActive(!this.isActive());                                // toggle the selection state
-    };
-
     public isAvailable(value?: boolean): boolean {
         if (value !== undefined && this._status.available !== value) {  // are we changing state?
             if (value === false) {

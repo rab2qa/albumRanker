@@ -24,6 +24,7 @@ import { Song } from '../models/song';
 /* UTILITIES */
 /*************/
 
+import { ContainerType } from '../utilities/enums';
 import { Globals } from '../utilities/globals';
 import { Settings } from '../utilities/settings';
 
@@ -134,10 +135,10 @@ export class Library extends Presenter {
             }
         });
 
-        this._artists = new Container("Artists", Object.values(artists));
-        this._albums = new Container("Albums", Object.values(albums));
-        this._playlists = new Container("Playlists", Object.values(playlists));
-        this._songs = new Container("Songs", Object.values(songs));
+        this._artists = new Container(ContainerType.Artist, "Artists", Object.values(artists));
+        this._albums = new Container(ContainerType.Album, "Albums", Object.values(albums));
+        this._playlists = new Container(ContainerType.Playlist, "Playlists", Object.values(playlists));
+        this._songs = new Container(ContainerType.Song, "Songs", Object.values(songs));
 
         this.rank()
 

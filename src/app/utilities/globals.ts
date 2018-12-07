@@ -12,6 +12,8 @@ export class Globals {
     /* ACCESSORS */
     /*************/
 
+    public static get defaultPageSize(): number { return 25; }
+    
     public static get defaultRating(): number { return null; }
 
     public static get fortyFiveMinutes(): number { return 45 * 60 * 1000; }

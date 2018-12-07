@@ -9,6 +9,7 @@ export class Status {
     public active: boolean;
     public available: boolean;
     public selected: boolean;
+    public supported: boolean;
     public dirty: boolean;
 
     /***************/
@@ -16,9 +17,10 @@ export class Status {
     /***************/
 
     constructor() {
-        this.active = true;
+        this.active = false;
         this.available = true;
         this.selected = false;
+        this.supported = true;
         this.dirty = false;
     };
 
@@ -33,6 +35,7 @@ export class Status {
             active: this.active,
             available: this.available,
             selected: this.selected,
+            supported: this.supported,
             dirty: this.dirty
         };
 

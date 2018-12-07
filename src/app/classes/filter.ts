@@ -11,6 +11,13 @@
 import { Comparison } from "./comparison";
 import { Presenter } from "./presenter";
 
+/**************/
+/* INTERFACES */
+/**************/
+
+import { Activatable } from "../interfaces/activatable";
+import { Supportable } from "../interfaces/supportable";
+
 /*************/
 /* UTILITIES */
 /*************/
@@ -25,7 +32,7 @@ import { Event, exclusiveSelect } from "./event";
 //                //
 ////////////////////
 
-export abstract class Filter extends Presenter {
+export abstract class Filter extends Presenter implements Activatable, Supportable {
 
     public comparisons: Array<Comparison>;
 
@@ -40,6 +47,42 @@ export abstract class Filter extends Presenter {
         super();
         this.comparisons = new Array<Comparison>();
     }
+
+    /******************/
+    /* PUBLIC METHODS */
+    /******************/
+
+    // -------------------- IMPLEMENT THE ACTIVATABLE INTERFACE -------------------- //
+
+    public isActive(value?: boolean): boolean {
+        if (value !== undefined && this._status.active !== value) {     // are we changing state?
+            this._status.active = value;                              // make the state change
+            if (this.notify) {                                          // do we implement the Observable interface?
+                this.notify(this, EventType.Active);                    // update listeners to the state change
+            }
+        }
+        return this._status.active;
+    };
+
+    public toggleActive(): void {
+        this.isActive(!this.isActive());                                // toggle the selection state
+    };
+
+    // -------------------- IMPLEMENT THE SUPPORTABLE INTERFACE -------------------- //
+
+    public isSupported(value?: boolean): boolean {
+        if (value !== undefined && this._status.supported !== value) {  // are we changing state?
+            this._status.supported = value;                             // make the state change
+            if (this.notify) {                                          // do we implement the Observable interface?
+                this.notify(this, EventType.Supported);                 // update listeners to the state change
+            }
+        }
+        return this._status.supported;
+    };
+
+    public toggleSupported(): void {
+        this.isSupported(!this.isSupported());                          // toggle the selection state
+    };
 
 }  // End class Filter
 

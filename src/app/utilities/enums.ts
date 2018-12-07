@@ -18,6 +18,19 @@ export enum ComparisonType {
     IsTrue
 }
 
+////////////////////////////
+//                        //
+//     CONTAINER TYPE     //
+//                        //
+////////////////////////////
+
+export enum ContainerType {
+    Album,
+    Artist,
+    Playlist,
+    Song
+}
+
 ////////////////////////
 //                    //
 //     EVENT TYPE     //
@@ -28,6 +41,7 @@ export enum EventType {
     Active,
     Available,
     Selected,
+    Supported,
     Dirty
 }
 /////////////////////////

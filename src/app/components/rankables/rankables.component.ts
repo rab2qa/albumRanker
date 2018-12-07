@@ -25,7 +25,7 @@ import { Rankable } from '../../interfaces/rankable';
 import { Filter, BooleanFilter } from 'src/app/classes/filter';
 import { DataService } from 'src/app/services/data.service';
 import { Comparison } from 'src/app/classes/comparison';
-import { FilterType, ComparisonType } from 'src/app/utilities/enums';
+import { ComparisonType } from 'src/app/utilities/enums';
 
 interface ListHeader {
     rankableTitle: string;
@@ -51,15 +51,17 @@ export class RankablesComponent implements OnInit {
     /**************/
 
     public listHeader: ListHeader;
-    public filters: Array<Filter>;
     public selectedFilter: Filter;
     public selectedComparison: Comparison;
     public showValueInput: boolean;
     public showRangeInput: boolean;
     public showApplyButton: boolean;
 
-    constructor(dataService: DataService) {
-        this.filters = dataService.filters;
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
+
+    constructor() {
         this.showValueInput = false;
         this.showRangeInput = false;
         this.showApplyButton = false;
@@ -100,13 +102,17 @@ export class RankablesComponent implements OnInit {
         } else if (event.value instanceof Filter) {
             this.selectedFilter = event.value;
             this.showValueInput = false;
-            this.showRangeInput = false;    
+            this.showRangeInput = false;
             this.showApplyButton = false;
         }
     }
 
-    public onApply(event: any): void {
+    public onApply(): void {
         this.rankables.addFilter(this.selectedFilter);
+    }
+
+    public onClear(): void {
+        this.rankables.clearFilters();
     }
 
 } // End class RankablesComponent
