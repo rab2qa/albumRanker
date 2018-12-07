@@ -9,10 +9,11 @@ export class StarRatingsComponent implements OnInit {
   @Input() ratings: any[];
   @Input() ranking: number;
   public stars: number[];
-  constructor() {}
+
   ngOnInit() {
     this.stars = this.rankingToStars(this.ranking);
   }
+
   public rankingToStars(ranking: number): number[] {
     const fixedRanking = ranking.toFixed(2);
     const array = [0, 0, 0, 0, 0];

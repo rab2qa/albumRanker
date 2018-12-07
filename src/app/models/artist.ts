@@ -90,14 +90,6 @@ export class Artist extends Presenter implements Rankable {
         return this.cache.get('songs');
     }
 
-    get stars(): Array<number> {
-        if (!this.cache.has('stars')) {
-            const stars = Globals.rankingToStars(this.ranking);
-            this.cache.add('stars', stars);;
-        }
-        return this.cache.get('stars');
-    }
-
     get value(): number {
         // if (Settings.distributeAggregateValues) {
         //     return this.getTotalValue();
