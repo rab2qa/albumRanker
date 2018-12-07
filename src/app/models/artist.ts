@@ -70,6 +70,14 @@ export class Artist extends Presenter implements Rankable {
 
     get name(): string { return this._name; }
 
+    get playCount(): number {
+        if (!this.cache.has('playCount')) {
+            const playCount = this.songs.reduce((sum, song) => sum + song.playCount, 0);
+            this.cache.add('playCount', playCount);
+        }
+        return this.cache.get('playCount');
+    }
+
     get ranking(): number {
         if (!this._ranking) {
             let aggregateAlbumRating = this._albums.reduce((sum, album) => sum + album.ranking, 0) / this._albums.length;
@@ -77,6 +85,14 @@ export class Artist extends Presenter implements Rankable {
             this._ranking = aggregateAlbumRating;
         }
         return this._ranking;
+    }
+
+    get skipCount(): number {
+        if (!this.cache.has('skipCount')) {
+            const skipCount = this.songs.reduce((sum, song) => sum + song.skipCount, 0);
+            this.cache.add('skipCount', skipCount);
+        }
+        return this.cache.get('skipCount');
     }
 
     get songs(): Array<Song> {

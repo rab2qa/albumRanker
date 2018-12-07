@@ -56,7 +56,7 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     private _rating: number;
     private _ratingComputed?: boolean;
     private _tracks: Array<Array<Song>>;
-    private _year: number;
+    private _year?: number;
 
     /***************/
     /* CONSTRUCTOR */
@@ -70,7 +70,7 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
         this._rating = (json["Album Rating Computed"] === "true") ? Globals.defaultRating : +json["Album Rating"] / 20 || Globals.defaultRating;
         this._ratingComputed = (json["Album Rating Computed"] === "true");
         this._liked = json["Album Loved"] === "true";
-        this._year = json["Year"];
+        this._year = +json["Year"] || undefined;
 
         this._tracks = new Array<Array<Song>>();
     }

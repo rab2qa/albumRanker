@@ -56,7 +56,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     private _explicit?: boolean;
     private _genre?: string;
     private _library?: Library;
-    private _liked?: boolean;
+    private _loved?: boolean;
     private _name: string;
     private _playCount: number;
     private _playlists: Array<Playlist>;
@@ -79,7 +79,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
         this._duration = +json["Total Time"];
         this._explicit = (json["Explicit"] === "true");
         this._genre = json["Genre"];
-        this._liked = (json["Loved"] === "true");
+        this._loved = (json["Loved"] === "true");
         this._name = json["Name"];
         this._playCount = +json["Play Count"] || 0;
         this._rating = +json["Rating"] / 20 || Globals.defaultRating;
@@ -100,10 +100,12 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     get artist(): Artist { return this._artist; }
     set artist(artist: Artist) { this._artist = artist; }
 
+    get checked(): boolean { return !this._disabled; }
+
     get discNumber(): number {
         if (!this.cache.has('discNumber')) {
             for (let i = 0; i < this.album.tracks.length; i++) {
-                for (let j = 0; j < this.album.tracks[i].length; j++) {
+                for (let j = 0; this.album.tracks[i] && j < this.album.tracks[i].length; j++) {
                     if (this.album.tracks[i][j] === this) {
                         this.cache.add('discNumber', i + 1);
                         return i + 1;
@@ -118,12 +120,14 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
 
     get duration(): number { return this._duration; }
 
+    get explicit(): boolean { return this._explicit; }
+
     get genre(): string { return this._genre; }
 
     get library(): Library { return this._library; }
     set library(library: Library) { this._library = library; }
 
-    get liked(): boolean { return this._liked; }
+    get liked(): boolean { return this._loved; }
 
     get name(): string { return this._name; }
 
@@ -150,7 +154,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     get trackNumber(): number {
         if (!this.cache.has('trackNumber')) {
             for (let i = 0; i < this.album.tracks.length; i++) {
-                for (let j = 0; j < this.album.tracks[i].length; j++) {
+                for (let j = 0; this.album.tracks[i] && j < this.album.tracks[i].length; j++) {
                     if (this.album.tracks[i][j] === this) {
                         this.cache.add('trackNumber', j + 1);
                         return j + 1;
@@ -167,7 +171,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
             if (this.isRated()) {
                 const starWeights = this._library.getSongStarWeights();
                 const starIndex = this.getDiscreteRating() - 1;
-                const likeDislikeMultiplier = this._liked ? 2 : this._disliked ? 0.5 : 1;
+                const likeDislikeMultiplier = this._loved ? 2 : this._disliked ? 0.5 : 1;
                 const playSkipMultiplier = 1 + this.getRelativePlaySkipRatio();
                 const weightedRating = starWeights[starIndex];
                 value = weightedRating * likeDislikeMultiplier * playSkipMultiplier;
@@ -190,7 +194,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     }
 
     public isLiked(): boolean {
-        return !Settings.ignoreLikesAndDislikes && this._liked;
+        return !Settings.ignoreLikesAndDislikes && this._loved;
     }
 
     public isRanked(): boolean {
@@ -198,7 +202,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     }
 
     public isRankable(): boolean {
-        const response = Settings.provideDefaultRating || !!(this.getDiscreteRating() || this._liked || this._disliked || this._playCount || this._skipCount);
+        const response = Settings.provideDefaultRating || !!(this.getDiscreteRating() || this._loved || this._disliked || this._playCount || this._skipCount);
         return response;
     }
 

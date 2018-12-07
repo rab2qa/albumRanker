@@ -2,6 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from '../components/app/app.component';
 import { StarRatingsComponent } from '../components/stars/stars.component';
@@ -15,6 +17,7 @@ import { NavigationComponent } from '../components/shell/navigation/navigation.c
 import { LibraryComponent } from '../components/library/library.component';
 import { RankablesComponent } from '../components/rankables/rankables.component';
 import { RankableComponent } from '../components/rankable/rankable.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -28,7 +31,7 @@ import { RankableComponent } from '../components/rankable/rankable.component';
     UploadComponent,
     HeaderComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule, MatPaginatorModule],
+  imports: [BrowserModule, AppRoutingModule, NoopAnimationsModule, DragDropModule, MatPaginatorModule, MatSelectModule, MatInputModule, FormsModule],
   providers: [DataService, LibraryGuard],
   bootstrap: [AppComponent],
 })
