@@ -16,13 +16,19 @@ import { Presenter } from "./presenter";
 
 import { Selectable } from "../interfaces/selectable";
 
-/*************/
-/* UTILITIES */
-/*************/
+////////////////////////
+//                    //
+//     EVENT TYPE     //
+//                    //
+////////////////////////
 
-import { EventType } from "../utilities/enums";
-import { Container } from "./container";
-import { Rankable } from "../interfaces/rankable";
+export enum EventType {
+    Active,
+    Available,
+    Selected,
+    Supported,
+    Dirty
+}
 
 ///////////////////
 //               //
@@ -30,32 +36,38 @@ import { Rankable } from "../interfaces/rankable";
 //               //
 ///////////////////
 
-export class Event {
-    type: EventType;
-    callback: (element: Presenter, index: number, array: Array<Presenter>) => void;
+export class AppEvent {
+    id: EventType;
+    callback: (...args) => void;
     args: Array<any>;
 
-    constructor(eventType: EventType, callback: (element: Presenter, index: number, array: Array<Presenter>) => void, ...args) {
-        this.type = eventType;
+    constructor(id: EventType, callback: (...args) => void, args?: Array<any>) {
+        this.id = id;
         this.callback = callback;
         this.args = args;
     }
 
-}; // end class Event
+}; // end class AppEvent
 
-// export class ContainerEvent<T> extends Event {
-//     type: EventType;
-//     callback: (target: Container<T>) => void;
-//     target: Container<T>;
+export class ExternalEvent extends AppEvent {
 
-//     constructor(eventType: EventType, callback: (target: Container<T>) => void, target: Container<T>) {
-//         super();
-//         this.type = eventType;
-//         this.callback = callback;
-//         this.target = target;
-//     }
+    constructor(id: EventType, callback: (element: Presenter, index: number, array: Array<Presenter>) => void, element: Presenter, index: number, array: Array<Presenter>) {
+        super(id, callback, [element, index, array]);
+    }
 
-// }; // end class Event
+}; // end class SelectionEvent
+
+export class InternalEvent extends AppEvent {
+
+    constructor(
+        public id: EventType,
+        public callback: () => void,
+        public target: any
+    ) {
+        super(id, callback);
+    }
+
+}; // end class ContainerEvent
 
 ////////////////////
 //                //

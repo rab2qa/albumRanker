@@ -15,17 +15,16 @@ import { MatSelectChange } from '@angular/material';
 /* CLASSES */
 /***********/
 
-import { Container } from '../../classes/container';
+import { ComparisonType } from 'src/app/classes/comparison';
+import { Container } from 'src/app/classes/container';
 
 /**************/
 /* INTERFACES */
 /**************/
 
-import { Rankable } from '../../interfaces/rankable';
+import { Rankable } from 'src/app/interfaces/rankable';
 import { Filter, BooleanFilter } from 'src/app/classes/filter';
-import { DataService } from 'src/app/services/data.service';
 import { Comparison } from 'src/app/classes/comparison';
-import { ComparisonType } from 'src/app/utilities/enums';
 
 interface ListHeader {
     rankableTitle: string;
@@ -108,7 +107,7 @@ export class RankablesComponent implements OnInit {
     }
 
     public onApply(): void {
-        this.rankables.addFilter(this.selectedFilter);
+        this.selectedFilter.isActive(true);
     }
 
     public onClear(): void {

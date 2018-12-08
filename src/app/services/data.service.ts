@@ -10,21 +10,11 @@
 
 import { Injectable } from '@angular/core';
 
-/***********/
-/* CLASSES */
-/***********/
-
-import { Event, exclusiveSelect } from '../classes/event';
-
 /**********/
 /* MODELS */
 /**********/
 
-import { Filter, BooleanFilter, NumberFilter, RangeFilter, StringFilter } from '../classes/filter';
 import { Library } from '../models/library';
-
-import { FilterType, EventType } from '../utilities/enums';
-import { Globals } from '../utilities/globals';
 
 /////////////////////
 //                 //

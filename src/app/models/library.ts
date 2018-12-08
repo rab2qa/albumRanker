@@ -8,7 +8,7 @@
 /* CLASSES */
 /***********/
 
-import { Container } from '../classes/container';
+import { Container, ContainerType} from '../classes/container';
 import { Presenter } from '../classes/presenter';
 
 /**********/
@@ -24,7 +24,6 @@ import { Song } from '../models/song';
 /* UTILITIES */
 /*************/
 
-import { ContainerType } from '../utilities/enums';
 import { Globals } from '../utilities/globals';
 import { Settings } from '../utilities/settings';
 

@@ -14,8 +14,9 @@ import { PageEvent } from '@angular/material';
 /* CLASSES */
 /***********/
 
-import { Event, exclusiveSelect } from './event';
-import { Filter, BooleanFilter, RangeFilter, StringFilter, NumberFilter } from './filter';
+import { ComparisonType } from './comparison';
+import { exclusiveSelect, InternalEvent, ExternalEvent, EventType } from './event';
+import { Filter, BooleanFilter, RangeFilter, StringFilter, NumberFilter, FilterType } from './filter';
 
 /**************/
 /* INTERFACES */
@@ -28,8 +29,20 @@ import { Pagable, PaginationOptions } from '../interfaces/pagable';
 /* UTILITIES */
 /*************/
 
-import { ComparisonType, FilterType, ContainerType, EventType } from '../utilities/enums';
 import { Globals } from '../utilities/globals';
+
+////////////////////////////
+//                        //
+//     CONTAINER TYPE     //
+//                        //
+////////////////////////////
+
+export enum ContainerType {
+    Album,
+    Artist,
+    Playlist,
+    Song
+}
 
 ///////////////////////
 //                   //
@@ -100,7 +113,7 @@ export class Container<T> implements Filterable, Pagable {
 
     public addFilter(filter: Filter): void {
         filter.isActive(true);
-        this.applyFilters();
+        // this.applyFilters();
     }
 
     public applyFilters(): void {
@@ -116,12 +129,12 @@ export class Container<T> implements Filterable, Pagable {
         this._filters
             .filter(filter => filter.isActive())
             .forEach(filter => filter.isActive(false));
-        this.applyFilters();
+        // this.applyFilters();
     }
 
     public removeFilter(filter: Filter): void {
         filter.isActive(false);
-        this.applyFilters();
+        // this.applyFilters();
     }
 
     /*******************/
@@ -130,7 +143,7 @@ export class Container<T> implements Filterable, Pagable {
 
     public applyFilter(data: Array<T>, filter: Filter): Array<T> {
         let response = data.filter(datum => {
-            const property = Globals.getPropertyValue(filter.id);
+            const property = Filter.getPropertyValue(filter.id);
             if (datum[property] !== undefined) {
                 let selectedComparison = filter.comparisons.find(comparison => comparison.isSelected());
                 if (selectedComparison) {
@@ -306,7 +319,8 @@ export class Container<T> implements Filterable, Pagable {
                 }
             }
         }
-        this._filters.forEach((element, index, array) => element.subscribe(new Event(EventType.Selected, exclusiveSelect, element, index, array)));
+        this._filters.forEach((element, index, array) => element.subscribe(new ExternalEvent(EventType.Selected, exclusiveSelect, element, index, array)));
+        this._filters.forEach((element) => element.subscribe(new InternalEvent(EventType.Active, this.applyFilters, this)));
     }
 
 }  // End class Container

@@ -8,7 +8,7 @@
 /* CLASSES */
 /***********/
 
-import { Event } from "./event";
+import { AppEvent, ExternalEvent, InternalEvent, EventType } from "./event";
 import { Status } from "./status";
 
 /**************/
@@ -23,7 +23,6 @@ import { Selectable } from "../interfaces/selectable";
 /*************/
 
 import { Cache } from "../utilities/cache";
-import { EventType } from "../utilities/enums";
 
 ///////////////////////
 //                   //
@@ -39,7 +38,7 @@ export abstract class Presenter implements Observable, Selectable {
 
     protected cache: Cache;
     protected _status: Status;
-    private _events: Array<Event>;
+    private _events: Array<AppEvent>;
 
     /***************/
     /* CONSTRUCTOR */
@@ -48,7 +47,7 @@ export abstract class Presenter implements Observable, Selectable {
     public constructor() {
         this.cache = new Cache();
         this._status = new Status();
-        this._events = new Array<Event>();
+        this._events = new Array<AppEvent>();
     }
 
     /******************/
@@ -57,7 +56,7 @@ export abstract class Presenter implements Observable, Selectable {
 
     // -------------------- IMPLEMENT THE OBSERVABLE INTERFACE -------------------- //
 
-    public subscribe(event: Event): void {
+    public subscribe(event: AppEvent): void {
         this.unsubscribe(event.callback);
         this._events.push(event);
     }
@@ -66,10 +65,16 @@ export abstract class Presenter implements Observable, Selectable {
         this._events = this._events.filter((handler) => { return (handler.callback !== callback); });
     }
 
-    public notify(thisObj: object, eventType: EventType): void {
+    public notify(thisObj: object, id: EventType): void {
         this._events
-            .filter((event) => event.type === eventType)
-            .forEach((event) => event.callback.apply(thisObj, event.args));
+            .filter((event) => event.id === id)
+            .forEach((event) => {
+                if (event instanceof ExternalEvent) {
+                    event.callback.apply(thisObj, event.args)
+                } else if (event instanceof InternalEvent) {
+                    event.callback.call(event.target);
+                }
+            });
     }
 
     // -------------------- IMPLEMENT THE SELECTABLE INTERFACE -------------------- //

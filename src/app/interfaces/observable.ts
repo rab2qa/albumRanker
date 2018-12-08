@@ -1,5 +1,4 @@
-import { EventType } from "../utilities/enums";
-import { Event } from "../classes/event";
+import { AppEvent, EventType } from "../classes/event";
 
 ////////////////////////
 //                    //
@@ -9,7 +8,7 @@ import { Event } from "../classes/event";
 
 export interface Observable{
 
-    subscribe(event: Event): void;
+    subscribe(event: AppEvent): void;
     unsubscribe(callback: Function): void;
     notify(thisObj: object, eventType: EventType): void;
 
