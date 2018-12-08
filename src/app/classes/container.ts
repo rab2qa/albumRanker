@@ -106,6 +106,10 @@ export class Container<T> implements Filterable, Pagable {
         return this._filteredData.slice(start, end);
     }
 
+    get selectedFilter(): Filter {
+        return this.filters.find(filter => filter.isSelected()); 
+    }
+
     get id(): ContainerType { return this._id; }
 
     get name(): string { return this._name; }
@@ -119,12 +123,11 @@ export class Container<T> implements Filterable, Pagable {
         this.paginationOptions.pageSize = event.pageSize;
     }
 
-    public addFilter(filter: Filter): void {
-        filter.isActive(true);
-        // this.applyFilters();
-    }
+    /*******************/
+    /* PRIVATE METHODS */
+    /*******************/
 
-    public applyFilters(): void {
+    private applyFilters(): void {
         this._filteredData = this._filters
             .filter(filter => filter.isActive())
             .reduce((filteredData, filter) => {
@@ -132,22 +135,6 @@ export class Container<T> implements Filterable, Pagable {
             }, this._data);
         this.paginationOptions.length = this._filteredData.length;
     }
-
-    public clearFilters(): void {
-        this._filters
-            .filter(filter => filter.isActive())
-            .forEach(filter => filter.isActive(false));
-        // this.applyFilters();
-    }
-
-    public removeFilter(filter: Filter): void {
-        filter.isActive(false);
-        // this.applyFilters();
-    }
-
-    /*******************/
-    /* PRIVATE METHODS */
-    /*******************/
 
     public applyFilter(data: Array<T>, filter: Filter): Array<T> {
         let response = data.filter(datum => {

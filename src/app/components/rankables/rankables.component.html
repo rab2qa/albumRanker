@@ -10,7 +10,7 @@
 
 <!-- Edit Filter -->
 <mat-form-field>
-    <mat-select matNativeControl required (selectionChange)="onFilterUpdate($event)">
+    <mat-select matNativeControl required [value]="selectedFilter" (selectionChange)="onFilterUpdate($event)">
         <mat-option *ngFor="let filter of rankables.filters" [value]="filter">{{ filter.name }}</mat-option>
     </mat-select>
 </mat-form-field>

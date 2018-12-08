@@ -101,6 +101,10 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
         this.comparisons = new Array<Comparison>();
     }
 
+    public get selectedComparison(): Comparison {
+        return this.comparisons.find(comparison => comparison.isSelected());
+    }
+
     /******************/
     /* STATIC METHODS */
     /******************/

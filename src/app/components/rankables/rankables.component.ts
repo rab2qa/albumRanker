@@ -55,11 +55,11 @@ export class RankablesComponent implements OnInit {
     /*************/
 
     get selectedComparison(): Comparison {
-        return this.selectedFilter && this.selectedFilter.comparisons.find(comparison => comparison.isSelected());
+        return this.selectedFilter && this.selectedFilter.selectedComparison;
     }
 
     get selectedFilter(): Filter {
-        return this.rankables.filters.find(filter => filter.isSelected());
+        return this.rankables.selectedFilter;
     }
 
     get activeFilters(): Array<Filter> {
@@ -108,7 +108,7 @@ export class RankablesComponent implements OnInit {
     }
 
     public onClearAll(): void {
-        this.rankables.clearFilters();
+        this.activeFilters.forEach(filter => filter.isActive(false));
     }
 
     public onClear(filter: Filter): void {

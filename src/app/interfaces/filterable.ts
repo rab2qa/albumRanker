@@ -18,8 +18,6 @@ import { Filter } from "../classes/filter";
 
 export interface Filterable {
 
-    addFilter(filter: Filter): void;
-    clearFilters(): void;
-    removeFilter(filter: Filter): void;
+    filters: Array<Filter>;
     
 }; // End interface Filterable
