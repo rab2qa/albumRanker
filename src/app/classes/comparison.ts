@@ -43,18 +43,26 @@ export class Comparison extends Presenter {
     /***************/
 
     constructor(
-        public id: number,
-        public name: string
+        private _id: ComparisonType,
+        private _name: string
     ) { 
         super();
     }
+
+    /*************/
+    /* ACCESSORS */
+    /*************/
+
+    get id(): ComparisonType { return this._id; }
+
+    get name(): string { return this._name; }
 
     /******************/
     /* STATIC METHODS */
     /******************/
 
-    public static getComparisonName(comparison: ComparisonType): string {
-        switch (comparison) {
+    public static getComparisonName(id: ComparisonType): string {
+        switch (id) {
             case ComparisonType.BeginsWith:
                 return "Begins With";
             case ComparisonType.Contians:

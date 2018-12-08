@@ -36,7 +36,7 @@ export abstract class Presenter implements Observable, Selectable {
     /* PROPERTIES */
     /**************/
 
-    protected cache: Cache;
+    protected _cache: Cache;
     protected _status: Status;
     private _events: Array<AppEvent>;
 
@@ -45,7 +45,7 @@ export abstract class Presenter implements Observable, Selectable {
     /***************/
 
     public constructor() {
-        this.cache = new Cache();
+        this._cache = new Cache();
         this._status = new Status();
         this._events = new Array<AppEvent>();
     }
@@ -117,5 +117,9 @@ export abstract class Presenter implements Observable, Selectable {
     public toggleSelected(): void {
         this.isSelected(!this.isSelected());                            // toggle the selection state
     };
+
+    public clean(): void {
+        this._status.dirty = false;
+    }
 
 } // End class Presenter

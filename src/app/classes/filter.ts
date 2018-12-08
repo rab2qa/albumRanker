@@ -19,12 +19,6 @@ import { Presenter } from "./presenter";
 import { Activatable } from "../interfaces/activatable";
 import { Supportable } from "../interfaces/supportable";
 
-/*************/
-/* UTILITIES */
-/*************/
-
-import { Globals } from "../utilities/globals";
-
 /////////////////////////
 //                     //
 //     FILTER TYPE     //
@@ -111,8 +105,8 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
     /* STATIC METHODS */
     /******************/
 
-    public static getPropertyName(property: FilterType): string {
-        switch (property) {
+    public static getFilterName(id: FilterType): string {
+        switch (id) {
             case FilterType.Album:
                 return "Album";
             case FilterType.AlbumArtist:
@@ -218,8 +212,8 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
         }
     }
 
-    public static getPropertyValue(property: FilterType): string {
-        switch (property) {
+    public static getFilterValue(id: FilterType): string {
+        switch (id) {
             case FilterType.Album:
                 return "album";
             case FilterType.AlbumArtist:
@@ -332,10 +326,12 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
     // -------------------- IMPLEMENT THE ACTIVATABLE INTERFACE -------------------- //
 
     public isActive(value?: boolean): boolean {
-        if (value !== undefined && this._status.active !== value) {     // are we changing state?
-            this._status.active = value;                              // make the state change
-            if (this.notify) {                                          // do we implement the Observable interface?
-                this.notify(this, EventType.Active);                    // update listeners to the state change
+        if (value !== undefined && this._status.active !== value || this.isDirty()) {   // are we changing state?
+            this._status.active = value;                                                // make the state change
+            this.clean();                                                               // clean self
+            this.comparisons.forEach(comparison => comparison.clean());                 // clean comparisons
+            if (this.notify) {                                                          // do we implement the Observable interface?
+                this.notify(this, EventType.Active);                                    // update listeners to the state change
             }
         }
         return this._status.active;
@@ -360,6 +356,12 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
     public toggleSupported(): void {
         this.isSupported(!this.isSupported());                          // toggle the supported state
     };
+
+    // -------------------- HIDE BASE CLASS SELECTABLE IMPLEMENTATION -------------------- //
+
+    public isDirty(): boolean {
+        return this._status.dirty || !!(this.comparisons.find(comparison => comparison.isDirty()));
+    }
 
 }  // End class Filter
 

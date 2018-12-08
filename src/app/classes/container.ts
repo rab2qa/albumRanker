@@ -29,6 +29,7 @@ import { Pagable, PaginationOptions } from '../interfaces/pagable';
 /* UTILITIES */
 /*************/
 
+import { Cache } from '../utilities/cache';
 import { Globals } from '../utilities/globals';
 
 ////////////////////////////
@@ -59,6 +60,8 @@ export class Container<T> implements Filterable, Pagable {
     private _filteredData: Array<T>;
     private _filters: Array<Filter>;
 
+    protected _cache: Cache;
+
     public paginationOptions: PaginationOptions;
 
     /***************/
@@ -66,11 +69,12 @@ export class Container<T> implements Filterable, Pagable {
     /***************/
 
     public constructor(
-        private _id: number,
+        private _id: ContainerType,
         private _name: string,
         private _data: Array<T>
     ) {
         this.paginationOptions = new PaginationOptions(null, false, false, this._data.length, 0, Globals.defaultPageSize, [10, 25, 50, 100], true);
+        this._cache = new Cache();
         this._filteredData = this._data;
         this._filters = new Array<Filter>();
         this.setFilters();
@@ -89,7 +93,11 @@ export class Container<T> implements Filterable, Pagable {
     }
 
     get filters(): Array<Filter> {
-        return this._filters.filter(filter => filter.isSupported());
+        if (!this._cache.has('supportedFilters')) {
+            const supportedFilters = this._filters.filter(filter => filter.isSupported());;
+            this._cache.add('supportedFilters', supportedFilters);
+        }
+        return this._cache.get('supportedFilters');
     }
 
     get page(): Array<T> {
@@ -98,7 +106,7 @@ export class Container<T> implements Filterable, Pagable {
         return this._filteredData.slice(start, end);
     }
 
-    get id(): number { return this._id; }
+    get id(): ContainerType { return this._id; }
 
     get name(): string { return this._name; }
 
@@ -143,7 +151,7 @@ export class Container<T> implements Filterable, Pagable {
 
     public applyFilter(data: Array<T>, filter: Filter): Array<T> {
         let response = data.filter(datum => {
-            const property = Filter.getPropertyValue(filter.id);
+            const property = Filter.getFilterValue(filter.id);
             if (datum[property] !== undefined) {
                 let selectedComparison = filter.comparisons.find(comparison => comparison.isSelected());
                 if (selectedComparison) {

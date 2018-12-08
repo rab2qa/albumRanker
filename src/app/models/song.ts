@@ -103,17 +103,17 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     get checked(): boolean { return !this._disabled; }
 
     get discNumber(): number {
-        if (!this.cache.has('discNumber')) {
+        if (!this._cache.has('discNumber')) {
             for (let i = 0; i < this.album.tracks.length; i++) {
                 for (let j = 0; this.album.tracks[i] && j < this.album.tracks[i].length; j++) {
                     if (this.album.tracks[i][j] === this) {
-                        this.cache.add('discNumber', i + 1);
+                        this._cache.add('discNumber', i + 1);
                         return i + 1;
                     }
                 }
             }
         }
-        return this.cache.get('discNumber');
+        return this._cache.get('discNumber');
     }
 
     get disliked(): boolean { return this._disliked; }
@@ -144,21 +144,21 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     get skipCount(): number { return this._skipCount; }
 
     get trackNumber(): number {
-        if (!this.cache.has('trackNumber')) {
+        if (!this._cache.has('trackNumber')) {
             for (let i = 0; i < this.album.tracks.length; i++) {
                 for (let j = 0; this.album.tracks[i] && j < this.album.tracks[i].length; j++) {
                     if (this.album.tracks[i][j] === this) {
-                        this.cache.add('trackNumber', j + 1);
+                        this._cache.add('trackNumber', j + 1);
                         return j + 1;
                     }
                 }
             }
         }
-        return this.cache.get('trackNumber');
+        return this._cache.get('trackNumber');
     }
 
     get value(): number {
-        if (!this.cache.has('value')) {
+        if (!this._cache.has('value')) {
             let value = 0;
             if (this.isRated()) {
                 const starWeights = this._library.getSongStarWeights();
@@ -168,9 +168,9 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
                 const weightedRating = starWeights[starIndex];
                 value = weightedRating * likeDislikeMultiplier * playSkipMultiplier;
             }
-            this.cache.add('value', value);
+            this._cache.add('value', value);
         }
-        return this.cache.get('value');
+        return this._cache.get('value');
     }
 
     /******************/
@@ -325,7 +325,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     }
 
     private getContinuousRating(): number {
-        if (!this.cache.has('continuousRating')) {
+        if (!this._cache.has('continuousRating')) {
             let continuousRating = Globals.defaultRating;
             if (this.isRated()) {
                 if (this.isLiked() || this.isDisliked()) {
@@ -353,9 +353,9 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
                     continuousRating = this.getRelativePlaySkipRating();
                 }
             }
-            this.cache.add('continuousRating', continuousRating);
+            this._cache.add('continuousRating', continuousRating);
         }
-        return this.cache.get('continuousRating');
+        return this._cache.get('continuousRating');
     }
 
     private getRelativeRating(): number {

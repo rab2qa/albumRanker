@@ -13,5 +13,7 @@ export interface Selectable {
     toggleAvailable(): void;
 
     isDirty(): boolean;
+
+    clean(): void;
     
 }; // End interface Selectable

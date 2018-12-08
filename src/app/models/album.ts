@@ -85,13 +85,13 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     get disliked(): boolean { return this._disliked; }
 
     get duration(): number {
-        if (!this.cache.has('duration')) {
+        if (!this._cache.has('duration')) {
             const duration = this.songs.reduce((total, track) => {
                 return total + track.duration;
             }, 0);
-            this.cache.add('duration', duration);
+            this._cache.add('duration', duration);
         }
-        return this.cache.get('duration');
+        return this._cache.get('duration');
     }
 
     get library(): Library { return this._library; }
@@ -102,11 +102,11 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     get name(): string { return this._name; }
 
     get playCount(): number {
-        if (!this.cache.has('playCount')) {
+        if (!this._cache.has('playCount')) {
             const playCount = this.songs.reduce((sum, song) => sum + song.playCount, 0);
-            this.cache.add('playCount', playCount);
+            this._cache.add('playCount', playCount);
         }
-        return this.cache.get('playCount');
+        return this._cache.get('playCount');
     }
 
     get ranking(): number {
@@ -146,32 +146,32 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     get rating(): number { return this._rating; }
 
     get skipCount(): number {
-        if (!this.cache.has('skipCount')) {
+        if (!this._cache.has('skipCount')) {
             const skipCount = this.songs.reduce((sum, song) => sum + song.skipCount, 0);
-            this.cache.add('skipCount', skipCount);
+            this._cache.add('skipCount', skipCount);
         }
-        return this.cache.get('skipCount');
+        return this._cache.get('skipCount');
     }
 
     get songs(): Array<Song> {
-        if (!this.cache.has('songs')) {
+        if (!this._cache.has('songs')) {
             const songs = this.tracks.reduce((array, disc) => {
                 disc.forEach(track => array.push(track));
                 return array.sort((a, b) => b.ranking - a.ranking);
             }, new Array<Song>());
-            this.cache.add('songs', songs);
+            this._cache.add('songs', songs);
         }
-        return this.cache.get('songs');
+        return this._cache.get('songs');
     }
 
     get topTenSongs(): Array<Song> {
-        if (!this.cache.has('topTenSongs')) {
+        if (!this._cache.has('topTenSongs')) {
             const topTenSongs = this.songs
                 .sort((a, b) => b.ranking - a.ranking)
                 .slice(0, 10);
-            this.cache.add('topTenSongs', topTenSongs);
+            this._cache.add('topTenSongs', topTenSongs);
         }
-        return this.cache.get('topTenSongs');
+        return this._cache.get('topTenSongs');
     }
 
     get tracks(): Array<Array<Song>> { return this._tracks; }

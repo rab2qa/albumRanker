@@ -15,7 +15,7 @@ import { MatSelectChange } from '@angular/material';
 /* CLASSES */
 /***********/
 
-import { ComparisonType } from 'src/app/classes/comparison';
+import { Comparison, ComparisonType } from 'src/app/classes/comparison';
 import { Container } from 'src/app/classes/container';
 
 /**************/
@@ -24,7 +24,6 @@ import { Container } from 'src/app/classes/container';
 
 import { Rankable } from 'src/app/interfaces/rankable';
 import { Filter, BooleanFilter } from 'src/app/classes/filter';
-import { Comparison } from 'src/app/classes/comparison';
 
 interface ListHeader {
     rankableTitle: string;
@@ -50,20 +49,20 @@ export class RankablesComponent implements OnInit {
     /**************/
 
     public listHeader: ListHeader;
-    public selectedFilter: Filter;
-    public selectedComparison: Comparison;
     public showValueInput: boolean;
     public showRangeInput: boolean;
     public showApplyButton: boolean;
 
-    /***************/
-    /* CONSTRUCTOR */
-    /***************/
+    /*************/
+    /* ACCESSORS */
+    /*************/
 
-    constructor() {
-        this.showValueInput = false;
-        this.showRangeInput = false;
-        this.showApplyButton = false;
+    get selectedComparison(): Comparison {
+        return this.selectedFilter.comparisons.find(comparison => comparison.isSelected());
+    }
+
+    get selectedFilter(): Filter {
+        return this.rankables.filters.find(filter => filter.isSelected());
     }
 
     /******************/
@@ -72,6 +71,9 @@ export class RankablesComponent implements OnInit {
 
     public ngOnInit(): void {
         this.listHeader = this.setListHeader(this.rankables.name.toLowerCase());
+        this.showValueInput = false;
+        this.showRangeInput = false;
+        this.showApplyButton = false;    
     }
 
     public setListHeader(name): ListHeader {
@@ -94,12 +96,10 @@ export class RankablesComponent implements OnInit {
     public onFilterUpdate(event: MatSelectChange): void {
         event.value.isSelected(true);
         if (event.value instanceof Comparison) {
-            this.selectedComparison = event.value;
             this.showValueInput = !(this.selectedFilter instanceof BooleanFilter);
             this.showRangeInput = !!(event.value.id === ComparisonType.IsInTheRange);
             this.showApplyButton = !!(this.selectedFilter && this.selectedComparison);
         } else if (event.value instanceof Filter) {
-            this.selectedFilter = event.value;
             this.showValueInput = false;
             this.showRangeInput = false;
             this.showApplyButton = false;
