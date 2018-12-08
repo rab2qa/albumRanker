@@ -414,6 +414,14 @@ export class NumberFilter extends Filter {
         this.comparisons.forEach((element, index, array) => element.subscribe(new ExternalEvent(EventType.Selected, exclusiveSelect, element, index, array)));
     }
 
+    /*************/
+    /* ACCESSORS */
+    /*************/
+
+    get dirtyValue(): number {
+        return this._cache.get('value');
+    }
+
     /******************/
     /* PUBLIC METHODS */
     /******************/
@@ -423,7 +431,7 @@ export class NumberFilter extends Filter {
         const isComplete = !!(this.value);
         const isNotActive = !this.isActive();
         const isDirty = this.isDirty();
-        return  superIsValid && isComplete && (isNotActive || isDirty);
+        return superIsValid && isComplete && (isNotActive || isDirty);
     }
 
     // -------------------- HIDE BASE CLASS SELECTABLE IMPLEMENTATION -------------------- //
@@ -494,6 +502,14 @@ export class RangeFilter extends NumberFilter {
         Array.prototype.push.apply(this.comparisons, comparisons);
     }
 
+    /*************/
+    /* ACCESSORS */
+    /*************/
+
+    get dirtyRangeEnd(): number {
+        return this._cache.get('rangeEnd');
+    }
+
     /******************/
     /* PUBLIC METHODS */
     /******************/
@@ -505,7 +521,7 @@ export class RangeFilter extends NumberFilter {
         const isComplete = rangeComparisonIsSelected ? !!(this.rangeEnd) : true;
         const isNotActive = !this.isActive();
         const isDirty = this.isDirty();
-        return  superIsValid && isComplete && (isNotActive || isDirty);
+        return superIsValid && isComplete && (isNotActive || isDirty);
     }
 
     // -------------------- HIDE BASE CLASS SELECTABLE IMPLEMENTATION -------------------- //
@@ -568,6 +584,14 @@ export class StringFilter extends Filter {
         this.comparisons.forEach((element, index, array) => element.subscribe(new ExternalEvent(EventType.Selected, exclusiveSelect, element, index, array)));
     }
 
+    /*************/
+    /* ACCESSORS */
+    /*************/
+
+    get dirtyValue(): number {
+        return this._cache.get('value');
+    }
+
     /******************/
     /* PUBLIC METHODS */
     /******************/
@@ -577,7 +601,7 @@ export class StringFilter extends Filter {
         const isComplete = !!(this.value);
         const isNotActive = !this.isActive();
         const isDirty = this.isDirty();
-        return  superIsValid && isComplete && (isNotActive || isDirty);
+        return superIsValid && isComplete && (isNotActive || isDirty);
     }
 
     // -------------------- HIDE BASE CLASS SELECTABLE IMPLEMENTATION -------------------- //

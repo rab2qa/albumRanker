@@ -63,7 +63,7 @@ export class RankablesComponent implements OnInit {
     }
 
     get activeFilters(): Array<Filter> {
-        return this.rankables.filters.filter(filter => filter.isActive() && !filter.isSelected());
+        return this.rankables.filters.filter(filter => filter.isActive());
     }
 
     get showRangeInput(): boolean {
