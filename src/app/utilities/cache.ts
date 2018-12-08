@@ -43,8 +43,12 @@ export class Cache {
         return !!(this._cache[key]);
     }
 
-    public remove(key: string) {
+    public remove(key: string): void {
         delete this._cache[key];
+    }
+
+    public update(key: string, value: any): any {
+        this._cache[key] = value;
     }
 
 } // End class Cache

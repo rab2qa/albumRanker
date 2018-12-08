@@ -360,7 +360,7 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
     // -------------------- HIDE BASE CLASS SELECTABLE IMPLEMENTATION -------------------- //
 
     public isDirty(): boolean {
-        return this._status.dirty || !!(this.comparisons.find(comparison => comparison.isDirty()));
+        return super.isDirty() || !!(this.comparisons.find(comparison => comparison.isDirty()));
     }
 
 }  // End class Filter
@@ -406,6 +406,26 @@ export class NumberFilter extends Filter {
         this.comparisons.forEach((element, index, array) => element.subscribe(new ExternalEvent(EventType.Selected, exclusiveSelect, element, index, array)));
     }
 
+        // -------------------- HIDE BASE CLASS ACTIVATABLE IMPLEMENTATION -------------------- //
+
+        public isActive(value?: boolean): boolean {
+            if (value === true) {
+                if (this.value) {
+                    if (this._cache.has('value')) {
+                        if (this._cache.get('value') !== this.value) {
+                            this._status.dirty = true;
+                            this._cache.update('value', this.value);
+                        }
+                    } else {
+                        this._cache.add('value', this.value);
+                    }
+                }
+            } else if (value === false) {
+                this._cache.remove('value');
+            }
+            return super.isActive(value);
+        }
+
 } // End class NumberFilter
 
 //////////////////////////
@@ -429,6 +449,37 @@ export class RangeFilter extends Filter {
         this.comparisons.push(new Comparison(ComparisonType.IsLessThan, Comparison.getComparisonName(ComparisonType.IsLessThan)));
         this.comparisons.push(new Comparison(ComparisonType.IsNot, Comparison.getComparisonName(ComparisonType.IsNot)));
         this.comparisons.forEach((element, index, array) => element.subscribe(new ExternalEvent(EventType.Selected, exclusiveSelect, element, index, array)));
+    }
+
+    // -------------------- HIDE BASE CLASS ACTIVATABLE IMPLEMENTATION -------------------- //
+
+    public isActive(value?: boolean): boolean {
+        if (value === true) {
+            if (this.value) {
+                if (this._cache.has('value')) {
+                    if (this._cache.get('value') !== this.value) {
+                        this._status.dirty = true;
+                        this._cache.update('value', this.value);
+                    }
+                } else {
+                    this._cache.add('value', this.value);
+                }
+            }
+            if (this.rangeEnd) {
+                if (this._cache.has('rangeEnd')) {
+                    if (this._cache.get('rangeEnd') !== this.rangeEnd) {
+                        this._status.dirty = true;
+                        this._cache.update('rangeEnd', this.rangeEnd);
+                    }
+                } else {
+                    this._cache.add('rangeEnd', this.rangeEnd);
+                }
+            }
+        } else if (value === false) {
+            this._cache.remove('value');
+            this._cache.remove('rangeEnd');
+        }
+        return super.isActive(value);
     }
 
 } // End class RangeFilter
@@ -455,5 +506,25 @@ export class StringFilter extends Filter {
         this.comparisons.push(new Comparison(ComparisonType.IsNot, Comparison.getComparisonName(ComparisonType.IsNot)));
         this.comparisons.forEach((element, index, array) => element.subscribe(new ExternalEvent(EventType.Selected, exclusiveSelect, element, index, array)));
     }
+
+        // -------------------- HIDE BASE CLASS ACTIVATABLE IMPLEMENTATION -------------------- //
+
+        public isActive(value?: boolean): boolean {
+            if (value === true) {
+                if (this.value) {
+                    if (this._cache.has('value')) {
+                        if (this._cache.get('value') !== this.value) {
+                            this._status.dirty = true;
+                            this._cache.update('value', this.value);
+                        }
+                    } else {
+                        this._cache.add('value', this.value);
+                    }
+                }
+            } else if (value === false) {
+                this._cache.remove('value');
+            }
+            return super.isActive(value);
+        }
 
 } // End class StringFilter
