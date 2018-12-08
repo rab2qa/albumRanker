@@ -326,10 +326,12 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
     // -------------------- IMPLEMENT THE ACTIVATABLE INTERFACE -------------------- //
 
     public isActive(value?: boolean): boolean {
-        if (value !== undefined && this._status.active !== value || this.isDirty()) {   // are we changing state?
+        if (value !== undefined && this._status.active !== value) {   // are we changing state?
             this._status.active = value;                                                // make the state change
-            this.clean();                                                               // clean self
-            this.comparisons.forEach(comparison => comparison.clean());                 // clean comparisons
+            if (this.isDirty()) {
+                this.clean();                                                               // clean self
+                this.comparisons.forEach(comparison => comparison.clean());                 // clean comparisons
+            }
             if (this.notify) {                                                          // do we implement the Observable interface?
                 this.notify(this, EventType.Active);                                    // update listeners to the state change
             }
@@ -406,25 +408,25 @@ export class NumberFilter extends Filter {
         this.comparisons.forEach((element, index, array) => element.subscribe(new ExternalEvent(EventType.Selected, exclusiveSelect, element, index, array)));
     }
 
-        // -------------------- HIDE BASE CLASS ACTIVATABLE IMPLEMENTATION -------------------- //
+    // -------------------- HIDE BASE CLASS ACTIVATABLE IMPLEMENTATION -------------------- //
 
-        public isActive(value?: boolean): boolean {
-            if (value === true) {
-                if (this.value) {
-                    if (this._cache.has('value')) {
-                        if (this._cache.get('value') !== this.value) {
-                            this._status.dirty = true;
-                            this._cache.update('value', this.value);
-                        }
-                    } else {
-                        this._cache.add('value', this.value);
+    public isActive(value?: boolean): boolean {
+        if (value === true) {
+            if (this.value) {
+                if (this._cache.has('value')) {
+                    if (this._cache.get('value') !== this.value) {
+                        this._status.dirty = true;
+                        this._cache.update('value', this.value);
                     }
+                } else {
+                    this._cache.add('value', this.value);
                 }
-            } else if (value === false) {
-                this._cache.remove('value');
             }
-            return super.isActive(value);
+        } else if (value === false) {
+            this._cache.remove('value');
         }
+        return super.isActive(value);
+    }
 
 } // End class NumberFilter
 
@@ -507,24 +509,24 @@ export class StringFilter extends Filter {
         this.comparisons.forEach((element, index, array) => element.subscribe(new ExternalEvent(EventType.Selected, exclusiveSelect, element, index, array)));
     }
 
-        // -------------------- HIDE BASE CLASS ACTIVATABLE IMPLEMENTATION -------------------- //
+    // -------------------- HIDE BASE CLASS ACTIVATABLE IMPLEMENTATION -------------------- //
 
-        public isActive(value?: boolean): boolean {
-            if (value === true) {
-                if (this.value) {
-                    if (this._cache.has('value')) {
-                        if (this._cache.get('value') !== this.value) {
-                            this._status.dirty = true;
-                            this._cache.update('value', this.value);
-                        }
-                    } else {
-                        this._cache.add('value', this.value);
+    public isActive(value?: boolean): boolean {
+        if (value === true) {
+            if (this.value) {
+                if (this._cache.has('value')) {
+                    if (this._cache.get('value') !== this.value) {
+                        this._status.dirty = true;
+                        this._cache.update('value', this.value);
                     }
+                } else {
+                    this._cache.add('value', this.value);
                 }
-            } else if (value === false) {
-                this._cache.remove('value');
             }
-            return super.isActive(value);
+        } else if (value === false) {
+            this._cache.remove('value');
         }
+        return super.isActive(value);
+    }
 
 } // End class StringFilter

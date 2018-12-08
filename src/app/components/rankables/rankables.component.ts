@@ -65,6 +65,10 @@ export class RankablesComponent implements OnInit {
         return this.rankables.filters.find(filter => filter.isSelected());
     }
 
+    get activeFilters(): Array<Filter> {
+        return this.rankables.filters.filter(filter => filter.isActive());
+    }
+
     /******************/
     /* PUBLIC METHODS */
     /******************/
@@ -110,8 +114,12 @@ export class RankablesComponent implements OnInit {
         this.selectedFilter.isActive(true);
     }
 
-    public onClear(): void {
+    public onClearAll(): void {
         this.rankables.clearFilters();
+    }
+
+    public onClear(filter: Filter): void {
+        filter.isActive(false);
     }
 
 } // End class RankablesComponent
