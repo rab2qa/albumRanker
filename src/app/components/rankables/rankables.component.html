@@ -13,14 +13,14 @@
     </mat-select>
 </mat-form-field>
 <mat-form-field *ngIf="selectedFilter">
-    <mat-select matNativeControl required (selectionChange)="onFilterUpdate($event)">
+    <mat-select matNativeControl required (selectionChange)="onFilterUpdate($event)" [value]="selectedComparison">
         <mat-option *ngFor="let comparison of selectedFilter.comparisons" [value]="comparison">{{ comparison.name }}</mat-option>
     </mat-select>
 </mat-form-field>
 <input *ngIf="showValueInput" [(ngModel)]="selectedFilter.value">
 <input *ngIf="showRangeInput" [(ngModel)]="selectedFilter.rangeEnd">
-<button *ngIf="showApplyButton" (click)="onApply()">Apply Filter</button>
-<button (click)="onClearAll()">Clear Filters</button>
+<button *ngIf="selectedFilter && selectedFilter.isValid()" (click)="onApply()">Apply Filter</button>
+<button *ngIf="selectedFilter && selectedFilter.isActive()" (click)="onClear(selectedFilter)">Remove Filter</button>
 <div *ngFor="let activeFilter of activeFilters">
     <span>{{ activeFilter.name }} </span>
     <ng-container *ngFor="let comparison of activeFilter.comparisons">

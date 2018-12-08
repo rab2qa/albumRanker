@@ -49,16 +49,13 @@ export class RankablesComponent implements OnInit {
     /**************/
 
     public listHeader: ListHeader;
-    public showValueInput: boolean;
-    public showRangeInput: boolean;
-    public showApplyButton: boolean;
 
     /*************/
     /* ACCESSORS */
     /*************/
 
     get selectedComparison(): Comparison {
-        return this.selectedFilter.comparisons.find(comparison => comparison.isSelected());
+        return this.selectedFilter && this.selectedFilter.comparisons.find(comparison => comparison.isSelected());
     }
 
     get selectedFilter(): Filter {
@@ -66,7 +63,15 @@ export class RankablesComponent implements OnInit {
     }
 
     get activeFilters(): Array<Filter> {
-        return this.rankables.filters.filter(filter => filter.isActive());
+        return this.rankables.filters.filter(filter => filter.isActive() && !filter.isSelected());
+    }
+
+    get showRangeInput(): boolean {
+        return !!(this.selectedComparison && this.selectedComparison.id === ComparisonType.IsInTheRange);
+    }
+
+    get showValueInput(): boolean {
+        return !!(this.selectedFilter && this.selectedComparison && !(this.selectedFilter instanceof BooleanFilter));
     }
 
     /******************/
@@ -75,9 +80,6 @@ export class RankablesComponent implements OnInit {
 
     public ngOnInit(): void {
         this.listHeader = this.setListHeader(this.rankables.name.toLowerCase());
-        this.showValueInput = false;
-        this.showRangeInput = false;
-        this.showApplyButton = false;    
     }
 
     public setListHeader(name): ListHeader {
@@ -99,15 +101,6 @@ export class RankablesComponent implements OnInit {
 
     public onFilterUpdate(event: MatSelectChange): void {
         event.value.isSelected(true);
-        if (event.value instanceof Comparison) {
-            this.showValueInput = !(this.selectedFilter instanceof BooleanFilter);
-            this.showRangeInput = !!(event.value.id === ComparisonType.IsInTheRange);
-            this.showApplyButton = !!(this.selectedFilter && this.selectedComparison);
-        } else if (event.value instanceof Filter) {
-            this.showValueInput = false;
-            this.showRangeInput = false;
-            this.showApplyButton = false;
-        }
     }
 
     public onApply(): void {
