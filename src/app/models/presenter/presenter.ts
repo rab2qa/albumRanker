@@ -4,25 +4,27 @@
 //                      //
 //////////////////////////
 
-/***********/
-/* CLASSES */
-/***********/
+/**********/
+/* MODELS */
+/**********/
 
-import { Event, ExternalEvent, InternalEvent, EventType } from "./event";
-import { Status } from "./status";
+import { Event, EventType } from '../event/event';
+import { ExternalEvent } from '../event/externalEvent/externalEvent';
+import { InternalEvent } from '../event/InternalEvent/internalEvent';
+import { Status } from '../status/status';
 
 /**************/
 /* INTERFACES */
 /**************/
 
-import { Observable } from "../interfaces/observable";
-import { Selectable } from "../interfaces/selectable";
+import { Observable } from '../../interfaces/observable';
+import { Selectable } from '../../interfaces/selectable';
 
 /*************/
 /* UTILITIES */
 /*************/
 
-import { Cache } from "../utilities/cache";
+import { Cache } from '../cache/cache';
 
 ///////////////////////
 //                   //
@@ -35,11 +37,11 @@ export abstract class Presenter implements Observable, Selectable {
     /**************/
     /* PROPERTIES */
     /**************/
+    
+    private _events: Array<Event>;
 
     protected _cache: Cache;
     protected _status: Status;
-    
-    private _events: Array<Event>;
 
     /***************/
     /* CONSTRUCTOR */
@@ -55,7 +57,9 @@ export abstract class Presenter implements Observable, Selectable {
     /* PUBLIC METHODS */
     /******************/
 
+    // ---------------------------------------------------------------------------- //
     // -------------------- IMPLEMENT THE OBSERVABLE INTERFACE -------------------- //
+    // ---------------------------------------------------------------------------- //
 
     public notify(thisObj: object, id: EventType): void {
         this._events
@@ -78,7 +82,9 @@ export abstract class Presenter implements Observable, Selectable {
         this._events = this._events.filter((handler) => { return (handler.callback !== callback); });
     }
 
+    // ---------------------------------------------------------------------------- //
     // -------------------- IMPLEMENT THE SELECTABLE INTERFACE -------------------- //
+    // ---------------------------------------------------------------------------- //
 
     public clean(): void {
         this._status.dirty = false;

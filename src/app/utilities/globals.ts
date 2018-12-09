@@ -23,7 +23,7 @@ export class Globals {
     public static get thirtyMinutes(): number { return 30 * 60 * 1000; }
 
     /******************/
-    /* PUBLIC METHODS */
+    /* STATIC METHODS */
     /******************/
 
     public static newStarArray(): Array<number> {

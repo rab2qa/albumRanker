@@ -26,7 +26,7 @@ export class Cache {
 
     public add(key: string, value: any): any {
         if (this.has(key)) {
-            console.warn("Overwriting an existing cache key: " + key);
+            console.warn('Overwriting an existing cache key: ' + key);
         }
         this._cache[key] = value;
     }

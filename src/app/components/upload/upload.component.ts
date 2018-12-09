@@ -10,6 +10,7 @@
 
 import { Component } from '@angular/core';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 /************/
 /* SERVICES */
@@ -17,7 +18,6 @@ import { Location } from '@angular/common';
 
 import { XmlService } from '../../services/xml.service';
 import { DataService } from '../../services/data.service';
-import { Router } from '@angular/router';
 
 ///////////////////////////
 //                       //

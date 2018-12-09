@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Rankable } from 'src/app/interfaces/rankable';
-import { Cache } from 'src/app/utilities/cache';
-import { Album } from 'src/app/models/album';
-import { Artist } from 'src/app/models/artist';
-import { Song } from 'src/app/models/song';
+import { Cache } from 'src/app/models/cache/cache';
+import { Album } from 'src/app/models/presenter/album/album';
+import { Artist } from 'src/app/models/presenter/artist/artist';
+import { Song } from 'src/app/models/presenter/song/song';
 
 const cache = new Cache();
 

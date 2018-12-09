@@ -10,27 +10,34 @@
 
 import { PageEvent } from '@angular/material';
 
-/***********/
-/* CLASSES */
-/***********/
-
-import { ComparisonType } from './comparison';
-import { exclusiveSelect, InternalEvent, ExternalEvent, EventType } from './event';
-import { Filter, BooleanFilter, RangeFilter, StringFilter, NumberFilter, FilterType } from './filter';
-
 /**************/
 /* INTERFACES */
 /**************/
 
-import { Filterable } from '../interfaces/filterable';
-import { Pagable, PaginationOptions } from '../interfaces/pagable';
+import { Filterable } from 'src/app/interfaces/filterable';
+import { Pagable } from 'src/app/interfaces/pagable';
+
+/**********/
+/* MODELS */
+/**********/
+
+import { ComparisonType } from 'src/app/models/comparison/comparison';
+import { exclusiveSelect, EventType } from 'src/app/models/event/event';
+import { ExternalEvent } from 'src/app/models/event/externalEvent/externalEvent';
+import { InternalEvent } from 'src/app/models/event/InternalEvent/internalEvent';
+import { Filter, FilterType } from 'src/app/models/presenter/filter/filter';
+import { BooleanFilter } from 'src/app/models/presenter/filter/booleanFilter/booleanFilter';
+import { NumberFilter } from 'src/app/models/presenter/filter/numberFilter/numberFilter';
+import { RangeFilter } from 'src/app/models/presenter/filter/numberFilter/rangeFilter/rangeFilter';
+import { StringFilter } from 'src/app/models/presenter/filter/stringFilter/stringFilter';
+import { PaginationOptions } from 'src/app/models/paginationOptions/paginationOptions';
 
 /*************/
 /* UTILITIES */
 /*************/
 
-import { Cache } from '../utilities/cache';
-import { Globals } from '../utilities/globals';
+import { Cache } from 'src/app/models/cache/cache';
+import { Globals } from 'src/app/utilities/globals';
 
 ////////////////////////////
 //                        //
@@ -106,10 +113,6 @@ export class Container<T> implements Filterable, Pagable {
         return this._filteredData.slice(start, end);
     }
 
-    get selectedFilter(): Filter {
-        return this.filters.find(filter => filter.isSelected()); 
-    }
-
     get id(): ContainerType { return this._id; }
 
     get name(): string { return this._name; }
@@ -127,15 +130,6 @@ export class Container<T> implements Filterable, Pagable {
     /* PRIVATE METHODS */
     /*******************/
 
-    private _applyFilters(): void {
-        this._filteredData = this._filters
-            .filter(filter => filter.isActive())
-            .reduce((filteredData, filter) => {
-                return this._applyFilter(filteredData, filter);
-            }, this._data);
-        this.paginationOptions.length = this._filteredData.length;
-    }
-
     private _applyFilter(data: Array<T>, filter: Filter): Array<T> {
         let response = data.filter(datum => {
             const property = Filter.getFilterValue(filter.id);
@@ -144,14 +138,14 @@ export class Container<T> implements Filterable, Pagable {
                 if (selectedComparison) {
                     switch (selectedComparison.id) {
                         case ComparisonType.BeginsWith:
-                            return datum[property].match(new RegExp('\^' + (filter as StringFilter).value, "i"));
+                            return datum[property].match(new RegExp('\^' + (filter as StringFilter).value, 'i'));
                         case ComparisonType.Contians:
-                            return datum[property].match(new RegExp((filter as StringFilter).value, "i"));
+                            return datum[property].match(new RegExp((filter as StringFilter).value, 'i'));
                         case ComparisonType.DoesNotContain:
-                            return !datum[property].match(new RegExp((filter as StringFilter).value, "i"));
+                            return !datum[property].match(new RegExp((filter as StringFilter).value, 'i'));
                         case ComparisonType.EndsWith:
                             const stringFilter = filter as StringFilter;
-                            return datum[property].match(new RegExp(stringFilter.value + '\$', "i"));
+                            return datum[property].match(new RegExp(stringFilter.value + '\$', 'i'));
                         case ComparisonType.Is:
                             if (filter instanceof StringFilter) {
                                 return datum[property].toString().toLowerCase() == filter.value.toString().toLowerCase();
@@ -181,6 +175,15 @@ export class Container<T> implements Filterable, Pagable {
             }
         });
         return response;
+    }
+
+    private _applyFilters(): void {
+        this._filteredData = this._filters
+            .filter(filter => filter.isActive())
+            .reduce((filteredData, filter) => {
+                return this._applyFilter(filteredData, filter);
+            }, this._data);
+        this.paginationOptions.length = this._filteredData.length;
     }
 
     private _setFilters(): void {

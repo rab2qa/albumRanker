@@ -1,13 +1,3 @@
-<div class="list-header flex">
-    <div class="rankable-stars rankable-stars-relative">Relative Rating</div>
-    <div class="rankable-title-text">
-        {{ listHeader.rankableTitle }}
-    </div>
-    <div class="rankable-secondary-text text-right" *ngIf="listHeader.secondary">
-        {{ listHeader.secondary }}
-    </div>
-</div>
-
 <!-- Edit Filter -->
 <mat-form-field>
     <mat-select matNativeControl required [value]="selectedFilter" (selectionChange)="onFilterUpdate($event)">
@@ -34,7 +24,21 @@
     <button (click)="onClear(activeFilter)">Remove Filter</button>
 </div>
 
+<!-- Header -->
+<div class="list-header flex">
+    <div class="rankable-stars rankable-stars-relative">Relative Rating</div>
+    <div class="rankable-title-text">
+        {{ listHeader.rankableTitle }}
+    </div>
+    <div class="rankable-secondary-text text-right" *ngIf="listHeader.secondary">
+        {{ listHeader.secondary }}
+    </div>
+</div>
+
+<!-- Rankable -->
 <ranker-rankable *ngFor="let rankable of rankables.page" [rankable]="rankable"></ranker-rankable>
+
+<!-- Pagination -->
 <mat-paginator [disabled]="rankables.paginationOptions.disabled" [hidePageSize]="rankables.paginationOptions.hidePageSize"
     [length]="rankables.paginationOptions.length" [pageIndex]="rankables.paginationOptions.pageIndex" [pageSize]="rankables.paginationOptions.pageSize"
     [pageSizeOptions]="rankables.paginationOptions.pageSizeOptions" [showFirstLastButtons]="rankables.paginationOptions.showFirstLastButtons"

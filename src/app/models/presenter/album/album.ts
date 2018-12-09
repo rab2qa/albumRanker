@@ -4,36 +4,31 @@
 //                      //
 //////////////////////////
 
-/***********/
-/* CLASSES */
-/***********/
-
-import { Presenter } from '../classes/presenter';
-
 /**************/
 /* INTERFACES */
 /**************/
 
-import { Disklikable } from '../interfaces/dislikable';
-import { Library } from './library';
-import { Likable } from '../interfaces/likable';
-import { Rankable } from '../interfaces/rankable';
-import { Ratable } from '../interfaces/ratable';
+import { Disklikable } from '../../../interfaces/dislikable';
+import { Likable } from '../../../interfaces/likable';
+import { Rankable } from '../../../interfaces/rankable';
+import { Ratable } from '../../../interfaces/ratable';
 
 /**********/
 /* MODELS */
 /**********/
 
-import { Artist } from './artist';
-import { Song } from './song';
+import { Artist } from '../artist/artist';
+import { Library } from '../library/library';
+import { Presenter } from '../presenter';
+import { Song } from '../song/song';
 
 /************/
 /* UTILTIES */
 /************/
 
-import { Algorithm } from '../utilities/algorithm';
-import { Globals } from '../utilities/globals';
-import { Settings } from '../utilities/settings';
+import { Algorithm } from '../../../utilities/algorithm';
+import { Globals } from '../../../utilities/globals';
+import { Settings } from '../../../utilities/settings';
 
 ///////////////////
 //               //
@@ -65,12 +60,12 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     public constructor(json: Object) {
         super();
 
-        this._disliked = json["Album Disliked"] === "true";
-        this._name = json["Album"];
-        this._rating = (json["Album Rating Computed"] === "true") ? Globals.defaultRating : +json["Album Rating"] / 20 || Globals.defaultRating;
-        this._ratingComputed = (json["Album Rating Computed"] === "true");
-        this._liked = json["Album Loved"] === "true";
-        this._year = +json["Year"] || null;
+        this._disliked = json['Album Disliked'] === 'true';
+        this._name = json['Album'];
+        this._rating = (json['Album Rating Computed'] === 'true') ? Globals.defaultRating : +json['Album Rating'] / 20 || Globals.defaultRating;
+        this._ratingComputed = (json['Album Rating Computed'] === 'true');
+        this._liked = json['Album Loved'] === 'true';
+        this._year = +json['Year'] || null;
 
         this._tracks = new Array<Array<Song>>();
     }
@@ -115,8 +110,8 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
             if (this.isRated()) {
                 if (this.isLiked() || this.isDisliked()) {
                     const features = [
-                        { value: this.getLikeDislikeRating(), weight: 0.5 },
-                        { value: this.getAggregateSongRating(), weight: 0.5 }
+                        { value: this._getLikeDislikeRating(), weight: 0.5 },
+                        { value: this._getAggregateSongRating(), weight: 0.5 }
                     ];
                     const weightedRating = features.reduce((sum, feature) => sum + Algorithm.applyWeight(feature.value, feature.weight), 0);
                     response =
@@ -125,17 +120,17 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
                 } else {
                     response =
                         (this._rating - 1) + // take a star off
-                        Algorithm.scale(this.getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
+                        Algorithm.scale(this._getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
                 }
             } else {
                 if (this.isLiked()) {
                     response =
                         Algorithm.scale(Globals.maxRating, Globals.minRating, (Globals.maxRating - 1) / Globals.maxRating) +
-                        Algorithm.scale(this.getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+                        Algorithm.scale(this._getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
                 } else if (this.isDisliked()) {
-                    response = Algorithm.scale(this.getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+                    response = Algorithm.scale(this._getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
                 } else {
-                    response = this.getAggregateSongRating();
+                    response = this._getAggregateSongRating();
                 }
             }
             this._ranking = response;
@@ -244,32 +239,32 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     /* PRIVATE METHODS */
     /*******************/
 
-    private getAggregateSongRating(): number {
+    private _getAggregateSongRating(): number {
         const albumDivisor = (Settings.distributeAggregateValues) ? 10 : this.topTenSongs.length;
         let aggregateSongRating = this.topTenSongs.reduce((sum, song) => sum + song.ranking, 0) / albumDivisor;
         const response = Number.isFinite(aggregateSongRating) ? aggregateSongRating : 0;
         return response;
     }
 
-    private getWeightedRating(): number {
-        let response = Globals.defaultRating;
-
-        if (this.isRated()) {
-            const starWeights = this.library.getAlbumStarWeights();
-            const weightedRating = starWeights[this.rating - 1];
-            response = weightedRating;
-        }
-
-        return response;
-    }
-
-    private getLikeDislikeRating(): number {
+    private _getLikeDislikeRating(): number {
         let response = Globals.maxRating / 2;
 
         if (this.isLiked()) {
             response = Globals.maxRating;
         } else if (this.isDisliked) {
             response = Globals.minRating;
+        }
+
+        return response;
+    }
+
+    private _getWeightedRating(): number {
+        let response = Globals.defaultRating;
+
+        if (this.isRated()) {
+            const starWeights = this.library.getAlbumStarWeights();
+            const weightedRating = starWeights[this.rating - 1];
+            response = weightedRating;
         }
 
         return response;

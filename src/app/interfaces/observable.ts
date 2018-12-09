@@ -1,4 +1,4 @@
-import { Event, EventType } from "../classes/event";
+import { Event, EventType } from "../models/event/event";
 
 ////////////////////////
 //                    //

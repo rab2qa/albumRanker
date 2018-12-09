@@ -1,32 +1,20 @@
+//////////////////////////
+//                      //
+//     DEPENDENCIES     //
+//                      //
+//////////////////////////
 
 /*************/
 /* FRAMEWORK */
 /*************/
 
-import { PageEvent, ThemePalette } from '@angular/material';
+import { PageEvent } from "@angular/material";
 
-////////////////////////////////
-//                            //
-//     PAGINATION OPTIONS     //
-//                            //
-////////////////////////////////
+/**********/
+/* MODELS */
+/**********/
 
-export class PaginationOptions {
-
-    constructor(
-        public color?: ThemePalette,
-        public disabled?: boolean,
-        public hidePageSize?: boolean,
-        public length?: number,
-        public pageIndex?: number,
-        public pageSize?: number,
-        public pageSizeOptions?: number[],
-        public showFirstLastButtons?: boolean,
-        // public page?: EventEmitter<PageEvent>,
-        // public initialized?: Observable<void>
-    ) { }
-
-} // End class PaginationOptions
+import { PaginationOptions } from "../models/paginationOptions/paginationOptions";
 
 /////////////////////
 //                 //

@@ -8,7 +8,7 @@
 /* CLASSES */
 /***********/
 
-import { Filter } from "../classes/filter";
+import { Filter } from "../models/presenter/filter/filter";
 
 ////////////////////////
 //                    //

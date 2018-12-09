@@ -13,7 +13,7 @@ export class Algorithm {
     public constructor() { }
 
     /******************/
-    /* PUBLIC METHODS */
+    /* STATIC METHODS */
     /******************/
 
     // ------------------------------------------------------------------------

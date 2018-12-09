@@ -20,9 +20,9 @@ import { Rankable } from 'src/app/interfaces/rankable';
 /* MODELS */
 /**********/
 
-import { Album } from '../../models/album';
-import { Artist } from '../../models/artist';
-import { Song } from '../../models/song';
+import { Album } from '../../models/presenter/album/album';
+import { Artist } from '../../models/presenter/artist/artist';
+import { Song } from '../../models/presenter/song/song';
 
 ///////////////////////
 //                   //
@@ -89,5 +89,5 @@ export class RankableComponent implements OnInit {
             this.canShowDetails = true;
         }
     }
-    
+
 } // End class RankablesComponent

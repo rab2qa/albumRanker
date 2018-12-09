@@ -14,7 +14,7 @@ import { Injectable } from '@angular/core';
 /* MODELS */
 /**********/
 
-import { Library } from '../models/library';
+import { Library } from '../models/presenter/library/library';
 
 /////////////////////
 //                 //
@@ -43,15 +43,6 @@ export class DataService {
     /* ACCESSORS */
     /*************/
 
-    get library(): Object {
-        if (this._library) {
-            return {
-                initial: this._library,
-                adjusted: this._library
-            }
-        }
-    }
-
     get albums(): Object {
         if (this._library) {
             return {
@@ -67,6 +58,15 @@ export class DataService {
                 initial: this._library.artists,
                 adjusted: this._library.artists
             };
+        }
+    }
+
+    get library(): Object {
+        if (this._library) {
+            return {
+                initial: this._library,
+                adjusted: this._library
+            }
         }
     }
 
@@ -101,9 +101,5 @@ export class DataService {
 
         return success;
     }
-
-    /*******************/
-    /* PRIVATE METHODS */
-    /*******************/
 
 } // End class DataService

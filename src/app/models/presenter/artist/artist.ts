@@ -4,32 +4,20 @@
 //                      //
 //////////////////////////
 
-/***********/
-/* CLASSES */
-/***********/
-
-import { Presenter } from '../classes/presenter';
-
 /**************/
 /* INTERFACES */
 /**************/
 
-import { Rankable } from '../interfaces/rankable';
+import { Rankable } from '../../../interfaces/rankable';
 
 /**********/
 /* MODELS */
 /**********/
 
-import { Album } from '../models/album';
-import { Library } from '../models/library';
-import { Song } from '../models/song';
-
-/*************/
-/* UTILITIES */
-/*************/
-
-import { Globals } from '../utilities/globals';
-import { Settings } from '../utilities/settings';
+import { Album } from '../album/album';
+import { Library } from '../library/library';
+import { Presenter } from '../presenter';
+import { Song } from '../song/song';
 
 ////////////////////
 //                //
@@ -45,8 +33,8 @@ export class Artist extends Presenter implements Rankable {
 
     private _albums: Array<Album>;
     private _library?: Library;
-    private _ranking?: number;
     private _name: string;
+    private _ranking?: number;
 
     /***************/
     /* CONSTRUCTOR */
@@ -55,8 +43,8 @@ export class Artist extends Presenter implements Rankable {
     public constructor(json: Object) {
         super();
 
-        this._name = json["Artist"];
         this._albums = new Array<Album>();
+        this._name = json['Artist'];
     }
 
     /*************/
@@ -107,13 +95,7 @@ export class Artist extends Presenter implements Rankable {
     }
 
     get value(): number {
-        // if (Settings.distributeAggregateValues) {
-        //     return this.getTotalValue();
-        // } else {
-        //     return this.getAverageValue();
-        // }
-        return this.getTotalValue();
-
+        return this._getTotalValue();
     }
 
     /******************/
@@ -127,12 +109,16 @@ export class Artist extends Presenter implements Rankable {
         return !!(this.ranking);
     }
 
-    public getAverageValue(): number {
-        let response = this.getTotalValue() / this.songs.length || 0;
+    /*******************/
+    /* PRIVATE METHODS */
+    /*******************/
+
+    private _getAverageValue(): number {
+        let response = this._getTotalValue() / this.songs.length || 0;
         return response;
     }
 
-    public getTotalValue(): number {
+    private _getTotalValue(): number {
         const response = this.songs.reduce((sum, song) => sum + song.value, 0);
         return response;
     }

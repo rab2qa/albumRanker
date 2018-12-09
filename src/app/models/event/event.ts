@@ -4,17 +4,11 @@
 //                      //
 //////////////////////////
 
-/***********/
-/* CLASSES */
-/***********/
-
-import { Presenter } from "./presenter";
-
 /**************/
 /* INTERFACES */
 /**************/
 
-import { Selectable } from "../interfaces/selectable";
+import { Selectable } from '../../interfaces/selectable';
 
 ////////////////////////
 //                    //
@@ -37,37 +31,18 @@ export enum EventType {
 ///////////////////
 
 export class Event {
-    id: EventType;
-    callback: (...args) => void;
-    args: Array<any>;
 
-    constructor(id: EventType, callback: (...args) => void, args?: Array<any>) {
-        this.id = id;
-        this.callback = callback;
-        this.args = args;
-    }
-
-}; // end class Event
-
-export class ExternalEvent extends Event {
-
-    constructor(id: EventType, callback: (element: Presenter, index: number, array: Array<Presenter>) => void, element: Presenter, index: number, array: Array<Presenter>) {
-        super(id, callback, [element, index, array]);
-    }
-
-}; // end class SelectionEvent
-
-export class InternalEvent extends Event {
+    /***************/
+    /* CONSTRUCTOR */
+    /***************/
 
     constructor(
         public id: EventType,
-        public callback: () => void,
-        public target: any
-    ) {
-        super(id, callback);
+        public callback: (...args) => void,
+        public args?: Array<any>) {
     }
 
-}; // end class ContainerEvent
+}; // end class Event
 
 ////////////////////
 //                //

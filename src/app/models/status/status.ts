@@ -28,6 +28,19 @@ export class Status {
     /* PUBLIC METHODS */
     /******************/
 
+    public toString(): string {
+        let response: string;
+
+        try {
+            const valueOfThis = this.valueOf();
+            response = JSON.stringify(valueOfThis);
+        } catch (exception) {
+            response = '{}';
+        }
+
+        return response;
+    }
+
     public valueOf(): object {
         let response: object;
 
@@ -42,16 +55,4 @@ export class Status {
         return response;
     }
 
-    public toString(): string {
-        let response: string;
-
-        try {
-            response = JSON.stringify(this.valueOf());
-        } catch (exception) {
-            response = "{}";
-        }
-
-        return response;
-    }
-
-}; // end class Status
+}; // End class Status

@@ -4,11 +4,11 @@
 //                      //
 //////////////////////////
 
-/***********/
-/* CLASSES */
-/***********/
+/**********/
+/* MODELS */
+/**********/
 
-import { Presenter } from "./presenter";
+import { Presenter } from 'src/app/models/presenter/presenter';
 
 /////////////////////////////
 //                         //
@@ -22,11 +22,11 @@ export enum ComparisonType {
     DoesNotContain,
     EndsWith,
     Is,
-    IsNot,
     IsFalse,
     IsGreaterThan,
-    IsLessThan,
     IsInTheRange,
+    IsLessThan,
+    IsNot,
     IsTrue
 }
 
@@ -64,28 +64,27 @@ export class Comparison extends Presenter {
     public static getComparisonName(id: ComparisonType): string {
         switch (id) {
             case ComparisonType.BeginsWith:
-                return "Begins With";
+                return 'Begins With';
             case ComparisonType.Contians:
-                return "Contains";
+                return 'Contains';
             case ComparisonType.DoesNotContain:
-                return "Does Not Contain";
+                return 'Does Not Contain';
             case ComparisonType.EndsWith:
-                return "Ends With";
+                return 'Ends With';
             case ComparisonType.Is:
-                return "Is";
+                return 'Is';
             case ComparisonType.IsNot:
-                return "Is Not";
+                return 'Is Not';
             case ComparisonType.IsFalse:
-                return "Is False";
+                return 'Is False';
             case ComparisonType.IsGreaterThan:
-                return "Is Greater Than";
+                return 'Is Greater Than';
             case ComparisonType.IsLessThan:
-                return "Is Less Than";
+                return 'Is Less Than';
             case ComparisonType.IsInTheRange:
-                return "Is In The Range";
+                return 'Is In The Range';
             case ComparisonType.IsTrue:
-                return "Is True";
-
+                return 'Is True';
         }
     }
 

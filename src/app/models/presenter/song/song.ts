@@ -4,37 +4,32 @@
 //                      //
 //////////////////////////
 
-/***********/
-/* CLASSES */
-/***********/
-
-import { Presenter } from '../classes/presenter';
-
 /**************/
 /* INTERFACES */
 /**************/
 
-import { Disklikable } from '../interfaces/dislikable';
-import { Likable } from '../interfaces/likable';
-import { Rankable } from '../interfaces/rankable';
-import { Ratable } from '../interfaces/ratable';
+import { Disklikable } from '../../../interfaces/dislikable';
+import { Likable } from '../../../interfaces/likable';
+import { Rankable } from '../../../interfaces/rankable';
+import { Ratable } from '../../../interfaces/ratable';
 
 /**********/
 /* MODELS */
 /**********/
 
-import { Album } from './album';
-import { Artist } from './artist';
-import { Library } from './library';
-import { Playlist } from './playlist';
+import { Album } from '../album/album';
+import { Artist } from '../artist/artist';
+import { Library } from '../library/library';
+import { Playlist } from '../playlist/playlist';
+import { Presenter } from '../presenter';
 
 /************/
 /* UTILTIES */
 /************/
 
-import { Algorithm } from '../utilities/algorithm';
-import { Globals } from '../utilities/globals';
-import { Settings } from '../utilities/settings';
+import { Algorithm } from '../../../utilities/algorithm';
+import { Globals } from '../../../utilities/globals';
+import { Settings } from '../../../utilities/settings';
 
 //////////////////
 //              //
@@ -74,18 +69,18 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     public constructor(json: Object) {
         super();
 
-        this._disabled = (json["Disabled"] === "true");
-        this._disliked = (json["Disliked"] === "true");
-        this._duration = +json["Total Time"];
-        this._explicit = (json["Explicit"] === "true");
-        this._genre = json["Genre"];
-        this._loved = (json["Loved"] === "true");
-        this._name = json["Name"];
-        this._playCount = +json["Play Count"] || 0;
-        this._rating = +json["Rating"] / 20 || Globals.defaultRating;
-        this._ratingComputed = (json["Rating Computed"] === "true");
-        this._releaseDate = json['Release Date'] ? new Date(json["Release Date"]) : null;
-        this._skipCount = +json["Skip Count"] || 0;
+        this._disabled = (json['Disabled'] === 'true');
+        this._disliked = (json['Disliked'] === 'true');
+        this._duration = +json['Total Time'];
+        this._explicit = (json['Explicit'] === 'true');
+        this._genre = json['Genre'];
+        this._loved = (json['Loved'] === 'true');
+        this._name = json['Name'];
+        this._playCount = +json['Play Count'] || 0;
+        this._rating = +json['Rating'] / 20 || Globals.defaultRating;
+        this._ratingComputed = (json['Rating Computed'] === 'true');
+        this._releaseDate = json['Release Date'] ? new Date(json['Release Date']) : null;
+        this._skipCount = +json['Skip Count'] || 0;
 
         this._playlists = new Array<Playlist>();
     }
@@ -137,9 +132,9 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
 
     get releaseDate(): Date { return this._releaseDate; }
 
-    get ranking(): number { return this.getContinuousRating(); }
+    get ranking(): number { return this._getContinuousRating(); }
 
-    get rating(): number { return this.getDiscreteRating(); }
+    get rating(): number { return this._getDiscreteRating(); }
 
     get skipCount(): number { return this._skipCount; }
 
@@ -162,9 +157,9 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
             let value = 0;
             if (this.isRated()) {
                 const starWeights = this._library.getSongStarWeights();
-                const starIndex = this.getDiscreteRating() - 1;
+                const starIndex = this._getDiscreteRating() - 1;
                 const likeDislikeMultiplier = this._loved ? 2 : this._disliked ? 0.5 : 1;
-                const playSkipMultiplier = 1 + this.getRelativePlaySkipRatio();
+                const playSkipMultiplier = 1 + this._getRelativePlaySkipRatio();
                 const weightedRating = starWeights[starIndex];
                 value = weightedRating * likeDislikeMultiplier * playSkipMultiplier;
             }
@@ -194,57 +189,63 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     }
 
     public isRankable(): boolean {
-        const response = Settings.provideDefaultRating || !!(this.getDiscreteRating() || this._loved || this._disliked || this._playCount || this._skipCount);
+        const response = Settings.provideDefaultRating || !!(this._getDiscreteRating() || this._loved || this._disliked || this._playCount || this._skipCount);
         return response;
     }
 
     public isRated(): boolean {
-        return Number.isFinite(this.getDiscreteRating());
+        return Number.isFinite(this._getDiscreteRating());
     }
 
     /*******************/
     /* PRIVATE METHODS */
     /*******************/
 
+    // ------------------------------------------------------ //
     // -------------------- PLAY METRICS -------------------- //
+    // ------------------------------------------------------ //
 
-    private getRelativePlayRatio(): number {
+    private _getRelativePlayRatio(): number {
         let response = 1;
 
         const playRatio = this._playCount / this.library.getMaxPlayCount();
-        if (Number.isFinite(playRatio)) { 
-            response = playRatio; 
+        if (Number.isFinite(playRatio)) {
+            response = playRatio;
         }
 
         return response;
     }
 
+    // ------------------------------------------------------ //
     // -------------------- SKIP METRICS -------------------- //
+    // ------------------------------------------------------ //
 
-    private getRelativeSkipRatio(): number {
+    private _getRelativeSkipRatio(): number {
         let response = 1;
 
         const skipRatio = this._skipCount / this.library.getMaxSkipCount();
-        if (Number.isFinite(skipRatio)) { 
-            response = skipRatio; 
+        if (Number.isFinite(skipRatio)) {
+            response = skipRatio;
         }
 
         return response;
     }
 
+    // ------------------------------------------------------------- //
     // -------------------- PLAY / SKIP METRICS -------------------- //
+    // ------------------------------------------------------------- //
 
-    private getPlaySkipMultiplier(): number {
+    private _getPlaySkipMultiplier(): number {
         let response = 1;
 
         if (!Settings.ignorePlays && !Settings.ignoreSkips) {
-            response = 1 + this.getRelativePlaySkipRatio();
+            response = 1 + this._getRelativePlaySkipRatio();
         }
 
         return response;
     }
 
-    private getAbsolutePlaySkipRatio(): number {
+    private _getAbsolutePlaySkipRatio(): number {
         let response = 1;
 
         const absolutePlaySkipRatio = this._playCount / (this._playCount + this._skipCount);
@@ -255,12 +256,12 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
         return response;
     }
 
-    private getAbsolutePlaySkipRating(): number {
-        const absolutePlaySkipRating = Algorithm.scale(this.getAbsolutePlaySkipRatio(), Globals.minRating, Globals.maxRating);
+    private _getAbsolutePlaySkipRating(): number {
+        const absolutePlaySkipRating = Algorithm.scale(this._getAbsolutePlaySkipRatio(), Globals.minRating, Globals.maxRating);
         return absolutePlaySkipRating;
     }
 
-    private getRelativePlaySkipRatio(): number {
+    private _getRelativePlaySkipRatio(): number {
         let response = 0.5;
 
         const maxPlayCount = this.library.getMaxPlayCount();
@@ -273,14 +274,16 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
         return response;
     }
 
-    private getRelativePlaySkipRating(): number {
-        const playSkipRating = Algorithm.scale(this.getRelativePlaySkipRatio(), Globals.minRating, Globals.maxRating);
+    private _getRelativePlaySkipRating(): number {
+        const playSkipRating = Algorithm.scale(this._getRelativePlaySkipRatio(), Globals.minRating, Globals.maxRating);
         return playSkipRating;
     }
 
+    // ---------------------------------------------------------------- //
     // -------------------- LIKE / DISLIKE METRICS -------------------- //
+    // ---------------------------------------------------------------- //
 
-    private getLikeDislikeMultiplier(): number {
+    private _getLikeDislikeMultiplier(): number {
         let response = 1;
 
         if (!Settings.ignoreLikesAndDislikes) {
@@ -294,7 +297,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
         return response;
     }
 
-    private getLikeDislikeRating(): number {
+    private _getLikeDislikeRating(): number {
         let response = Globals.maxRating / 2;
 
         if (this.isLiked()) {
@@ -306,9 +309,11 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
         return response;
     }
 
+    // -------------------------------------------------------- //
     // -------------------- RATING METRICS -------------------- //
+    // -------------------------------------------------------- //
 
-    private getDiscreteRating(): number {
+    private _getDiscreteRating(): number {
         let response = Globals.defaultRating;
 
         if (Settings.ignoreComputedRatings) {
@@ -324,33 +329,33 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
         return response;
     }
 
-    private getContinuousRating(): number {
+    private _getContinuousRating(): number {
         if (!this._cache.has('continuousRating')) {
             let continuousRating = Globals.defaultRating;
             if (this.isRated()) {
                 if (this.isLiked() || this.isDisliked()) {
                     const features = [
-                        { value: this.getLikeDislikeRating(), weight: 0.5 },
-                        { value: this.getRelativePlaySkipRating(), weight: 0.5 }
+                        { value: this._getLikeDislikeRating(), weight: 0.5 },
+                        { value: this._getRelativePlaySkipRating(), weight: 0.5 }
                     ];
                     const weightedRating = features.reduce((sum, feature) => sum + Algorithm.applyWeight(feature.value, feature.weight), 0);
                     continuousRating =
-                        (this.getDiscreteRating() - 1) + // take a star off
+                        (this._getDiscreteRating() - 1) + // take a star off
                         Algorithm.scale(weightedRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
                 } else {
                     continuousRating =
-                        (this.getDiscreteRating() - 1) + // take a star off
-                        Algorithm.scale(this.getRelativePlaySkipRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
+                        (this._getDiscreteRating() - 1) + // take a star off
+                        Algorithm.scale(this._getRelativePlaySkipRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
                 }
             } else {
                 if (this.isLiked()) {
                     continuousRating =
                         Algorithm.scale(Globals.maxRating, Globals.minRating, (Globals.maxRating - 1) / Globals.maxRating) +
-                        Algorithm.scale(this.getRelativePlaySkipRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+                        Algorithm.scale(this._getRelativePlaySkipRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
                 } else if (this.isDisliked()) {
-                    continuousRating = Algorithm.scale(this.getRelativePlaySkipRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+                    continuousRating = Algorithm.scale(this._getRelativePlaySkipRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
                 } else {
-                    continuousRating = this.getRelativePlaySkipRating();
+                    continuousRating = this._getRelativePlaySkipRating();
                 }
             }
             this._cache.add('continuousRating', continuousRating);
@@ -358,18 +363,18 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
         return this._cache.get('continuousRating');
     }
 
-    private getRelativeRating(): number {
+    private _getRelativeRating(): number {
         let response = Globals.defaultRating;
 
         if (this.isRated()) {
             const starWeights = this._library.getSongStarWeights();
-            let starIndex = this.getDiscreteRating() - 1;
+            let starIndex = this._getDiscreteRating() - 1;
             if (!Number.isInteger(starIndex)) {
                 starIndex = Math.floor(starIndex);
                 console.warn('Attempt to access an array with a non-integer index.');
             }
             if (starIndex < Globals.minRating || starIndex > Globals.maxRating) {
-                throw new RangeError("Variable starIndex: " + starIndex + " is not a valid array index for starWeights: " + starWeights.length);
+                throw new RangeError('Variable starIndex: ' + starIndex + ' is not a valid array index for starWeights: ' + starWeights.length);
             }
             response = starWeights[starIndex];
         }

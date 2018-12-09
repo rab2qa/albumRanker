@@ -4,28 +4,23 @@
 //                      //
 //////////////////////////
 
-/***********/
-/* CLASSES */
-/***********/
-
-import { Container, ContainerType} from '../classes/container';
-import { Presenter } from '../classes/presenter';
-
 /**********/
 /* MODELS */
 /**********/
 
-import { Artist } from '../models/artist';
-import { Album } from '../models/album';
-import { Playlist } from '../models/playlist';
-import { Song } from '../models/song';
+import { Container, ContainerType} from '../../container/container';
+import { Artist } from '../artist/artist';
+import { Album } from '../album/album';
+import { Playlist } from '../playlist/playlist';
+import { Presenter } from '../presenter';
+import { Song } from '../song/song';
 
 /*************/
 /* UTILITIES */
 /*************/
 
-import { Globals } from '../utilities/globals';
-import { Settings } from '../utilities/settings';
+import { Globals } from '../../../utilities/globals';
+import { Settings } from '../../../utilities/settings';
 
 /////////////////////
 //                 //
@@ -56,31 +51,31 @@ export class Library extends Presenter {
         const playlists = {};
         const songs = {};
 
-        for (const key in json["Tracks"]) {
+        for (const key in json['Tracks']) {
 
-            const track = json["Tracks"][key];
-            const albumName = track["Album"];
-            const artistName = track["Artist"];
-            const discNumber = +track["Disc Number"] || 1;
-            const trackId: string = track["Track ID"];
-            const trackNumber = +track["Track Number"];
+            const track = json['Tracks'][key];
+            const albumName = track['Album'];
+            const artistName = track['Artist'];
+            const discNumber = +track['Disc Number'] || 1;
+            const trackId: string = track['Track ID'];
+            const trackNumber = +track['Track Number'];
 
-            if (track["Movie"] === "true") {
+            if (track['Movie'] === 'true') {
                 // TODO: Add support for Movies
                 continue;
             }
 
-            if (track["TV Show"] === "true") {
+            if (track['TV Show'] === 'true') {
                 // TODO: Add support for TV Shows
                 continue;
             }
 
-            if (track["Audiobook"] === "true") {
+            if (track['Audiobook'] === 'true') {
                 // TODO: Add support for Audiobooks
                 continue;
             }
 
-            if (track["Podcast"] === "true") {
+            if (track['Podcast'] === 'true') {
                 // TODO: Add support for Podcasts
                 continue;
             }
@@ -116,15 +111,15 @@ export class Library extends Presenter {
         }
 
         // Create Playlists
-        json["Playlists"].forEach(jsonPlaylist => {
-            if (!(jsonPlaylist["Folder"] || jsonPlaylist["Name"] === "Downloaded")) { // TODO: Add support for Folders and Downloaded Content
-                const name = jsonPlaylist["Name"];
+        json['Playlists'].forEach(jsonPlaylist => {
+            if (!(jsonPlaylist['Folder'] || jsonPlaylist['Name'] === 'Downloaded')) { // TODO: Add support for Folders and Downloaded Content
+                const name = jsonPlaylist['Name'];
                 const playlist = new Playlist(jsonPlaylist);
                 playlist.library = this;
 
-                if (jsonPlaylist["Playlist Items"]) {
-                    jsonPlaylist["Playlist Items"].forEach(item => {
-                        const itemId = item["Track ID"];
+                if (jsonPlaylist['Playlist Items']) {
+                    jsonPlaylist['Playlist Items'].forEach(item => {
+                        const itemId = item['Track ID'];
                         const song = songs[itemId];
                         if (song) { playlist.songs.push(song); }
                         if (songs[itemId]) { songs[itemId].playlists.push(playlist); }
@@ -134,12 +129,12 @@ export class Library extends Presenter {
             }
         });
 
-        this._artists = new Container(ContainerType.Artist, "Artists", Object.values(artists));
-        this._albums = new Container(ContainerType.Album, "Albums", Object.values(albums));
-        this._playlists = new Container(ContainerType.Playlist, "Playlists", Object.values(playlists));
-        this._songs = new Container(ContainerType.Song, "Songs", Object.values(songs));
+        this._artists = new Container(ContainerType.Artist, 'Artists', Object.values(artists));
+        this._albums = new Container(ContainerType.Album, 'Albums', Object.values(albums));
+        this._playlists = new Container(ContainerType.Playlist, 'Playlists', Object.values(playlists));
+        this._songs = new Container(ContainerType.Song, 'Songs', Object.values(songs));
 
-        this.rank()
+        this._rank()
 
     } // End constructor()
 
@@ -313,7 +308,7 @@ export class Library extends Presenter {
     /* PRIVATE METHODS */
     /*******************/
 
-    private rank(): void {
+    private _rank(): void {
         this.artists.all.sort((a, b) => (Settings.useRelativeRatingsForArtists) ? b.value - a.value : b.ranking - a.ranking);
         this.artists.all.forEach(artist => artist.albums.sort((a, b) => (Settings.useRelativeRatingsForAlbums) ? b.value - a.value : b.ranking - a.ranking));
         this.albums.all.sort((a, b) => (Settings.useRelativeRatingsForAlbums) ? b.value - a.value : b.ranking - a.ranking);

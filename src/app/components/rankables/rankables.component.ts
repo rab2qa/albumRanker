@@ -15,15 +15,16 @@ import { MatSelectChange } from '@angular/material';
 /* CLASSES */
 /***********/
 
-import { Comparison, ComparisonType } from 'src/app/classes/comparison';
-import { Container } from 'src/app/classes/container';
+import { Comparison, ComparisonType } from "src/app/models/comparison/comparison";
+import { Container } from 'src/app/models/container/container';
 
 /**************/
 /* INTERFACES */
 /**************/
 
 import { Rankable } from 'src/app/interfaces/rankable';
-import { Filter, BooleanFilter } from 'src/app/classes/filter';
+import { Filter } from 'src/app/models/presenter/filter/filter';
+import { BooleanFilter } from 'src/app/models/presenter/filter/booleanFilter/booleanFilter';
 
 interface ListHeader {
     rankableTitle: string;

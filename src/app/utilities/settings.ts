@@ -9,7 +9,7 @@ export class Settings {
     /*************/
     /* ACCESSORS */
     /*************/
-    
+
     // Setting that governs the divisor of aggregates
     // Set to false to make EPs competitive with LPs
     public static get distributeAggregateValues(): boolean { return false; }
