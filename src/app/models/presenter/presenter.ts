@@ -96,8 +96,8 @@ export abstract class Presenter implements Observable, Selectable {
                 this.isSelected(false);                                                     // deselect anything we make unavailable
             }
             this._status.available = value;                                                 // make the state change
-            if (this.notify) {                                                              // do we implement the Observable interface?
-                this.notify(this, EventType.Available);                                     // update listeners to the state change
+            if (this['notify']) {                                                           // do we implement the Observable interface?
+                this['notify'](this, EventType.Available);                                  // update listeners to the state change
             }
         }
         return this._status.available;
@@ -112,9 +112,9 @@ export abstract class Presenter implements Observable, Selectable {
             if (this.isAvailable()) {                                                       // ensure that only available items can be selected
                 this._status.selected = value;                                              // make the state change
                 this._status.dirty = !this._status.dirty;                                   // flip the dirty flag
-                if (this.notify) {                                                          // do we implement the Observable interface?
-                    this.notify(this, EventType.Selected);                                  // update listeners to the state change
-                    this.notify(this, EventType.Dirty);
+                if (this['notify']) {                                                       // do we implement the Observable interface?
+                    this['notify'](this, EventType.Selected);                               // update listeners to the state change
+                    this['notify'](this, EventType.Dirty);
                 }
             }
         }

@@ -339,8 +339,8 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
     public isActive(value?: boolean, force?: boolean): boolean {
         if (value !== undefined && (this._status.active !== value || force === true)) { // are we changing state?
             this._status.active = value;                                                // make the state change
-            if (this.notify) {                                                          // do we implement the Observable interface?
-                this.notify(this, EventType.Active);                                    // update listeners to the state change
+            if (this['notify']) {                                                          // do we implement the Observable interface?
+                this['notify'](this, EventType.Active);                                    // update listeners to the state change
             }
         }
         return this._status.active;
@@ -370,8 +370,8 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
     public isSupported(value?: boolean): boolean {
         if (value !== undefined && this._status.supported !== value) {  // are we changing state?
             this._status.supported = value;                             // make the state change
-            if (this.notify) {                                          // do we implement the Observable interface?
-                this.notify(this, EventType.Supported);                 // update listeners to the state change
+            if (this['notify']) {                                          // do we implement the Observable interface?
+                this['notify'](this, EventType.Supported);                 // update listeners to the state change
             }
         }
         return this._status.supported;
