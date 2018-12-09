@@ -8,7 +8,7 @@
 /* MODELS */
 /**********/
 
-import { Container, ContainerType} from '../../container/container';
+import { Container, ContainerType } from '../../container/container';
 import { Artist } from '../artist/artist';
 import { Album } from '../album/album';
 import { Playlist } from '../playlist/playlist';
@@ -155,8 +155,9 @@ export class Library extends Presenter {
     /******************/
 
     public getAlbumStarCounts(): Array<number> {
-        if (!this._cache.has('albumStarCounts')) {
-            const albumStarCounts = this.albums.all.reduce((starCounts, album) => {
+        let albumStarCounts = this._cache.get('albumStarCounts')
+        if (!albumStarCounts) {
+            albumStarCounts = this.albums.all.reduce((starCounts, album) => {
                 if (album.isRated()) {
                     const starIndex = album.rating - 1;
                     starCounts[starIndex] = starCounts[starIndex] || 0;
@@ -166,13 +167,14 @@ export class Library extends Presenter {
             }, Globals.newStarArray());
             this._cache.add('albumStarCounts', albumStarCounts);
         }
-        return this._cache.get('albumStarCounts');
+        return albumStarCounts;
     }
 
     public getAlbumStarWeights(): Array<number> {
-        if (!this._cache.has('albumStarWeights')) {
+        let albumStarWeights = this._cache.get('albumStarWeights');
+        if (!albumStarWeights) {
             const albumStarCounts = this.getAlbumStarCounts();
-            let albumStarWeights = Globals.newStarArray();
+            albumStarWeights = Globals.newStarArray();
             for (let i = 2; i < Globals.maxRating; i++) {
                 if (albumStarCounts[i]) {
                     const previousStarWeight = albumStarWeights[i - 1];
@@ -182,70 +184,77 @@ export class Library extends Presenter {
             }
             this._cache.add('albumStarWeights', albumStarWeights);
         }
-        return this._cache.get('albumStarWeights');
+        return albumStarWeights;
     }
 
     public getMaxPlayCount(): number {
-        if (!this._cache.has('maxPlayCount')) {
-            const maxPlayCount = this.songs.all.reduce((max, song) => Math.max(song.playCount, max), 0);
+        let maxPlayCount = this._cache.get('maxPlayCount');
+        if (!Number.isFinite(maxPlayCount)) {
+            maxPlayCount = this.songs.all.reduce((max, song) => Math.max(song.playCount, max), 0);
             this._cache.add('maxPlayCount', maxPlayCount);
         }
-        return this._cache.get('maxPlayCount');
+        return maxPlayCount;
     }
 
     public getMaxSkipCount(): number {
-        if (!this._cache.has('maxSkipCount')) {
-            const maxSkipCount = this.songs.all.reduce((max, song) => Math.max(song.skipCount, max), 0);
+        let maxSkipCount = this._cache.get('maxSkipCount');
+        if (!Number.isFinite(maxSkipCount)) {
+            maxSkipCount = this.songs.all.reduce((max, song) => Math.max(song.skipCount, max), 0);
             this._cache.add('maxSkipCount', maxSkipCount);
         }
-        return this._cache.get('maxSkipCount');
+        return maxSkipCount;
     }
 
     public getMaxWeightedRating(): number {
-        if (!this._cache.has('maxWeightedRating')) {
+        let maxWeightedRating = this._cache.get('maxWeightedRating');
+        if (!Number.isFinite(maxWeightedRating)) {
             const likeCounts = this.getSongLikeCounts
-            const maxWeightedRating = this.getSongStarWeights().reduce((result, element, index, array) => {
+            maxWeightedRating = this.getSongStarWeights().reduce((result, element, index, array) => {
                 const likeMultiplier = likeCounts[index] ? 2 : 1;
                 const playSkipMultiplier = 1 + 1;
                 return Math.max(result, array[index] * likeMultiplier * playSkipMultiplier);
             }, 0);
             this._cache.add('maxWeightedRating', maxWeightedRating);
         }
-        return this._cache.get('maxWeightedRating');
+        return maxWeightedRating;
     }
 
     public getMinPlayCount(): number {
-        if (!this._cache.has('minPlayCount')) {
-            const minPlayCount = this.songs.all.reduce((min, song) => Math.min(song.playCount, min), Number.MAX_SAFE_INTEGER);
+        let minPlayCount = this._cache.get('minPlayCount');
+        if (!Number.isFinite(minPlayCount)) {
+            minPlayCount = this.songs.all.reduce((min, song) => Math.min(song.playCount, min), Number.MAX_SAFE_INTEGER);
             this._cache.add('maxPlayCount', minPlayCount);
         }
-        return this._cache.get('minPlayCount');
+        return minPlayCount;
     }
 
     public getMinSkipCount(): number {
-        if (!this._cache.has('minSkipCount')) {
-            const minSkipCount = this.songs.all.reduce((min, song) => Math.min(song.skipCount, min), Number.MAX_SAFE_INTEGER);
+        let minSkipCount = this._cache.get('minSkipCount');
+        if (!Number.isFinite(minSkipCount)) {
+            minSkipCount = this.songs.all.reduce((min, song) => Math.min(song.skipCount, min), Number.MAX_SAFE_INTEGER);
             this._cache.add('minSkipCount', minSkipCount);
         }
-        return this._cache.get('minSkipCount');
+        return minSkipCount;
     }
 
     public getMinWeightedRating(): number {
-        if (!this._cache.has('minWeightedRating')) {
+        let minWeightedRating = this._cache.get('minWeightedRating');
+        if (!Number.isFinite(minWeightedRating)) {
             const dislikeCounts = this.getSongLikeCounts
-            const minWeightedRating = this.getSongStarWeights().reduce((result, element, index, array) => {
+            minWeightedRating = this.getSongStarWeights().reduce((result, element, index, array) => {
                 const dislikeMultiplier = dislikeCounts[index] ? 0.5 : 1;
                 const playSkipMultiplier = 1 + 1;
                 return Math.min(result, array[index] * dislikeMultiplier * playSkipMultiplier);
             }, 0);
             this._cache.add('minWeightedRating', minWeightedRating);
         }
-        return this._cache.get('minWeightedRating');
+        return minWeightedRating;
     }
 
     public getSongStarCounts(): Array<number> {
-        if (!this._cache.has('songStarCounts')) {
-            const songStarCounts = this.songs.all.reduce((starCounts, song) => {
+        let songStarCounts = this._cache.get('songStarCounts');
+        if (!songStarCounts) {
+            songStarCounts = this.songs.all.reduce((starCounts, song) => {
                 if (song.isRated()) {
                     const starIndex = song.rating - 1;
                     starCounts[starIndex] = starCounts[starIndex] || 0;
@@ -255,13 +264,14 @@ export class Library extends Presenter {
             }, Globals.newStarArray());
             this._cache.add('songStarCounts', songStarCounts);
         }
-        return this._cache.get('songStarCounts');
+        return songStarCounts;
     }
 
     public getSongStarWeights(): Array<number> {
-        if (!this._cache.has('songStarWeights')) {
+        let songStarWeights = this._cache.get('songStarWeights');
+        if (!songStarWeights) {
             const songStarCounts = this.getSongStarCounts();
-            let songStarWeights = Globals.newStarArray();
+            songStarWeights = Globals.newStarArray();
             for (let i = 2; i < Globals.maxRating; i++) {
                 if (songStarCounts[i]) {
                     const previousStarWeight = songStarWeights[i - 1];
@@ -271,12 +281,13 @@ export class Library extends Presenter {
             }
             this._cache.add('songStarWeights', songStarWeights);
         }
-        return this._cache.get('songStarWeights');
+        return songStarWeights;
     }
 
     public getSongLikeCounts(): Array<number> {
-        if (!this._cache.has('songLikeCounts')) {
-            const songLikeCounts = this.songs.all.reduce((likeCounts, song) => {
+        let songLikeCounts = this._cache.get('songLikeCounts');
+        if (!songLikeCounts) {
+            songLikeCounts = this.songs.all.reduce((likeCounts, song) => {
                 if (song.isLiked()) {
                     const countIndex = song.rating - 1;
                     likeCounts[countIndex] = likeCounts[countIndex] || 0;
@@ -286,12 +297,13 @@ export class Library extends Presenter {
             }, Globals.newStarArray());
             this._cache.add('songLikeCounts', songLikeCounts);
         }
-        return this._cache.get('songLikeCounts');
+        return songLikeCounts;
     }
 
     public getSongDislikeCounts(): Array<number> {
-        if (!this._cache.has('songDislikeCounts')) {
-            const songDislikeCounts = this.songs.all.reduce((dislikeCounts, song) => {
+        let songDislikeCounts = this._cache.get('songDislikeCounts');
+        if (!songDislikeCounts) {
+            songDislikeCounts = this.songs.all.reduce((dislikeCounts, song) => {
                 if (song.isDisliked()) {
                     const countIndex = song.rating - 1;
                     songDislikeCounts[countIndex] = songDislikeCounts[countIndex] || 0;
@@ -301,7 +313,7 @@ export class Library extends Presenter {
             }, Globals.newStarArray());
             this._cache.add('songDislikeCounts', songDislikeCounts);
         }
-        return this._cache.get('songDislikeCounts');
+        return songDislikeCounts;
     }
 
     /*******************/

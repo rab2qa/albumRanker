@@ -153,8 +153,9 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     }
 
     get value(): number {
-        if (!this._cache.has('value')) {
-            let value = 0;
+        let value = this._cache.get('value');
+        if (!Number.isFinite(value)) {
+            value = 0;
             if (this.isRated()) {
                 const starWeights = this._library.getSongStarWeights();
                 const starIndex = this._getDiscreteRating() - 1;
@@ -165,7 +166,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
             }
             this._cache.add('value', value);
         }
-        return this._cache.get('value');
+        return value;
     }
 
     /******************/
@@ -330,8 +331,9 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     }
 
     private _getContinuousRating(): number {
-        if (!this._cache.has('continuousRating')) {
-            let continuousRating = Globals.defaultRating;
+        let continuousRating = this._cache.get('continuousRating')
+        if (!Number.isFinite(continuousRating)) {
+            continuousRating = Globals.defaultRating;
             if (this.isRated()) {
                 if (this.isLiked() || this.isDisliked()) {
                     const features = [
@@ -360,7 +362,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
             }
             this._cache.add('continuousRating', continuousRating);
         }
-        return this._cache.get('continuousRating');
+        return continuousRating;
     }
 
     private _getRelativeRating(): number {

@@ -59,11 +59,12 @@ export class Artist extends Presenter implements Rankable {
     get name(): string { return this._name; }
 
     get playCount(): number {
-        if (!this._cache.has('playCount')) {
-            const playCount = this.songs.reduce((sum, song) => sum + song.playCount, 0);
+        let playCount = this._cache.get('playCount');
+        if (!Number.isFinite(playCount)) {
+            playCount = this.songs.reduce((sum, song) => sum + song.playCount, 0);
             this._cache.add('playCount', playCount);
         }
-        return this._cache.get('playCount');
+        return playCount;
     }
 
     get ranking(): number {
@@ -76,22 +77,24 @@ export class Artist extends Presenter implements Rankable {
     }
 
     get skipCount(): number {
-        if (!this._cache.has('skipCount')) {
-            const skipCount = this.songs.reduce((sum, song) => sum + song.skipCount, 0);
+        let skipCount = this._cache.get('skipCount');
+        if (!Number.isFinite(skipCount)) {
+            skipCount = this.songs.reduce((sum, song) => sum + song.skipCount, 0);
             this._cache.add('skipCount', skipCount);
         }
-        return this._cache.get('skipCount');
+        return skipCount;
     }
 
     get songs(): Array<Song> {
-        if (!this._cache.has('songs')) {
-            const songs = new Array<Song>();
+        let songs = this._cache.get('songs');
+        if (!songs) {
+            songs = new Array<Song>();
             for (let key in this._albums) {
                 Array.prototype.push.apply(songs, this._albums[key].songs);
             }
             this._cache.add('songs', songs);
         }
-        return this._cache.get('songs');
+        return songs;
     }
 
     get value(): number {

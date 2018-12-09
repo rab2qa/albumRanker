@@ -100,11 +100,12 @@ export class Container<T> implements Filterable, Pagable {
     }
 
     get filters(): Array<Filter> {
-        if (!this._cache.has('supportedFilters')) {
-            const supportedFilters = this._filters.filter(filter => filter.isSupported());;
+        let supportedFilters = this._cache.get('supportedFilters');
+        if (!supportedFilters) {
+            supportedFilters = this._filters.filter(filter => filter.isSupported());;
             this._cache.add('supportedFilters', supportedFilters);
         }
-        return this._cache.get('supportedFilters');
+        return supportedFilters;
     }
 
     get page(): Array<T> {
