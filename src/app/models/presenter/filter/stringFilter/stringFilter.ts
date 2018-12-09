@@ -48,12 +48,17 @@ export class StringFilter extends Filter {
     /* PUBLIC METHODS */
     /******************/
 
-    public isValid(): boolean {
-        const superIsValid = super.isValid();
-        const isComplete = !!(this.value);
-        const isNotActive = !this.isActive();
-        const isDirty = this.isDirty();
-        return superIsValid && isComplete && (isNotActive || isDirty);
+    // ------------------------------------------------------------------------------------ //
+    // -------------------- HIDE BASE CLASS ACTIVATABLE IMPLEMENTATION -------------------- //
+    // ------------------------------------------------------------------------------------ //
+
+    public isActive(value?: boolean): boolean {
+        if (value === true && this.isDirty()) {
+            this.clean();
+            return super.isActive(value, true);
+        } else {
+            return super.isActive(value);
+        }
     }
 
     // ----------------------------------------------------------------------------------- //
@@ -76,16 +81,15 @@ export class StringFilter extends Filter {
     }
 
     // ------------------------------------------------------------------------------------ //
-    // -------------------- HIDE BASE CLASS ACTIVATABLE IMPLEMENTATION -------------------- //
+    // -------------------- HIDE BASE CLASS VALIDATABLE IMPLEMENTATION -------------------- //
     // ------------------------------------------------------------------------------------ //
 
-    public isActive(value?: boolean): boolean {
-        if (value === true && this.isDirty()) {
-            this.clean();
-            return super.isActive(value, true);
-        } else {
-            return super.isActive(value);
-        }
+    public isValid(): boolean {
+        const superIsValid = super.isValid();
+        const isComplete = !!(this.value);
+        const isNotActive = !this.isActive();
+        const isDirty = this.isDirty();
+        return superIsValid && isComplete && (isNotActive || isDirty);
     }
 
     /*******************/

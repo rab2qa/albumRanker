@@ -44,16 +44,6 @@ export class RangeFilter extends NumberFilter {
     /* PUBLIC METHODS */
     /******************/
 
-    public isValid(): boolean {
-        const superIsValid = super.isValid();
-        const selectedComparison = this.comparisons.find(comparison => comparison.isSelected());
-        const rangeComparisonIsSelected = !!(selectedComparison && selectedComparison.id === ComparisonType.IsInTheRange);
-        const isComplete = rangeComparisonIsSelected ? !!(this.rangeEnd) : true;
-        const isNotActive = !this.isActive();
-        const isDirty = this.isDirty();
-        return superIsValid && isComplete && (isNotActive || isDirty);
-    }
-
     // ----------------------------------------------------------------------------------- //
     // -------------------- HIDE BASE CLASS SELECTABLE IMPLEMENTATION -------------------- //
     // ----------------------------------------------------------------------------------- //
@@ -71,6 +61,20 @@ export class RangeFilter extends NumberFilter {
 
     public isDirty(): boolean {
         return super.isDirty() || this._rangeEndIsDirty();
+    }
+
+    // ------------------------------------------------------------------------------------ //
+    // -------------------- HIDE BASE CLASS VALIDATABLE IMPLEMENTATION -------------------- //
+    // ------------------------------------------------------------------------------------ //
+
+    public isValid(): boolean {
+        const superIsValid = super.isValid();
+        const selectedComparison = this.comparisons.find(comparison => comparison.isSelected());
+        const rangeComparisonIsSelected = !!(selectedComparison && selectedComparison.id === ComparisonType.IsInTheRange);
+        const isComplete = rangeComparisonIsSelected ? !!(this.rangeEnd) : true;
+        const isNotActive = !this.isActive();
+        const isDirty = this.isDirty();
+        return superIsValid && isComplete && (isNotActive || isDirty);
     }
 
     /*******************/

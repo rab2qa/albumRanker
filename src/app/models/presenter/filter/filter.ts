@@ -10,6 +10,7 @@
 
 import { Activatable } from '../../../interfaces/activatable';
 import { Supportable } from '../../../interfaces/supportable';
+import { Validatable } from '../../../interfaces/validatable';
 
 /**********/
 /* MODELS */
@@ -85,7 +86,7 @@ export enum FilterType {
 //                //
 ////////////////////
 
-export abstract class Filter extends Presenter implements Activatable, Supportable {
+export abstract class Filter extends Presenter implements Activatable, Supportable, Validatable {
 
     public comparisons: Array<Comparison>;
 
@@ -331,11 +332,6 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
     /* PUBLIC METHODS */
     /******************/
 
-    public isValid(): boolean {
-        const hasSelectedComparison = !!(this.comparisons.find(comparison => comparison.isSelected()));
-        return hasSelectedComparison;
-    }
-
     // ----------------------------------------------------------------------------- //
     // -------------------- IMPLEMENT THE ACTIVATABLE INTERFACE -------------------- //
     // ----------------------------------------------------------------------------- //
@@ -353,6 +349,19 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
     public toggleActive(): void {
         this.isActive(!this.isActive());                                // toggle the active state
     };
+
+    // ----------------------------------------------------------------------------------- //
+    // -------------------- HIDE BASE CLASS SELECTABLE IMPLEMENTATION -------------------- //
+    // ----------------------------------------------------------------------------------- //
+
+    public clean(): void {
+        super.clean();
+        this.comparisons.forEach(comparison => comparison.clean());
+    }
+
+    public isDirty(): boolean {
+        return super.isDirty() || !!(this.comparisons.find(comparison => comparison.isDirty()));
+    }
 
     // ----------------------------------------------------------------------------- //
     // -------------------- IMPLEMENT THE SUPPORTABLE INTERFACE -------------------- //
@@ -372,17 +381,13 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
         this.isSupported(!this.isSupported());                          // toggle the supported state
     };
 
-    // ----------------------------------------------------------------------------------- //
-    // -------------------- HIDE BASE CLASS SELECTABLE IMPLEMENTATION -------------------- //
-    // ----------------------------------------------------------------------------------- //
+    // ----------------------------------------------------------------------------- //
+    // -------------------- IMPLEMENT THE VALIDATABLE INTERFACE -------------------- //
+    // ----------------------------------------------------------------------------- //
 
-    public clean(): void {
-        super.clean();
-        this.comparisons.forEach(comparison => comparison.clean());
-    }
-
-    public isDirty(): boolean {
-        return super.isDirty() || !!(this.comparisons.find(comparison => comparison.isDirty()));
+    public isValid(): boolean {
+        const hasSelectedComparison = !!(this.comparisons.find(comparison => comparison.isSelected()));
+        return hasSelectedComparison;
     }
 
 }  // End class Filter
