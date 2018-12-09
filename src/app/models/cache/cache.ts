@@ -26,7 +26,7 @@ export class Cache {
 
     public add(key: string, value: any): void {
         if (this.has(key)) {
-            console.warn(`Overwriting an existing cache key: ${key}`);
+            console.warn(`Overwriting an existing cache key of ${key}`);
         }
         switch (value) {
             case NaN:
@@ -34,7 +34,7 @@ export class Cache {
             case null:
             // Fall Through
             case undefined:
-                console.warn(`Attempt to cache a value of: ${value}`);
+                console.warn(`Attempt to cache a value of ${value}`);
                 break;
             default:
                 this._cache[key] = value;
