@@ -17,7 +17,5 @@ import { Filter } from "../models/presenter/filter/filter";
 ////////////////////////
 
 export interface Filterable {
-
-    filters: Array<Filter>;
     
 }; // End interface Filterable

@@ -61,11 +61,11 @@ export class RankablesComponent implements OnInit {
     }
 
     get selectedFilter(): Filter {
-        return this.rankables.filters.find(filter => filter.isSelected()); 
+        return this.rankables.container.getAvailableFilters().find(filter => filter.isSelected()); 
     }
 
     get activeFilters(): Array<Filter> {
-        return this.rankables.filters.filter(filter => filter.isActive());
+        return this.rankables.container.getAvailableFilters().filter(filter => filter.isActive());
     }
 
     get showRangeInput(): boolean {
@@ -81,7 +81,7 @@ export class RankablesComponent implements OnInit {
     /******************/
 
     public ngOnInit(): void {
-        this.listHeader = this.setListHeader(this.rankables.name.toLowerCase());
+        this.listHeader = this.setListHeader(this.rankables.container.name.toLowerCase());
     }
 
     public setListHeader(name): ListHeader {

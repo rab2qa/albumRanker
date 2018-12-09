@@ -95,18 +95,15 @@ export class Container<T> implements Filterable, Pagable {
         return this._data;
     }
 
+    get container(): Container<T> { return this; }
+    
     get filtered(): Array<T> {
         return this._filteredData;
     }
 
-    get filters(): Array<Filter> {
-        let supportedFilters = this._cache.get('supportedFilters');
-        if (!supportedFilters) {
-            supportedFilters = this._filters.filter(filter => filter.isSupported());;
-            this._cache.add('supportedFilters', supportedFilters);
-        }
-        return supportedFilters;
-    }
+    get id(): ContainerType { return this._id; }
+
+    get name(): string { return this._name; }
 
     get page(): Array<T> {
         const start = this.paginationOptions.pageSize * this.paginationOptions.pageIndex;
@@ -114,13 +111,29 @@ export class Container<T> implements Filterable, Pagable {
         return this._filteredData.slice(start, end);
     }
 
-    get id(): ContainerType { return this._id; }
-
-    get name(): string { return this._name; }
-
     /******************/
     /* PUBLIC METHODS */
     /******************/
+
+    public getAvailableFilters(): Array<Filter> {
+        let availableFilters: Array<Filter> = this._cache.get('availableFilters');
+        if (!availableFilters) {
+            availableFilters = this.getSupportedFilters()
+                .filter(filter => filter.isAvailable());
+            this._cache.add('availableFilters', availableFilters);
+        }
+        return availableFilters;
+    }
+
+    public getSupportedFilters(): Array<Filter> {
+        let supportedFilters: Array<Filter> = this._cache.get('supportedFilters');
+        if (!supportedFilters) {
+            supportedFilters = this._filters
+                .filter(filter => filter.isSupported());
+            this._cache.add('supportedFilters', supportedFilters);
+        }
+        return supportedFilters;
+    }
 
     public onPageChange(event: PageEvent): void {
         this.paginationOptions.pageIndex = event.pageIndex;
@@ -232,10 +245,10 @@ export class Container<T> implements Filterable, Pagable {
                             case ContainerType.Artist:
                             case ContainerType.Album:
                             case ContainerType.Playlist:
-                                this._filters[this._filters.length - 1].isSupported(false);
+                                this._filters[this._filters.length - 1].isAvailable(false);
                                 break;
                             default:
-                                this._filters[this._filters.length - 1].isSupported(true);
+                                this._filters[this._filters.length - 1].isAvailable(true);
                         }
                         break;
                     case FilterType.Disliked:
@@ -243,10 +256,10 @@ export class Container<T> implements Filterable, Pagable {
                         this._filters.push(new BooleanFilter(id, FilterType[key]));
                         switch (this._id) {
                             case ContainerType.Artist:
-                                this._filters[this._filters.length - 1].isSupported(false);
+                                this._filters[this._filters.length - 1].isAvailable(false);
                                 break;
                             default:
-                                this._filters[this._filters.length - 1].isSupported(true);
+                                this._filters[this._filters.length - 1].isAvailable(true);
                         }
                         break;
                     // case FilterType.AlbumRating:
@@ -266,32 +279,32 @@ export class Container<T> implements Filterable, Pagable {
                             case ContainerType.Album:
                             case ContainerType.Artist:
                             case ContainerType.Playlist:
-                                this._filters[this._filters.length - 1].isSupported(false);
+                                this._filters[this._filters.length - 1].isAvailable(false);
                                 break;
                             default:
-                                this._filters[this._filters.length - 1].isSupported(true);
+                                this._filters[this._filters.length - 1].isAvailable(true);
                         }
                         break;
                     case FilterType.Plays:
                     case FilterType.Skips:
-                    this._filters.push(new RangeFilter(id, FilterType[key]));
-                    switch (this._id) {
-                        case ContainerType.Playlist:
-                            this._filters[this._filters.length - 1].isSupported(false);
-                            break;
-                        default:
-                            this._filters[this._filters.length - 1].isSupported(true);
-                    }
-                    break;
+                        this._filters.push(new RangeFilter(id, FilterType[key]));
+                        switch (this._id) {
+                            case ContainerType.Playlist:
+                                this._filters[this._filters.length - 1].isAvailable(false);
+                                break;
+                            default:
+                                this._filters[this._filters.length - 1].isAvailable(true);
+                        }
+                        break;
                     case FilterType.Rating:
                         this._filters.push(new RangeFilter(id, FilterType[key]));
                         switch (this._id) {
                             case ContainerType.Artist:
                             case ContainerType.Playlist:
-                                this._filters[this._filters.length - 1].isSupported(false);
+                                this._filters[this._filters.length - 1].isAvailable(false);
                                 break;
                             default:
-                                this._filters[this._filters.length - 1].isSupported(true);
+                                this._filters[this._filters.length - 1].isAvailable(true);
                         }
                         break;
                     case FilterType.Year:
@@ -300,10 +313,10 @@ export class Container<T> implements Filterable, Pagable {
                             case ContainerType.Artist:
                             case ContainerType.Playlist:
                             case ContainerType.Song:
-                                this._filters[this._filters.length - 1].isSupported(false);
+                                this._filters[this._filters.length - 1].isAvailable(false);
                                 break;
                             default:
-                                this._filters[this._filters.length - 1].isSupported(true);
+                                this._filters[this._filters.length - 1].isAvailable(true);
                         }
                         break;
                     case FilterType.DateAdded:
