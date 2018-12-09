@@ -40,7 +40,7 @@ export class Cache {
     }
 
     public has(key: string): boolean {
-        return !!(this._cache[key]);
+        return this._cache[key] !== undefined;
     }
 
     public remove(key: string): void {
