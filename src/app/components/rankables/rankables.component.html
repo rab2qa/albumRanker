@@ -1,7 +1,7 @@
 <!-- Edit Filter -->
 <mat-form-field>
     <mat-select matNativeControl required [value]="selectedFilter" (selectionChange)="onFilterUpdate($event)">
-        <mat-option *ngFor="let filter of rankables.container.getAvailableFilters()" [value]="filter">{{ filter.name }}</mat-option>
+        <mat-option *ngFor="let filter of filters" [value]="filter">{{ filter.name }}</mat-option>
     </mat-select>
 </mat-form-field>
 <mat-form-field *ngIf="selectedFilter">
@@ -36,11 +36,11 @@
 </div>
 
 <!-- Rankable -->
-<ranker-rankable *ngFor="let rankable of rankables.page" [rankable]="rankable"></ranker-rankable>
+<ranker-rankable *ngFor="let rankable of rankables" [rankable]="rankable"></ranker-rankable>
 
 <!-- Pagination -->
-<mat-paginator [disabled]="rankables.paginationOptions.disabled" [hidePageSize]="rankables.paginationOptions.hidePageSize"
-    [length]="rankables.paginationOptions.length" [pageIndex]="rankables.paginationOptions.pageIndex" [pageSize]="rankables.paginationOptions.pageSize"
-    [pageSizeOptions]="rankables.paginationOptions.pageSizeOptions" [showFirstLastButtons]="rankables.paginationOptions.showFirstLastButtons"
-    (page)="rankables.onPageChange($event)">
+<mat-paginator [disabled]="paginationOptions.disabled" [hidePageSize]="paginationOptions.hidePageSize"
+    [length]="paginationOptions.length" [pageIndex]="paginationOptions.pageIndex" [pageSize]="paginationOptions.pageSize"
+    [pageSizeOptions]="paginationOptions.pageSizeOptions" [showFirstLastButtons]="paginationOptions.showFirstLastButtons"
+    (page)="paginationOptions.page($event)">
 </mat-paginator>

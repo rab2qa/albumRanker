@@ -4,12 +4,6 @@
 //                      //
 //////////////////////////
 
-/*************/
-/* FRAMEWORK */
-/*************/
-
-import { PageEvent } from "@angular/material";
-
 /**********/
 /* MODELS */
 /**********/
@@ -29,11 +23,5 @@ export interface Pagable {
     /**************/
 
     paginationOptions: PaginationOptions;
-
-    /***********/
-    /* METHODS */
-    /***********/
-
-    onPageChange(event: PageEvent): void;
 
 } // End interface Pagable

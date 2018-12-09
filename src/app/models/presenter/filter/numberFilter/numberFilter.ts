@@ -8,7 +8,7 @@
 /* MODELS */
 /**********/
 
-import { Comparison, ComparisonType } from 'src/app/models/comparison/comparison';
+import { Comparison, ComparisonType } from 'src/app/models/presenter/comparison/comparison';
 import { ExternalEvent } from 'src/app/models/event/externalEvent/externalEvent';
 import { EventType, exclusiveSelect } from 'src/app/models/event/event';
 import { Filter, FilterType } from '../filter';

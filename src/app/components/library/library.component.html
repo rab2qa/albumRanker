@@ -1,5 +1,6 @@
 <ng-container *ngIf="library">
     <div class="list-columns">
-        <ranker-rankables [rankables]="library.initial[key]"></ranker-rankables>
+        <ranker-rankables [rankables]="library.initial[key].page" [filters]="library.initial[key].getAvailableFilters()"
+            [name]="library.initial[key].name" [paginationOptions]="library.initial[key].paginationOptions"></ranker-rankables>
     </div>
 </ng-container>

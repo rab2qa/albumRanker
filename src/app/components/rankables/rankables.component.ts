@@ -11,25 +11,35 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { MatSelectChange } from '@angular/material';
 
-/***********/
-/* CLASSES */
-/***********/
+/**********/
+/* MODELS */
+/**********/
 
-import { Comparison, ComparisonType } from "src/app/models/comparison/comparison";
-import { Container } from 'src/app/models/container/container';
+import { Cache } from 'src/app/models/cache/cache';
+import { Comparison, ComparisonType } from 'src/app/models/presenter/comparison/comparison';
+import { Filter } from 'src/app/models/presenter/filter/filter';
+import { BooleanFilter } from 'src/app/models/presenter/filter/booleanFilter/booleanFilter';
+import { PaginationOptions } from 'src/app/models/paginationOptions/paginationOptions';
+import { Presenter } from 'src/app/models/presenter/presenter';
 
 /**************/
 /* INTERFACES */
 /**************/
 
 import { Rankable } from 'src/app/interfaces/rankable';
-import { Filter } from 'src/app/models/presenter/filter/filter';
-import { BooleanFilter } from 'src/app/models/presenter/filter/booleanFilter/booleanFilter';
 
 interface ListHeader {
     rankableTitle: string;
     secondary?: string;
 }
+
+/////////////////////
+//                 //
+//     GLOBALS     //
+//                 //
+/////////////////////
+
+const cache = new Cache();
 
 ///////////////////////
 //                   //
@@ -43,7 +53,15 @@ interface ListHeader {
     styleUrls: ['./rankables.component.scss'],
 })
 export class RankablesComponent implements OnInit {
-    @Input() rankables: Container<Rankable>;
+
+    /***********/
+    /*  INPUTS */
+    /***********/
+
+    @Input() filters: Array<Filter>;
+    @Input() name: string;
+    @Input() paginationOptions: PaginationOptions;
+    @Input() rankables: Array<Rankable>;
 
     /**************/
     /* PROPERTIES */
@@ -55,17 +73,28 @@ export class RankablesComponent implements OnInit {
     /* ACCESSORS */
     /*************/
 
-    get selectedComparison(): Comparison {
-        return this.selectedFilter && this.selectedFilter.comparisons.find(comparison => comparison.isSelected());
+    get activeFilters(): Array<Filter> {
+        let activeFilters: Array<Filter> = cache.get('activeFilters');
+        if (!activeFilters) {
+            activeFilters = this.filters.filter(filter => filter.isActive());
+        }
+        return activeFilters;
+    }
 
+    get selectedComparison(): Comparison {
+        let selectedComparison: Comparison = cache.get('selectedComparison');
+        if (!selectedComparison) {
+            selectedComparison = this.selectedFilter && this.selectedFilter.comparisons.find(comparison => comparison.isSelected());
+        }
+        return selectedComparison;
     }
 
     get selectedFilter(): Filter {
-        return this.rankables.container.getAvailableFilters().find(filter => filter.isSelected()); 
-    }
-
-    get activeFilters(): Array<Filter> {
-        return this.rankables.container.getAvailableFilters().filter(filter => filter.isActive());
+        let selectedFilter: Filter = cache.get('selectedFilter');
+        if (!selectedFilter) {
+            selectedFilter = this.filters.find(filter => filter.isSelected());
+        }
+        return selectedFilter;
     }
 
     get showRangeInput(): boolean {
@@ -81,7 +110,7 @@ export class RankablesComponent implements OnInit {
     /******************/
 
     public ngOnInit(): void {
-        this.listHeader = this.setListHeader(this.rankables.container.name.toLowerCase());
+        this.listHeader = this.setListHeader(this.name.toLowerCase());
     }
 
     public setListHeader(name): ListHeader {
@@ -102,19 +131,32 @@ export class RankablesComponent implements OnInit {
     }
 
     public onFilterUpdate(event: MatSelectChange): void {
-        event.value.isSelected(true);
+        const model: Presenter = event.value;
+        model.isSelected(true);
+        if (model instanceof Filter) {
+            cache.remove('selectedFilter');
+        } else if (model instanceof Comparison) {
+            cache.remove('selectedComparison');
+        }
     }
 
     public onApply(): void {
-        this.selectedFilter.isActive(true);
+        if (this.selectedFilter) {
+            this.selectedFilter.isActive(true);
+            cache.remove('activeFilters');
+        }
     }
 
     public onClearAll(): void {
         this.activeFilters.forEach(filter => filter.isActive(false));
+        cache.remove('activeFilters')
     }
 
     public onClear(filter: Filter): void {
-        filter.isActive(false);
+        if (filter) {
+            filter.isActive(false);
+            cache.remove('activeFilters');
+        }
     }
 
 } // End class RankablesComponent

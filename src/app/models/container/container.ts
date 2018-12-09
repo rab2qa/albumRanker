@@ -4,12 +4,6 @@
 //                      //
 //////////////////////////
 
-/*************/
-/* FRAMEWORK */
-/*************/
-
-import { PageEvent } from '@angular/material';
-
 /**************/
 /* INTERFACES */
 /**************/
@@ -21,7 +15,7 @@ import { Pagable } from 'src/app/interfaces/pagable';
 /* MODELS */
 /**********/
 
-import { ComparisonType } from 'src/app/models/comparison/comparison';
+import { ComparisonType } from 'src/app/models/presenter/comparison/comparison';
 import { exclusiveSelect, EventType } from 'src/app/models/event/event';
 import { ExternalEvent } from 'src/app/models/event/externalEvent/externalEvent';
 import { InternalEvent } from 'src/app/models/event/InternalEvent/internalEvent';
@@ -133,11 +127,6 @@ export class Container<T> implements Filterable, Pagable {
             this._cache.add('supportedFilters', supportedFilters);
         }
         return supportedFilters;
-    }
-
-    public onPageChange(event: PageEvent): void {
-        this.paginationOptions.pageIndex = event.pageIndex;
-        this.paginationOptions.pageSize = event.pageSize;
     }
 
     /*******************/

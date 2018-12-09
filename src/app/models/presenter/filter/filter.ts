@@ -16,7 +16,7 @@ import { Validatable } from '../../../interfaces/validatable';
 /* MODELS */
 /**********/
 
-import { Comparison } from '../../comparison/comparison';
+import { Comparison } from '../../presenter/comparison/comparison';
 import { EventType } from '../../event/event';
 import { Presenter } from '../presenter';
 
