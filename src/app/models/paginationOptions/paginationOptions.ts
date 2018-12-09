@@ -29,7 +29,6 @@ export class PaginationOptions {
         public pageSize?: number,
         public pageSizeOptions?: number[],
         public showFirstLastButtons?: boolean,
-        // public initialized?: Observable<void>
     ) { 
         this.page = function(event: PageEvent): void {
             this.pageIndex = event.pageIndex;
