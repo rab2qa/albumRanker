@@ -94,12 +94,16 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
     /***************/
 
     public constructor(
-        public id: FilterType,
-        public name: string,
+        private _id: FilterType,
+        private _name: string,
     ) {
         super();
         this.comparisons = new Array<Comparison>();
     }
+
+    public get id(): FilterType { return this._id; }
+
+    public get name(): string { return this._name; }
 
     public get selectedComparison(): Comparison {
         return this.comparisons.find(comparison => comparison.isSelected());
@@ -386,8 +390,8 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
 export class BooleanFilter extends Filter {
 
     constructor(
-        public id: FilterType,
-        public name: string,
+        id: FilterType,
+        name: string,
     ) {
         super(id, name);
         this.comparisons.push(new Comparison(ComparisonType.IsFalse, Comparison.getComparisonName(ComparisonType.IsFalse)));
@@ -406,8 +410,8 @@ export class BooleanFilter extends Filter {
 export class NumberFilter extends Filter {
 
     constructor(
-        public id: FilterType,
-        public name: string,
+        id: FilterType,
+        name: string,
         public value?: number
     ) {
         super(id, name);
@@ -422,9 +426,7 @@ export class NumberFilter extends Filter {
     /* ACCESSORS */
     /*************/
 
-    get dirtyValue(): number {
-        return this._cache.get('value');
-    }
+    get dirtyValue(): number { return this._cache.get('value'); }
 
     /******************/
     /* PUBLIC METHODS */
@@ -495,9 +497,9 @@ export class NumberFilter extends Filter {
 export class RangeFilter extends NumberFilter {
 
     constructor(
-        public id: FilterType,
-        public name: string,
-        public value?: number,
+        id: FilterType,
+        name: string,
+        value?: number,
         public rangeEnd?: number
     ) {
         super(id, name, value);
@@ -510,9 +512,7 @@ export class RangeFilter extends NumberFilter {
     /* ACCESSORS */
     /*************/
 
-    get dirtyRangeEnd(): number {
-        return this._cache.get('rangeEnd');
-    }
+    get dirtyRangeEnd(): number { return this._cache.get('rangeEnd'); }
 
     /******************/
     /* PUBLIC METHODS */
@@ -574,8 +574,8 @@ export class RangeFilter extends NumberFilter {
 export class StringFilter extends Filter {
 
     constructor(
-        public id: FilterType,
-        public name: string,
+        id: FilterType,
+        name: string,
         public value?: string
     ) {
         super(id, name);
@@ -592,7 +592,7 @@ export class StringFilter extends Filter {
     /* ACCESSORS */
     /*************/
 
-    get dirtyValue(): number {
+    get dirtyValue(): string {
         return this._cache.get('value');
     }
 
