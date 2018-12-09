@@ -24,7 +24,7 @@ export class Cache {
     /* PUBLIC METHODS */
     /******************/
 
-    public add(key: string, value: any): any {
+    public add(key: string, value: any): void {
         if (this.has(key)) {
             console.warn('Overwriting an existing cache key: ' + key);
         }
@@ -47,7 +47,7 @@ export class Cache {
         delete this._cache[key];
     }
 
-    public update(key: string, value: any): any {
+    public update(key: string, value: any): void {
         this._cache[key] = value;
     }
 
