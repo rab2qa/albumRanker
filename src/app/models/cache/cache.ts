@@ -26,9 +26,19 @@ export class Cache {
 
     public add(key: string, value: any): void {
         if (this.has(key)) {
-            console.warn('Overwriting an existing cache key: ' + key);
+            console.warn(`Overwriting an existing cache key: ${key}`);
         }
-        this._cache[key] = value;
+        switch (value) {
+            case NaN:
+            // Fall Through
+            case null:
+            // Fall Through
+            case undefined:
+                console.warn(`Attempt to cache a value of: ${value}`);
+                break;
+            default:
+                this._cache[key] = value;
+        }
     }
 
     public clear(): void {
