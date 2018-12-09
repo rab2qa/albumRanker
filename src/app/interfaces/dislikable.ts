@@ -11,5 +11,11 @@ export interface Disklikable {
     /**************/
 
     disliked: boolean;
+   
+    /***********/
+    /* METHODS */
+    /***********/
+
+    isDisliked(): boolean;
 
 } // End interface Dislikable

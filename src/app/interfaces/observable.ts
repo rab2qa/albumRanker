@@ -1,4 +1,4 @@
-import { AppEvent, EventType } from "../classes/event";
+import { Event, EventType } from "../classes/event";
 
 ////////////////////////
 //                    //
@@ -8,8 +8,8 @@ import { AppEvent, EventType } from "../classes/event";
 
 export interface Observable{
 
-    subscribe(event: AppEvent): void;
-    unsubscribe(callback: Function): void;
     notify(thisObj: object, eventType: EventType): void;
+    subscribe(event: Event): void;
+    unsubscribe(callback: Function): void;
 
 }; // end interface Observable

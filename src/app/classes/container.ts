@@ -77,7 +77,7 @@ export class Container<T> implements Filterable, Pagable {
         this._cache = new Cache();
         this._filteredData = this._data;
         this._filters = new Array<Filter>();
-        this.setFilters();
+        this._setFilters();
     }
 
     /*************/
@@ -127,16 +127,16 @@ export class Container<T> implements Filterable, Pagable {
     /* PRIVATE METHODS */
     /*******************/
 
-    private applyFilters(): void {
+    private _applyFilters(): void {
         this._filteredData = this._filters
             .filter(filter => filter.isActive())
             .reduce((filteredData, filter) => {
-                return this.applyFilter(filteredData, filter);
+                return this._applyFilter(filteredData, filter);
             }, this._data);
         this.paginationOptions.length = this._filteredData.length;
     }
 
-    public applyFilter(data: Array<T>, filter: Filter): Array<T> {
+    private _applyFilter(data: Array<T>, filter: Filter): Array<T> {
         let response = data.filter(datum => {
             const property = Filter.getFilterValue(filter.id);
             if (datum[property] !== undefined) {
@@ -183,7 +183,7 @@ export class Container<T> implements Filterable, Pagable {
         return response;
     }
 
-    private setFilters(): void {
+    private _setFilters(): void {
         for (let key in FilterType) {
             let id = Number.parseInt(key);
             if (Number.isFinite(id)) {
@@ -315,7 +315,7 @@ export class Container<T> implements Filterable, Pagable {
             }
         }
         this._filters.forEach((element, index, array) => element.subscribe(new ExternalEvent(EventType.Selected, exclusiveSelect, element, index, array)));
-        this._filters.forEach((element) => element.subscribe(new InternalEvent(EventType.Active, this.applyFilters, this)));
+        this._filters.forEach((element) => element.subscribe(new InternalEvent(EventType.Active, this._applyFilters, this)));
     }
 
 }  // End class Container

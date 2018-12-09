@@ -5,7 +5,7 @@
 //////////////////////
 
 export interface Rankable {
-    
+
   /**************/
   /* PROPERTIES */
   /**************/
@@ -17,6 +17,5 @@ export interface Rankable {
   /***********/
 
   isRanked(): boolean;
-  isRankable(): boolean;
 
 } // End interface Rankable

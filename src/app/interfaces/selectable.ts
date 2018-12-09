@@ -5,15 +5,14 @@
 ////////////////////////
 
 export interface Selectable {
-
-    isSelected(value: boolean): boolean;
-    toggleSelected(): void;
+    
+    clean(): void;
 
     isAvailable(value: boolean): boolean;
-    toggleAvailable(): void;
-
     isDirty(): boolean;
-
-    clean(): void;
+    isSelected(value: boolean): boolean;
     
+    toggleAvailable(): void;
+    toggleSelected(): void;
+
 }; // End interface Selectable

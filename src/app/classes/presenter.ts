@@ -8,7 +8,7 @@
 /* CLASSES */
 /***********/
 
-import { AppEvent, ExternalEvent, InternalEvent, EventType } from "./event";
+import { Event, ExternalEvent, InternalEvent, EventType } from "./event";
 import { Status } from "./status";
 
 /**************/
@@ -38,7 +38,8 @@ export abstract class Presenter implements Observable, Selectable {
 
     protected _cache: Cache;
     protected _status: Status;
-    private _events: Array<AppEvent>;
+    
+    private _events: Array<Event>;
 
     /***************/
     /* CONSTRUCTOR */
@@ -47,7 +48,7 @@ export abstract class Presenter implements Observable, Selectable {
     public constructor() {
         this._cache = new Cache();
         this._status = new Status();
-        this._events = new Array<AppEvent>();
+        this._events = new Array<Event>();
     }
 
     /******************/
@@ -55,15 +56,6 @@ export abstract class Presenter implements Observable, Selectable {
     /******************/
 
     // -------------------- IMPLEMENT THE OBSERVABLE INTERFACE -------------------- //
-
-    public subscribe(event: AppEvent): void {
-        this.unsubscribe(event.callback);
-        this._events.push(event);
-    }
-
-    public unsubscribe(callback: Function): void {
-        this._events = this._events.filter((handler) => { return (handler.callback !== callback); });
-    }
 
     public notify(thisObj: object, id: EventType): void {
         this._events
@@ -77,36 +69,45 @@ export abstract class Presenter implements Observable, Selectable {
             });
     }
 
+    public subscribe(event: Event): void {
+        this.unsubscribe(event.callback);
+        this._events.push(event);
+    }
+
+    public unsubscribe(callback: Function): void {
+        this._events = this._events.filter((handler) => { return (handler.callback !== callback); });
+    }
+
     // -------------------- IMPLEMENT THE SELECTABLE INTERFACE -------------------- //
 
-    public isAvailable(value?: boolean): boolean {
-        if (value !== undefined && this._status.available !== value) {  // are we changing state?
+    public clean(): void {
+        this._status.dirty = false;
+    }
+
+    public isAvailable(value?: boolean, force?: boolean): boolean {
+        if (value !== undefined && (this._status.available !== value || force === true)) {  // are we changing state?
             if (value === false) {
-                this.isSelected(false);                                 // deselect anything we make unavailable
+                this.isSelected(false);                                                     // deselect anything we make unavailable
             }
-            this._status.available = value;                             // make the state change
-            if (this.notify) {                                          // do we implement the Observable interface?
-                this.notify(this, EventType.Available);                 // update listeners to the state change
+            this._status.available = value;                                                 // make the state change
+            if (this.notify) {                                                              // do we implement the Observable interface?
+                this.notify(this, EventType.Available);                                     // update listeners to the state change
             }
         }
         return this._status.available;
-    };
-
-    public toggleAvailable(): void {
-        this.isAvailable(!this.isAvailable());                          // toggle the available state
     };
 
     public isDirty(): boolean {
         return this._status.dirty;
     };
 
-    public isSelected(value?: boolean): boolean {
-        if (value !== undefined && this._status.selected !== value) {   // are we changing state?
-            if (this.isAvailable()) {                                   // ensure that only available items can be selected
-                this._status.selected = value;                          // make the state change
-                this._status.dirty = !this._status.dirty;               // flip the dirty flag
-                if (this.notify) {                                      // do we implement the Observable interface?
-                    this.notify(this, EventType.Selected);              // update listeners to the state change
+    public isSelected(value?: boolean, force?: boolean): boolean {
+        if (value !== undefined && (this._status.selected !== value || force === true)) {   // are we changing state?
+            if (this.isAvailable()) {                                                       // ensure that only available items can be selected
+                this._status.selected = value;                                              // make the state change
+                this._status.dirty = !this._status.dirty;                                   // flip the dirty flag
+                if (this.notify) {                                                          // do we implement the Observable interface?
+                    this.notify(this, EventType.Selected);                                  // update listeners to the state change
                     this.notify(this, EventType.Dirty);
                 }
             }
@@ -114,12 +115,12 @@ export abstract class Presenter implements Observable, Selectable {
         return this._status.selected;
     };
 
-    public toggleSelected(): void {
-        this.isSelected(!this.isSelected());                            // toggle the selection state
+    public toggleAvailable(): void {
+        this.isAvailable(!this.isAvailable());  // toggle the available state
     };
 
-    public clean(): void {
-        this._status.dirty = false;
-    }
+    public toggleSelected(): void {
+        this.isSelected(!this.isSelected());    // toggle the selection state
+    };
 
 } // End class Presenter

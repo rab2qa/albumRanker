@@ -36,7 +36,7 @@ export enum EventType {
 //               //
 ///////////////////
 
-export class AppEvent {
+export class Event {
     id: EventType;
     callback: (...args) => void;
     args: Array<any>;
@@ -47,9 +47,9 @@ export class AppEvent {
         this.args = args;
     }
 
-}; // end class AppEvent
+}; // end class Event
 
-export class ExternalEvent extends AppEvent {
+export class ExternalEvent extends Event {
 
     constructor(id: EventType, callback: (element: Presenter, index: number, array: Array<Presenter>) => void, element: Presenter, index: number, array: Array<Presenter>) {
         super(id, callback, [element, index, array]);
@@ -57,7 +57,7 @@ export class ExternalEvent extends AppEvent {
 
 }; // end class SelectionEvent
 
-export class InternalEvent extends AppEvent {
+export class InternalEvent extends Event {
 
     constructor(
         public id: EventType,

@@ -101,13 +101,13 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
         this.comparisons = new Array<Comparison>();
     }
 
+    /*************/
+    /* ACCESSORS */
+    /*************/
+
     public get id(): FilterType { return this._id; }
 
     public get name(): string { return this._name; }
-
-    public get selectedComparison(): Comparison {
-        return this.comparisons.find(comparison => comparison.isSelected());
-    }
 
     /******************/
     /* STATIC METHODS */
@@ -339,7 +339,7 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
     // -------------------- IMPLEMENT THE ACTIVATABLE INTERFACE -------------------- //
 
     public isActive(value?: boolean, force?: boolean): boolean {
-        if (value !== undefined && (this._status.active !== value || force === true)) {   // are we changing state?
+        if (value !== undefined && (this._status.active !== value || force === true)) { // are we changing state?
             this._status.active = value;                                                // make the state change
             if (this.notify) {                                                          // do we implement the Observable interface?
                 this.notify(this, EventType.Active);                                    // update listeners to the state change
@@ -454,7 +454,7 @@ export class NumberFilter extends Filter {
     }
 
     public isDirty(): boolean {
-        return super.isDirty() || this.valueIsDirty();
+        return super.isDirty() || this._valueIsDirty();
     }
 
     // -------------------- HIDE BASE CLASS ACTIVATABLE IMPLEMENTATION -------------------- //
@@ -472,7 +472,7 @@ export class NumberFilter extends Filter {
     /* PRIVATE METHODS */
     /*******************/
 
-    protected valueIsDirty(): boolean {
+    private _valueIsDirty(): boolean {
         let response = false;
         if (this.value) {
             if (this._cache.has('value')) {
@@ -542,14 +542,14 @@ export class RangeFilter extends NumberFilter {
     }
 
     public isDirty(): boolean {
-        return super.isDirty() || this.rangeEndIsDirty();
+        return super.isDirty() || this._rangeEndIsDirty();
     }
 
     /*******************/
     /* PRIVATE METHODS */
     /*******************/
 
-    protected rangeEndIsDirty(): boolean {
+    private _rangeEndIsDirty(): boolean {
         let response = false;
         if (this.rangeEnd) {
             if (this._cache.has('rangeEnd')) {
@@ -622,7 +622,7 @@ export class StringFilter extends Filter {
     }
 
     public isDirty(): boolean {
-        return super.isDirty() || this.valueIsDirty();
+        return super.isDirty() || this._valueIsDirty();
     }
 
     // -------------------- HIDE BASE CLASS ACTIVATABLE IMPLEMENTATION -------------------- //
@@ -640,7 +640,7 @@ export class StringFilter extends Filter {
     /* PRIVATE METHODS */
     /*******************/
 
-    protected valueIsDirty(): boolean {
+    private _valueIsDirty(): boolean {
         let response = false;
         if (this.value) {
             if (this._cache.has('value')) {

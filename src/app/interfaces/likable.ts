@@ -11,5 +11,11 @@ export interface Likable {
     /**************/
 
     liked: boolean;
+   
+    /***********/
+    /* METHODS */
+    /***********/
 
+    isLiked(): boolean;
+    
 } // End interface Likable

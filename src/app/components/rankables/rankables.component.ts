@@ -55,11 +55,12 @@ export class RankablesComponent implements OnInit {
     /*************/
 
     get selectedComparison(): Comparison {
-        return this.selectedFilter && this.selectedFilter.selectedComparison;
+        return this.selectedFilter && this.selectedFilter.comparisons.find(comparison => comparison.isSelected());
+
     }
 
     get selectedFilter(): Filter {
-        return this.rankables.selectedFilter;
+        return this.rankables.filters.find(filter => filter.isSelected()); 
     }
 
     get activeFilters(): Array<Filter> {

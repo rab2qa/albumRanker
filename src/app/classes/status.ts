@@ -29,7 +29,7 @@ export class Status {
     /******************/
 
     public valueOf(): object {
-        var response: object;
+        let response: object;
 
         response = {
             active: this.active,
@@ -43,7 +43,7 @@ export class Status {
     }
 
     public toString(): string {
-        var response: string;
+        let response: string;
 
         try {
             response = JSON.stringify(this.valueOf());
