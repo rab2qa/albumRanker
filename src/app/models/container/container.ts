@@ -15,7 +15,7 @@ import { Pagable } from 'src/app/interfaces/pagable';
 /* MODELS */
 /**********/
 
-import { ComparisonType } from 'src/app/models/presenter/comparison/comparison';
+import { Comparison, ComparisonType } from 'src/app/models/presenter/comparison/comparison';
 import { exclusiveSelect, EventType } from 'src/app/models/event/event';
 import { ExternalEvent } from 'src/app/models/event/externalEvent/externalEvent';
 import { InternalEvent } from 'src/app/models/event/InternalEvent/internalEvent';
@@ -85,23 +85,19 @@ export class Container<T> implements Filterable, Pagable {
     /* ACCESSORS */
     /*************/
 
-    get all(): Array<T> {
-        return this._data;
-    }
+    get all(): Array<T> { return this._data; }
 
     get container(): Container<T> { return this; }
     
-    get filtered(): Array<T> {
-        return this._filteredData;
-    }
+    get filtered(): Array<T> { return this._filteredData; }
 
     get id(): ContainerType { return this._id; }
 
     get name(): string { return this._name; }
 
     get page(): Array<T> {
-        const start = this.paginationOptions.pageSize * this.paginationOptions.pageIndex;
-        const end = start + this.paginationOptions.pageSize;
+        const start: number = this.paginationOptions.pageSize * this.paginationOptions.pageIndex;
+        const end: number = start + this.paginationOptions.pageSize;
         return this._filteredData.slice(start, end);
     }
 
@@ -134,10 +130,10 @@ export class Container<T> implements Filterable, Pagable {
     /*******************/
 
     private _applyFilter(data: Array<T>, filter: Filter): Array<T> {
-        let response = data.filter(datum => {
-            const property = Filter.getFilterValue(filter.id);
+        const filteredData: Array<T> = data.filter(datum => {
+            const property: string = Filter.getFilterValue(filter.id);
             if (datum[property] !== undefined) {
-                let selectedComparison = filter.comparisons.find(comparison => comparison.isSelected());
+                const selectedComparison: Comparison = filter.comparisons.find(comparison => comparison.isSelected());
                 if (selectedComparison) {
                     switch (selectedComparison.id) {
                         case ComparisonType.BeginsWith:
@@ -147,7 +143,7 @@ export class Container<T> implements Filterable, Pagable {
                         case ComparisonType.DoesNotContain:
                             return !datum[property].match(new RegExp((filter as StringFilter).value, 'i'));
                         case ComparisonType.EndsWith:
-                            const stringFilter = filter as StringFilter;
+                            const stringFilter: StringFilter = filter as StringFilter;
                             return datum[property].match(new RegExp(stringFilter.value + '\$', 'i'));
                         case ComparisonType.Is:
                             if (filter instanceof StringFilter) {
@@ -177,7 +173,7 @@ export class Container<T> implements Filterable, Pagable {
                 return true;
             }
         });
-        return response;
+        return filteredData;
     }
 
     private _applyFilters(): void {
@@ -190,8 +186,8 @@ export class Container<T> implements Filterable, Pagable {
     }
 
     private _setFilters(): void {
-        for (let key in FilterType) {
-            let id = Number.parseInt(key);
+        for (const key in FilterType) {
+            const id: number = Number.parseInt(key);
             if (Number.isFinite(id)) {
                 switch (id) {
                     case FilterType.Album:

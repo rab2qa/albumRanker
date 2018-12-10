@@ -85,11 +85,11 @@ export class StringFilter extends Filter {
     // ------------------------------------------------------------------------------------ //
 
     public isValid(): boolean {
-        const superIsValid = super.isValid();
-        const isComplete = !!(this.value);
-        const isNotActive = !this.isActive();
-        const isDirty = this.isDirty();
-        return superIsValid && isComplete && (isNotActive || isDirty);
+        const superIsValid: boolean = super.isValid();
+        const thisIsComplete: boolean = !!(this.value);
+        const thisIsActive: boolean = this.isActive();
+        const thisIsDirty: boolean = this.isDirty();
+        return superIsValid && thisIsComplete && (!thisIsActive || thisIsDirty);
     }
 
     /*******************/
@@ -97,17 +97,17 @@ export class StringFilter extends Filter {
     /*******************/
 
     private _valueIsDirty(): boolean {
-        let response = false;
+        let valueIsDirty: boolean = false;
         if (this.value) {
             if (this._cache.has('value')) {
                 if (this._cache.get('value') !== this.value) {
-                    response = true;
+                    valueIsDirty = true;
                 }
             } else {
-                response = true;
+                valueIsDirty = true;
             }
         }
-        return response;
+        return valueIsDirty;
     }
 
 } // End class StringFilter

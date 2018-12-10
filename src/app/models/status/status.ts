@@ -29,30 +29,27 @@ export class Status {
     /******************/
 
     public toString(): string {
-        let response: string;
+        let stringifiedValueOfThis: string = '{}';
 
         try {
-            const valueOfThis = this.valueOf();
-            response = JSON.stringify(valueOfThis);
-        } catch (exception) {
-            response = '{}';
+            const valueOfThis: object = this.valueOf();
+            stringifiedValueOfThis = JSON.stringify(valueOfThis);
+        } catch (error) {
+            console.error(error);
         }
 
-        return response;
+        return stringifiedValueOfThis;
     }
 
     public valueOf(): object {
-        let response: object;
-
-        response = {
+        const valueOf: object = {
             active: this.active,
             available: this.available,
             selected: this.selected,
             supported: this.supported,
             dirty: this.dirty
         };
-
-        return response;
+        return valueOf;
     }
 
 }; // End class Status

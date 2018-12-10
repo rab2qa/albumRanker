@@ -29,7 +29,7 @@ export class RangeFilter extends NumberFilter {
         public rangeEnd?: number
     ) {
         super(id, name, value);
-        const comparisons = [new Comparison(ComparisonType.IsInTheRange, Comparison.getComparisonName(ComparisonType.IsInTheRange))];
+        const comparisons: Array<Comparison> = [new Comparison(ComparisonType.IsInTheRange, Comparison.getComparisonName(ComparisonType.IsInTheRange))];
         comparisons.forEach((element, index, array) => element.subscribe(new ExternalEvent(EventType.Selected, exclusiveSelect, element, index, this.comparisons)));
         Array.prototype.push.apply(this.comparisons, comparisons);
     }
@@ -68,13 +68,13 @@ export class RangeFilter extends NumberFilter {
     // ------------------------------------------------------------------------------------ //
 
     public isValid(): boolean {
-        const superIsValid = super.isValid();
-        const selectedComparison = this.comparisons.find(comparison => comparison.isSelected());
-        const rangeComparisonIsSelected = !!(selectedComparison && selectedComparison.id === ComparisonType.IsInTheRange);
-        const isComplete = rangeComparisonIsSelected ? !!(this.rangeEnd) : true;
-        const isNotActive = !this.isActive();
-        const isDirty = this.isDirty();
-        return superIsValid && isComplete && (isNotActive || isDirty);
+        const superIsValid: boolean = super.isValid();
+        const selectedComparison: Comparison = this.comparisons.find(comparison => comparison.isSelected());
+        const rangeComparisonIsSelected: boolean = !!(selectedComparison && selectedComparison.id === ComparisonType.IsInTheRange);
+        const thisIsComplete: boolean = rangeComparisonIsSelected ? !!(this.rangeEnd) : true;
+        const thisIsNotActive: boolean = !this.isActive();
+        const thisIsDirty: boolean = this.isDirty();
+        return superIsValid && thisIsComplete && (thisIsNotActive || thisIsDirty);
     }
 
     /*******************/
@@ -82,17 +82,17 @@ export class RangeFilter extends NumberFilter {
     /*******************/
 
     private _rangeEndIsDirty(): boolean {
-        let response = false;
+        let rangeEndIsDirty: boolean = false;
         if (this.rangeEnd) {
             if (this._cache.has('rangeEnd')) {
                 if (this._cache.get('rangeEnd') !== this.rangeEnd) {
-                    response = true;
+                    rangeEndIsDirty = true;
                 }
             } else {
-                response = true;
+                rangeEndIsDirty = true;
             }
         }
-        return response;
+        return rangeEndIsDirty;
     }
 
 } // End class RangeFilter

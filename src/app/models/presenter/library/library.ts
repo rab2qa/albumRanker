@@ -54,11 +54,11 @@ export class Library extends Presenter {
         for (const key in json['Tracks']) {
 
             const track = json['Tracks'][key];
-            const albumName = track['Album'];
-            const artistName = track['Artist'];
-            const discNumber = +track['Disc Number'] || 1;
+            const albumName: string = track['Album'];
+            const artistName: string = track['Artist'];
+            const discNumber: number = +track['Disc Number'] || 1;
             const trackId: string = track['Track ID'];
-            const trackNumber = +track['Track Number'];
+            const trackNumber: number = +track['Track Number'];
 
             if (track['Movie'] === 'true') {
                 // TODO: Add support for Movies
@@ -81,7 +81,7 @@ export class Library extends Presenter {
             }
 
             // Create Artist
-            let artist = artists[artistName];
+            let artist: Artist = artists[artistName];
             if (!artist) {
                 artist = new Artist(track);
                 artist.library = this;
@@ -89,7 +89,7 @@ export class Library extends Presenter {
             }
 
             // Create Album
-            let album = albums[albumName];
+            let album: Album = albums[albumName];
             if (!album) {
                 album = new Album(track);
                 album.library = this;
@@ -101,7 +101,7 @@ export class Library extends Presenter {
             }
 
             // Create Song
-            const song = new Song(track);
+            const song: Song = new Song(track);
             songs[trackId] = song;
             song.library = this;
             song.artist = artist;
@@ -113,14 +113,14 @@ export class Library extends Presenter {
         // Create Playlists
         json['Playlists'].forEach(jsonPlaylist => {
             if (!(jsonPlaylist['Folder'] || jsonPlaylist['Name'] === 'Downloaded')) { // TODO: Add support for Folders and Downloaded Content
-                const name = jsonPlaylist['Name'];
-                const playlist = new Playlist(jsonPlaylist);
+                const name: string = jsonPlaylist['Name'];
+                const playlist: Playlist = new Playlist(jsonPlaylist);
                 playlist.library = this;
 
                 if (jsonPlaylist['Playlist Items']) {
                     jsonPlaylist['Playlist Items'].forEach(item => {
-                        const itemId = item['Track ID'];
-                        const song = songs[itemId];
+                        const itemId: string = item['Track ID'];
+                        const song: Song = songs[itemId];
                         if (song) { playlist.songs.push(song); }
                         if (songs[itemId]) { songs[itemId].playlists.push(playlist); }
                     });
@@ -155,11 +155,11 @@ export class Library extends Presenter {
     /******************/
 
     public getAlbumStarCounts(): Array<number> {
-        let albumStarCounts = this._cache.get('albumStarCounts')
+        let albumStarCounts: Array<number> = this._cache.get('albumStarCounts')
         if (!albumStarCounts) {
             albumStarCounts = this.albums.all.reduce((starCounts, album) => {
                 if (album.isRated()) {
-                    const starIndex = album.rating - 1;
+                    const starIndex: number = album.rating - 1;
                     starCounts[starIndex] = starCounts[starIndex] || 0;
                     starCounts[starIndex]++;
                 }
@@ -171,14 +171,14 @@ export class Library extends Presenter {
     }
 
     public getAlbumStarWeights(): Array<number> {
-        let albumStarWeights = this._cache.get('albumStarWeights');
+        let albumStarWeights: Array<number> = this._cache.get('albumStarWeights');
         if (!albumStarWeights) {
-            const albumStarCounts = this.getAlbumStarCounts();
+            const albumStarCounts: Array<number> = this.getAlbumStarCounts();
             albumStarWeights = Globals.newStarArray();
             for (let i = 2; i < Globals.maxRating; i++) {
                 if (albumStarCounts[i]) {
-                    const previousStarWeight = albumStarWeights[i - 1];
-                    const currentStarMultiplier = albumStarCounts[i - 1] / albumStarCounts[i] || 1;
+                    const previousStarWeight: number = albumStarWeights[i - 1];
+                    const currentStarMultiplier: number = albumStarCounts[i - 1] / albumStarCounts[i] || 1;
                     albumStarWeights[i] = Math.max(previousStarWeight * currentStarMultiplier, i + 1);
                 }
             }
@@ -188,7 +188,7 @@ export class Library extends Presenter {
     }
 
     public getMaxPlayCount(): number {
-        let maxPlayCount = this._cache.get('maxPlayCount');
+        let maxPlayCount: number = this._cache.get('maxPlayCount');
         if (!Number.isFinite(maxPlayCount)) {
             maxPlayCount = this.songs.all.reduce((max, song) => Math.max(song.playCount, max), 0);
             this._cache.add('maxPlayCount', maxPlayCount);
@@ -197,7 +197,7 @@ export class Library extends Presenter {
     }
 
     public getMaxSkipCount(): number {
-        let maxSkipCount = this._cache.get('maxSkipCount');
+        let maxSkipCount: number = this._cache.get('maxSkipCount');
         if (!Number.isFinite(maxSkipCount)) {
             maxSkipCount = this.songs.all.reduce((max, song) => Math.max(song.skipCount, max), 0);
             this._cache.add('maxSkipCount', maxSkipCount);
@@ -206,12 +206,12 @@ export class Library extends Presenter {
     }
 
     public getMaxWeightedRating(): number {
-        let maxWeightedRating = this._cache.get('maxWeightedRating');
+        let maxWeightedRating: number = this._cache.get('maxWeightedRating');
         if (!Number.isFinite(maxWeightedRating)) {
-            const likeCounts = this.getSongLikeCounts
+            const likeCounts: Array<number> = this.getSongLikeCounts();
             maxWeightedRating = this.getSongStarWeights().reduce((result, element, index, array) => {
-                const likeMultiplier = likeCounts[index] ? 2 : 1;
-                const playSkipMultiplier = 1 + 1;
+                const likeMultiplier: number = likeCounts[index] ? 2 : 1;
+                const playSkipMultiplier: number = 1 + 1;
                 return Math.max(result, array[index] * likeMultiplier * playSkipMultiplier);
             }, 0);
             this._cache.add('maxWeightedRating', maxWeightedRating);
@@ -220,7 +220,7 @@ export class Library extends Presenter {
     }
 
     public getMinPlayCount(): number {
-        let minPlayCount = this._cache.get('minPlayCount');
+        let minPlayCount: number = this._cache.get('minPlayCount');
         if (!Number.isFinite(minPlayCount)) {
             minPlayCount = this.songs.all.reduce((min, song) => Math.min(song.playCount, min), Number.MAX_SAFE_INTEGER);
             this._cache.add('maxPlayCount', minPlayCount);
@@ -229,7 +229,7 @@ export class Library extends Presenter {
     }
 
     public getMinSkipCount(): number {
-        let minSkipCount = this._cache.get('minSkipCount');
+        let minSkipCount: number = this._cache.get('minSkipCount');
         if (!Number.isFinite(minSkipCount)) {
             minSkipCount = this.songs.all.reduce((min, song) => Math.min(song.skipCount, min), Number.MAX_SAFE_INTEGER);
             this._cache.add('minSkipCount', minSkipCount);
@@ -238,12 +238,12 @@ export class Library extends Presenter {
     }
 
     public getMinWeightedRating(): number {
-        let minWeightedRating = this._cache.get('minWeightedRating');
+        let minWeightedRating: number = this._cache.get('minWeightedRating');
         if (!Number.isFinite(minWeightedRating)) {
-            const dislikeCounts = this.getSongLikeCounts
+            const dislikeCounts: Array<number> = this.getSongLikeCounts();
             minWeightedRating = this.getSongStarWeights().reduce((result, element, index, array) => {
-                const dislikeMultiplier = dislikeCounts[index] ? 0.5 : 1;
-                const playSkipMultiplier = 1 + 1;
+                const dislikeMultiplier: number = dislikeCounts[index] ? 0.5 : 1;
+                const playSkipMultiplier: number = 1 + 1;
                 return Math.min(result, array[index] * dislikeMultiplier * playSkipMultiplier);
             }, 0);
             this._cache.add('minWeightedRating', minWeightedRating);
@@ -252,11 +252,11 @@ export class Library extends Presenter {
     }
 
     public getSongStarCounts(): Array<number> {
-        let songStarCounts = this._cache.get('songStarCounts');
+        let songStarCounts: Array<number> = this._cache.get('songStarCounts');
         if (!songStarCounts) {
             songStarCounts = this.songs.all.reduce((starCounts, song) => {
                 if (song.isRated()) {
-                    const starIndex = song.rating - 1;
+                    const starIndex: number = song.rating - 1;
                     starCounts[starIndex] = starCounts[starIndex] || 0;
                     starCounts[starIndex]++;
                 }
@@ -268,14 +268,14 @@ export class Library extends Presenter {
     }
 
     public getSongStarWeights(): Array<number> {
-        let songStarWeights = this._cache.get('songStarWeights');
+        let songStarWeights: Array<number> = this._cache.get('songStarWeights');
         if (!songStarWeights) {
-            const songStarCounts = this.getSongStarCounts();
+            const songStarCounts: Array<number> = this.getSongStarCounts();
             songStarWeights = Globals.newStarArray();
             for (let i = 2; i < Globals.maxRating; i++) {
                 if (songStarCounts[i]) {
-                    const previousStarWeight = songStarWeights[i - 1];
-                    const currentStarMultiplier = songStarCounts[i - 1] / songStarCounts[i];
+                    const previousStarWeight: number = songStarWeights[i - 1];
+                    const currentStarMultiplier: number = songStarCounts[i - 1] / songStarCounts[i];
                     songStarWeights[i] = Math.max(previousStarWeight * currentStarMultiplier, i + 1);
                 }
             }
@@ -285,11 +285,11 @@ export class Library extends Presenter {
     }
 
     public getSongLikeCounts(): Array<number> {
-        let songLikeCounts = this._cache.get('songLikeCounts');
+        let songLikeCounts: Array<number> = this._cache.get('songLikeCounts');
         if (!songLikeCounts) {
             songLikeCounts = this.songs.all.reduce((likeCounts, song) => {
                 if (song.isLiked()) {
-                    const countIndex = song.rating - 1;
+                    const countIndex: number = song.rating - 1;
                     likeCounts[countIndex] = likeCounts[countIndex] || 0;
                     likeCounts[countIndex]++;
                 }
@@ -301,11 +301,11 @@ export class Library extends Presenter {
     }
 
     public getSongDislikeCounts(): Array<number> {
-        let songDislikeCounts = this._cache.get('songDislikeCounts');
+        let songDislikeCounts: Array<number> = this._cache.get('songDislikeCounts');
         if (!songDislikeCounts) {
             songDislikeCounts = this.songs.all.reduce((dislikeCounts, song) => {
                 if (song.isDisliked()) {
-                    const countIndex = song.rating - 1;
+                    const countIndex: number = song.rating - 1;
                     songDislikeCounts[countIndex] = songDislikeCounts[countIndex] || 0;
                     songDislikeCounts[countIndex]++;
                 }

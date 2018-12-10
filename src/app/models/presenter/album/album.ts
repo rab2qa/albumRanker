@@ -47,7 +47,6 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     private _library?: Library;
     private _liked: boolean;
     private _name: string;
-    private _ranking?: number;
     private _rating: number;
     private _ratingComputed?: boolean;
     private _tracks: Array<Array<Song>>;
@@ -80,7 +79,7 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     get disliked(): boolean { return this._disliked; }
 
     get duration(): number {
-        let duration = this._cache.get('duration');
+        let duration: number = this._cache.get('duration');
         if (!Number.isFinite(duration)) {
             duration = this.songs.reduce((total, track) => {
                 return total + track.duration;
@@ -98,7 +97,7 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     get name(): string { return this._name; }
 
     get playCount(): number {
-        let playCount = this._cache.get('playCount');
+        let playCount: number = this._cache.get('playCount');
         if (!Number.isFinite(playCount)) {
             playCount = this.songs.reduce((sum, song) => sum + song.playCount, 0);
             this._cache.add('playCount', playCount);
@@ -107,43 +106,44 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     }
 
     get ranking(): number {
-        if (!this.isRanked()) {
-            let response = Globals.defaultRating;
+        let ranking: number = this._cache.get('ranking');
+        if (!Number.isFinite(ranking)) {
+            ranking = Globals.defaultRating;
             if (this.isRated()) {
                 if (this.isLiked() || this.isDisliked()) {
                     const features = [
                         { value: this._getLikeDislikeRating(), weight: 0.5 },
                         { value: this._getAggregateSongRating(), weight: 0.5 }
                     ];
-                    const weightedRating = features.reduce((sum, feature) => sum + Algorithm.applyWeight(feature.value, feature.weight), 0);
-                    response =
+                    const weightedRating: number = features.reduce((sum, feature) => sum + Algorithm.applyWeight(feature.value, feature.weight), 0);
+                    ranking =
                         (this._rating - 1) + // take a star off
                         Algorithm.scale(weightedRating, Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
                 } else {
-                    response =
+                    ranking =
                         (this._rating - 1) + // take a star off
                         Algorithm.scale(this._getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating); // fill the last star
                 }
             } else {
                 if (this.isLiked()) {
-                    response =
+                    ranking =
                         Algorithm.scale(Globals.maxRating, Globals.minRating, (Globals.maxRating - 1) / Globals.maxRating) +
                         Algorithm.scale(this._getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
                 } else if (this.isDisliked()) {
-                    response = Algorithm.scale(this._getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
+                    ranking = Algorithm.scale(this._getAggregateSongRating(), Globals.minRating, (Globals.maxRating - (Globals.maxRating - 1)) / Globals.maxRating);
                 } else {
-                    response = this._getAggregateSongRating();
+                    ranking = this._getAggregateSongRating();
                 }
             }
-            this._ranking = response;
+            this._cache.add('ranking', ranking);
         }
-        return this._ranking;
+        return ranking;
     }
 
     get rating(): number { return this._rating; }
 
     get skipCount(): number {
-        let skipCount = this._cache.get('skipCount');
+        let skipCount: number = this._cache.get('skipCount');
         if (!Number.isFinite(skipCount)) {
             skipCount = this.songs.reduce((sum, song) => sum + song.skipCount, 0);
             this._cache.add('skipCount', skipCount);
@@ -152,7 +152,7 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     }
 
     get songs(): Array<Song> {
-        let songs = this._cache.get('songs');
+        let songs: Array<Song> = this._cache.get('songs');
         if (!songs) {
             songs = this.tracks.reduce((array, disc) => {
                 disc.forEach(track => array.push(track));
@@ -164,7 +164,7 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     }
 
     get topTenSongs(): Array<Song> {
-        let topTenSongs = this._cache.get('topTenSongs');
+        let topTenSongs: Array<Song> = this._cache.get('topTenSongs');
         if (!topTenSongs) {
             topTenSongs = this.songs
                 .sort((a, b) => b.ranking - a.ranking)
@@ -215,7 +215,8 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     }
 
     public isRanked(): boolean {
-        return Number.isFinite(this._ranking);
+        const ranking = this._cache.get('ranking');
+        return Number.isFinite(ranking);
     }
 
     public isSingle(): boolean {
@@ -227,8 +228,8 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     }
 
     public getAverageValue(): number {
-        let response = this.getTotalValue() / this.songs.length || 0;
-        return response;
+        let averageValue: number = this.getTotalValue() / this.songs.length || 0;
+        return averageValue;
     }
 
     public getSongsWithRatingOf(rating: number): Array<Song> {
@@ -236,8 +237,8 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     }
 
     public getTotalValue(): number {
-        const response = this.songs.reduce((sum, song) => sum + song.value, 0);
-        return response;
+        const totalValue: number = this.songs.reduce((sum, song) => sum + song.value, 0);
+        return totalValue;
     }
 
     /*******************/
@@ -245,34 +246,33 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     /*******************/
 
     private _getAggregateSongRating(): number {
-        const albumDivisor = (Settings.distributeAggregateValues) ? 10 : this.topTenSongs.length;
-        let aggregateSongRating = this.topTenSongs.reduce((sum, song) => sum + song.ranking, 0) / albumDivisor;
-        const response = Number.isFinite(aggregateSongRating) ? aggregateSongRating : 0;
-        return response;
+        const albumDivisor: number = (Settings.distributeAggregateValues) ? 10 : this.topTenSongs.length;
+        let aggregateSongRating: number = this.topTenSongs.reduce((sum, song) => sum + song.ranking, 0) / albumDivisor;
+        aggregateSongRating = Number.isFinite(aggregateSongRating) ? aggregateSongRating : 0;
+        return aggregateSongRating;
     }
 
     private _getLikeDislikeRating(): number {
-        let response = Globals.maxRating / 2;
+        let likeDislikeRating: number = Globals.maxRating / 2;
 
         if (this.isLiked()) {
-            response = Globals.maxRating;
+            likeDislikeRating = Globals.maxRating;
         } else if (this.isDisliked) {
-            response = Globals.minRating;
+            likeDislikeRating = Globals.minRating;
         }
 
-        return response;
+        return likeDislikeRating;
     }
 
     private _getWeightedRating(): number {
-        let response = Globals.defaultRating;
+        let weightedRating: number = Globals.defaultRating;
 
         if (this.isRated()) {
-            const starWeights = this.library.getAlbumStarWeights();
-            const weightedRating = starWeights[this.rating - 1];
-            response = weightedRating;
+            const starWeights: Array<number> = this.library.getAlbumStarWeights();
+            weightedRating = starWeights[this.rating - 1];
         }
 
-        return response;
+        return weightedRating;
     }
 
 } // End class Album

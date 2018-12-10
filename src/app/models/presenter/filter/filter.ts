@@ -386,7 +386,7 @@ export abstract class Filter extends Presenter implements Activatable, Supportab
     // ----------------------------------------------------------------------------- //
 
     public isValid(): boolean {
-        const hasSelectedComparison = !!(this.comparisons.find(comparison => comparison.isSelected()));
+        const hasSelectedComparison: boolean = !!(this.comparisons.find(comparison => comparison.isSelected()));
         return hasSelectedComparison;
     }
 

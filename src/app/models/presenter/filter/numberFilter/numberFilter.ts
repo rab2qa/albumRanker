@@ -81,11 +81,11 @@ export class NumberFilter extends Filter {
     // ------------------------------------------------------------------------------------ //
 
     public isValid(): boolean {
-        const superIsValid = super.isValid();
-        const isComplete = !!(this.value);
-        const isNotActive = !this.isActive();
-        const isDirty = this.isDirty();
-        return superIsValid && isComplete && (isNotActive || isDirty);
+        const superIsValid: boolean = super.isValid();
+        const isComplete: boolean = !!(this.value);
+        const isNotActive: boolean = !this.isActive();
+        const thisIsDirty: boolean = this.isDirty();
+        return superIsValid && isComplete && (isNotActive || thisIsDirty);
     }
 
     /*******************/
@@ -93,17 +93,17 @@ export class NumberFilter extends Filter {
     /*******************/
 
     private _valueIsDirty(): boolean {
-        let response = false;
+        let valueIsDirty: boolean = false;
         if (this.value) {
             if (this._cache.has('value')) {
                 if (this._cache.get('value') !== this.value) {
-                    response = true;
+                    valueIsDirty = true;
                 }
             } else {
-                response = true;
+                valueIsDirty = true;
             }
         }
-        return response;
+        return valueIsDirty;
     }
 
 } // End class NumberFilter

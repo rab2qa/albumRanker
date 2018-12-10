@@ -34,7 +34,6 @@ export class Artist extends Presenter implements Rankable {
     private _albums: Array<Album>;
     private _library?: Library;
     private _name: string;
-    private _ranking?: number;
 
     /***************/
     /* CONSTRUCTOR */
@@ -59,7 +58,7 @@ export class Artist extends Presenter implements Rankable {
     get name(): string { return this._name; }
 
     get playCount(): number {
-        let playCount = this._cache.get('playCount');
+        let playCount: number = this._cache.get('playCount');
         if (!Number.isFinite(playCount)) {
             playCount = this.songs.reduce((sum, song) => sum + song.playCount, 0);
             this._cache.add('playCount', playCount);
@@ -68,16 +67,16 @@ export class Artist extends Presenter implements Rankable {
     }
 
     get ranking(): number {
-        if (!this._ranking) {
-            let aggregateAlbumRating = this._albums.reduce((sum, album) => sum + album.ranking, 0) / this._albums.length;
-            aggregateAlbumRating = aggregateAlbumRating || 0; // Handle Divide by Zero Error
-            this._ranking = aggregateAlbumRating;
+        let ranking: number = this._cache.get('ranking');
+        if (!Number.isFinite(ranking)) {
+            ranking = this._albums.reduce((sum, album) => sum + album.ranking, 0) / this._albums.length || 0;
+            this._cache.add('ranking', ranking);
         }
-        return this._ranking;
+        return ranking;
     }
 
     get skipCount(): number {
-        let skipCount = this._cache.get('skipCount');
+        let skipCount: number = this._cache.get('skipCount');
         if (!Number.isFinite(skipCount)) {
             skipCount = this.songs.reduce((sum, song) => sum + song.skipCount, 0);
             this._cache.add('skipCount', skipCount);
@@ -86,7 +85,7 @@ export class Artist extends Presenter implements Rankable {
     }
 
     get songs(): Array<Song> {
-        let songs = this._cache.get('songs');
+        let songs: Array<Song> = this._cache.get('songs');
         if (!songs) {
             songs = new Array<Song>();
             for (let key in this._albums) {
@@ -117,13 +116,13 @@ export class Artist extends Presenter implements Rankable {
     /*******************/
 
     private _getAverageValue(): number {
-        let response = this._getTotalValue() / this.songs.length || 0;
-        return response;
+        const averageValue: number = this._getTotalValue() / this.songs.length || 0;
+        return averageValue;
     }
 
     private _getTotalValue(): number {
-        const response = this.songs.reduce((sum, song) => sum + song.value, 0);
-        return response;
+        const totalValue: number = this.songs.reduce((sum, song) => sum + song.value, 0);
+        return totalValue;
     }
 
 } // End class Artist
