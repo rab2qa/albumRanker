@@ -1,5 +1,8 @@
 <div class="rankable transition" [class.clickable]="canShowDetails" [class.showing-details]="showDetails" (click)="toggleShowDetails()">
     <div class="rankable-title transition flex">
+      <div class="rankable-rank-number">
+        {{ rankNumber }}
+      </div>
       <div class="rankable-stars">
         <ranker-stars [rankable]="rankable"></ranker-stars>
       </div>
