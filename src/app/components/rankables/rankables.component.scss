@@ -10,6 +10,12 @@
 .rankable-stars {
   width: 90px;
 }
+.rankable-rank-number {
+  width: 45px;
+  color: $gray;
+  text-align: center;
+  padding-right: 10px;
+}
 .rankable-title-text {
   flex-grow: 1;
 }

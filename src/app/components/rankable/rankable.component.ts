@@ -37,6 +37,7 @@ import { Song } from '../../models/presenter/song/song';
 })
 export class RankableComponent implements OnInit {
     @Input() rankable: Rankable;
+    @Input() rankNumber: number;
 
     /**************/
     /* PROPERTIES */
