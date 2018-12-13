@@ -10,7 +10,7 @@
 
 import { Event, EventType } from '../event/event';
 import { ExternalEvent } from '../event/externalEvent/externalEvent';
-import { InternalEvent } from '../event/InternalEvent/internalEvent';
+import { InternalEvent } from '../event/internalEvent/internalEvent';
 import { Status } from '../status/status';
 
 /**************/

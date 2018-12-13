@@ -18,7 +18,7 @@ import { Pagable } from 'src/app/interfaces/pagable';
 import { Comparison, ComparisonType } from 'src/app/models/presenter/comparison/comparison';
 import { exclusiveSelect, EventType } from 'src/app/models/event/event';
 import { ExternalEvent } from 'src/app/models/event/externalEvent/externalEvent';
-import { InternalEvent } from 'src/app/models/event/InternalEvent/internalEvent';
+import { InternalEvent } from 'src/app/models/event/internalEvent/internalEvent';
 import { Filter, FilterType } from 'src/app/models/presenter/filter/filter';
 import { BooleanFilter } from 'src/app/models/presenter/filter/booleanFilter/booleanFilter';
 import { NumberFilter } from 'src/app/models/presenter/filter/numberFilter/numberFilter';
