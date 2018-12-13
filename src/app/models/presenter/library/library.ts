@@ -221,10 +221,28 @@ export class Library extends Presenter {
     public getMaxArtistValue(): number {
         let maxArtistValue: number = this._cache.get('maxArtistValue');
         if (!Number.isFinite(maxArtistValue)) {
-            maxArtistValue = this.artists.all.reduce((max, artist) => Math.max(max, artist.getTotalValue()), 0)
+            maxArtistValue = this.artists.all.reduce((max, artist) => Math.max(max, artist.getValue()), 0)
             this._cache.add('maxArtistValue', maxArtistValue);
         }
         return maxArtistValue;
+    }
+
+    public getMaxArtistAverageValue(): number {
+        let maxArtistAverageValue: number = this._cache.get('maxArtistAverageValue');
+        if (!Number.isFinite(maxArtistAverageValue)) {
+            maxArtistAverageValue = this.artists.all.reduce((max, artist) => Math.max(max, artist.getAverageValue()), 0)
+            this._cache.add('maxArtistAverageValue', maxArtistAverageValue);
+        }
+        return maxArtistAverageValue;
+    }
+
+    public getMaxArtistTotalValue(): number {
+        let maxArtistTotalValue: number = this._cache.get('maxArtistTotalValue');
+        if (!Number.isFinite(maxArtistTotalValue)) {
+            maxArtistTotalValue = this.artists.all.reduce((max, artist) => Math.max(max, artist.getTotalValue()), 0)
+            this._cache.add('maxArtistTotalValue', maxArtistTotalValue);
+        }
+        return maxArtistTotalValue;
     }
 
     public getMaxWeightedRating(): number {
@@ -244,10 +262,28 @@ export class Library extends Presenter {
     public getMinArtistValue(): number {
         let minArtistValue: number = this._cache.get('minArtistValue');
         if (!Number.isFinite(minArtistValue)) {
-            minArtistValue = this.artists.all.reduce((min, artist) => Math.min(min, artist.getTotalValue()), Number.MAX_SAFE_INTEGER)
+            minArtistValue = this.artists.all.reduce((min, artist) => Math.min(min, artist.getValue()), Number.MAX_SAFE_INTEGER)
             this._cache.add('minArtistValue', minArtistValue);
         }
         return minArtistValue;
+    }
+
+    public getMinArtistAverageValue(): number {
+        let minArtistAverageValue: number = this._cache.get('minArtistAverageValue');
+        if (!Number.isFinite(minArtistAverageValue)) {
+            minArtistAverageValue = this.artists.all.reduce((min, artist) => Math.min(min, artist.getAverageValue()), Number.MAX_SAFE_INTEGER)
+            this._cache.add('minArtistAverageValue', minArtistAverageValue);
+        }
+        return minArtistAverageValue;
+    }
+
+    public getMinArtistTotalValue(): number {
+        let minArtistTotalValue: number = this._cache.get('minArtistTotalValue');
+        if (!Number.isFinite(minArtistTotalValue)) {
+            minArtistTotalValue = this.artists.all.reduce((min, artist) => Math.min(min, artist.getTotalValue()), Number.MAX_SAFE_INTEGER)
+            this._cache.add('minArtistTotalValue', minArtistTotalValue);
+        }
+        return minArtistTotalValue;
     }
 
     public getMinPlayCount(): number {

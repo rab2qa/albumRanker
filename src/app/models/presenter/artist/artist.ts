@@ -76,8 +76,7 @@ export class Artist extends Presenter implements Rankable {
     get ranking(): number {
         let ranking: number = this._cache.get('ranking');
         if (!Number.isFinite(ranking)) {
-            // ranking = this._albums.reduce((sum, album) => sum + album.ranking, 0) / this._albums.length || 0;
-            ranking = Algorithm.normalize(this.getTotalValue(), this._library.getMinArtistValue(), this._library.getMaxArtistValue(), Globals.minRating, Globals.maxRating);
+            ranking = Algorithm.normalize(this.getValue(), this._library.getMinArtistValue(), this._library.getMaxArtistValue(), Globals.minRating, Globals.maxRating);
             this._cache.add('ranking', ranking);
         }
         return ranking;
@@ -120,6 +119,12 @@ export class Artist extends Presenter implements Rankable {
     public getTotalValue(): number {
         const totalValue: number = this.songs.reduce((sum, song) => sum + song.value, 0);
         return totalValue;
+    }
+
+    public getValue(): number {
+        const normalizedAverageValue: number = Algorithm.normalize(this.getAverageValue(), this._library.getMinArtistAverageValue(), this._library.getMaxArtistAverageValue(), Globals.minRating, Globals.maxRating);
+        const normalizedTotalValue: number = Algorithm.normalize(this.getTotalValue(), this._library.getMinArtistTotalValue(), this._library.getMaxArtistTotalValue(), Globals.minRating, Globals.maxRating);
+        return Algorithm.applyWeight(normalizedAverageValue, 0.5) + Algorithm.applyWeight(normalizedTotalValue, 0.5);
     }
 
     public isRankable(): boolean {
