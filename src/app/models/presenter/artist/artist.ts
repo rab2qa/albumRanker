@@ -19,6 +19,13 @@ import { Library } from '../library/library';
 import { Presenter } from '../presenter';
 import { Song } from '../song/song';
 
+/*************/
+/* UTILITIES */
+/*************/
+
+import { Algorithm } from 'src/app/utilities/algorithm';
+import { Globals } from 'src/app/utilities/globals';
+
 ////////////////////
 //                //
 //     ARTIST     //
@@ -69,7 +76,8 @@ export class Artist extends Presenter implements Rankable {
     get ranking(): number {
         let ranking: number = this._cache.get('ranking');
         if (!Number.isFinite(ranking)) {
-            ranking = this._albums.reduce((sum, album) => sum + album.ranking, 0) / this._albums.length || 0;
+            // ranking = this._albums.reduce((sum, album) => sum + album.ranking, 0) / this._albums.length || 0;
+            ranking = Algorithm.normalize(this.getTotalValue(), this._library.getMinArtistValue(), this._library.getMaxArtistValue(), Globals.minRating, Globals.maxRating);
             this._cache.add('ranking', ranking);
         }
         return ranking;
@@ -97,32 +105,28 @@ export class Artist extends Presenter implements Rankable {
     }
 
     get value(): number {
-        return this._getTotalValue();
+        return this.getTotalValue();
     }
 
     /******************/
     /* PUBLIC METHODS */
     /******************/
 
+    public getAverageValue(): number {
+        const averageValue: number = this.getTotalValue() / this.songs.length || 0;
+        return averageValue;
+    }
+
+    public getTotalValue(): number {
+        const totalValue: number = this.songs.reduce((sum, song) => sum + song.value, 0);
+        return totalValue;
+    }
+
     public isRankable(): boolean {
         return true;
     }
     public isRanked(): boolean {
         return !!(this.ranking);
-    }
-
-    /*******************/
-    /* PRIVATE METHODS */
-    /*******************/
-
-    private _getAverageValue(): number {
-        const averageValue: number = this._getTotalValue() / this.songs.length || 0;
-        return averageValue;
-    }
-
-    private _getTotalValue(): number {
-        const totalValue: number = this.songs.reduce((sum, song) => sum + song.value, 0);
-        return totalValue;
     }
 
 } // End class Artist
