@@ -183,6 +183,7 @@ export class Container<T> implements Filterable, Pagable {
                 return this._applyFilter(filteredData, filter);
             }, this._data);
         this.paginationOptions.length = this._filteredData.length;
+        this.paginationOptions.pageIndex = 0;
     }
 
     private _setFilters(): void {
