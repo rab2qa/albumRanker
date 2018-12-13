@@ -26,6 +26,9 @@
 
 <!-- Header -->
 <div class="list-header flex">
+    <div class="rankable-rank-number">
+        Rank #
+    </div>
     <div class="rankable-stars rankable-stars-relative">Relative Rating</div>
     <div class="rankable-title-text">
         {{ listHeader.rankableTitle }}
@@ -36,7 +39,7 @@
 </div>
 
 <!-- Rankable -->
-<ranker-rankable *ngFor="let rankable of rankables" [rankable]="rankable"></ranker-rankable>
+<ranker-rankable *ngFor="let rankable of rankables; let i = index" [rankable]="rankable" [rankNumber]="(paginationOptions.pageSize * paginationOptions.pageIndex) + (i + 1)"></ranker-rankable>
 
 <!-- Pagination -->
 <mat-paginator [disabled]="paginationOptions.disabled" [hidePageSize]="paginationOptions.hidePageSize"
