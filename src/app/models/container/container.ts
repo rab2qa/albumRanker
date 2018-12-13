@@ -88,7 +88,7 @@ export class Container<T> implements Filterable, Pagable {
     get all(): Array<T> { return this._data; }
 
     get container(): Container<T> { return this; }
-    
+
     get filtered(): Array<T> { return this._filteredData; }
 
     get id(): ContainerType { return this._id; }
@@ -190,6 +190,11 @@ export class Container<T> implements Filterable, Pagable {
             const id: number = Number.parseInt(key);
             if (Number.isFinite(id)) {
                 switch (id) {
+
+                    // -------------------------------------------------------- //
+                    // -------------------- STRING FILTERS -------------------- //
+                    // -------------------------------------------------------- //
+
                     case FilterType.Album:
                     case FilterType.AlbumArtist:
                     case FilterType.Artist:
@@ -216,6 +221,11 @@ export class Container<T> implements Filterable, Pagable {
                     case FilterType.Name:
                         this._filters.push(new StringFilter(id, FilterType[key]));
                         break;
+
+                    // --------------------------------------------------------- //
+                    // -------------------- BOOLEAN FILTERS -------------------- //
+                    // --------------------------------------------------------- //
+
                     case FilterType.AlbumArtwork:
                     // case FilterType.AlbumLove:
                     case FilterType.Compilation:
@@ -247,6 +257,11 @@ export class Container<T> implements Filterable, Pagable {
                                 this._filters[this._filters.length - 1].isAvailable(true);
                         }
                         break;
+
+                    // ------------------------------------------------------- //
+                    // -------------------- RANGE FILTERS -------------------- //
+                    // ------------------------------------------------------- //
+
                     // case FilterType.AlbumRating:
                     case FilterType.BitRate:
                     case FilterType.BPM:
@@ -304,6 +319,11 @@ export class Container<T> implements Filterable, Pagable {
                                 this._filters[this._filters.length - 1].isAvailable(true);
                         }
                         break;
+
+                    // --------------------------------------------------------- //
+                    // -------------------- SPECIAL FILTERS -------------------- //
+                    // --------------------------------------------------------- //
+
                     case FilterType.DateAdded:
                     case FilterType.DateModified:
                     case FilterType.ICloudStatus:

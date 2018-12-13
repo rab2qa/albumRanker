@@ -37,6 +37,7 @@ export class Playlist extends Presenter implements Likable, Disklikable {
     /* PROPERTIES */
     /**************/
 
+    private _description: string;
     private _disliked: boolean;
     private _library?: Library;
     private _liked: boolean;
@@ -50,6 +51,7 @@ export class Playlist extends Presenter implements Likable, Disklikable {
     public constructor(json: Object) {
         super();
 
+        this._description = json["Description"];
         this._disliked = json['Disliked'] === 'true';
         this._liked = json['Loved'] === 'true';
         this._name = json['Name'];

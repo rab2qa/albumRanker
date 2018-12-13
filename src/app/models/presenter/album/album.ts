@@ -42,13 +42,17 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     /* PROPERTIES */
     /**************/
 
+    private _albumArtist?: Artist;
     private _artist?: Artist;
+    private _artworkCount?: number;
+    private _compilation?: boolean;
     private _disliked: boolean;
     private _library?: Library;
     private _liked: boolean;
     private _name: string;
     private _rating: number;
     private _ratingComputed?: boolean;
+    private _sortAlbumArtist?: string;
     private _tracks: Array<Array<Song>>;
     private _year?: number;
 
@@ -59,12 +63,12 @@ export class Album extends Presenter implements Rankable, Ratable, Likable, Disk
     public constructor(json: Object) {
         super();
 
-        this._disliked = json['Album Disliked'] === 'true';
+        this._disliked = !!(json['Album Disliked']);
         this._name = json['Album'];
-        this._rating = (json['Album Rating Computed'] === 'true') ? Globals.defaultRating : +json['Album Rating'] / 20 || Globals.defaultRating;
-        this._ratingComputed = (json['Album Rating Computed'] === 'true');
-        this._liked = json['Album Loved'] === 'true';
-        this._year = +json['Year'] || null;
+        this._rating = !!(json['Album Rating Computed']) ? Globals.defaultRating : +json['Album Rating'] / 20 || Globals.defaultRating;
+        this._ratingComputed = !!(json['Album Rating Computed']);
+        this._liked = !!(json['Album Loved']);
+        this._year = +json['Year'] || undefined;
 
         this._tracks = new Array<Array<Song>>();
     }

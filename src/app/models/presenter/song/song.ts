@@ -45,22 +45,41 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
 
     private _album?: Album;
     private _artist?: Artist;
+    // private _bitrate?: number;
+    // private _bpm?: number;
+    // private _comments?: string;
+    // private _composer?: string;
+    // private _dateAdded?: Date;
+    // private _dateModified?: Date;
     private _disabled?: boolean;
+    // private _discCount?: number;
+    // private _discNumber?: number;    // Supported by using the array index of album.tracks[discNumber][albumNumber]
     private _disliked?: boolean;
-    private _duration: number;
-    private _explicit?: boolean;
+    // private _explicit?: boolean;
     private _genre?: string;
+    // private _grouping?: string;
+    // private _kind?: string;
     private _library?: Library;
     private _loved?: boolean;
-    private _name: string;
-    private _playCount: number;
+    private _name?: string;
+    private _playCount?: number;
+    // private _playdate?: Date;
     private _playlists: Array<Playlist>;
     private _ranking?: number;
-    private _rating: number;
+    private _rating?: number;
     private _ratingComputed?: boolean;
     private _releaseDate?: Date;
-    private _skipCount: number;
-
+    // private _sampleRate?: number;
+    // private _size?: number;
+    private _skipCount?: number;
+    // private _skipDate?: Date;
+    // private _sortAlbum?: string;
+    // private _sortArtist?: string;
+    // private _sortComposer?: string;
+    // private _sortName?: string;
+    private _totalTime?: number;
+    // private _trackCount?: number;
+    // private _trackNumber?: number;    // Supported by using the array index of album.tracks[discNumber][albumNumber]
 
     /***************/
     /* CONSTRUCTOR */
@@ -69,18 +88,31 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
     public constructor(json: Object) {
         super();
 
-        this._disabled = (json['Disabled'] === 'true');
-        this._disliked = (json['Disliked'] === 'true');
-        this._duration = +json['Total Time'];
-        this._explicit = (json['Explicit'] === 'true');
+        // this._bitrate = +json['Bit Rate'];
+        // this._bpm = +json['BPM'];
+        // this._comments = json['Comments']
+        // this._composer = json['Composer']
+        // this._dateAdded = json['Date Added'] ? new Date(json['Date Added']) : undefined;
+        // this._dateModified = json['Date Modified'] ? new Date(json['Date Modified']) : undefined;
+        this._disabled = !!(json['Disabled']);
+        this._disliked = !!(json['Disliked']);
+        // this._dateAdded = json['Date Added'] ? new Date(json['Date Added']) : undefined;
+        // this._dateModified = json['Date Modified'] ? new Date(json['Date Modified']) : undefined;
+        // this._explicit = !!(json['Explicit']);
         this._genre = json['Genre'];
-        this._loved = (json['Loved'] === 'true');
+        // this._grouping = json['Grouping'];
+        // this._kind = json['Kind'];
+        this._loved = !!(json['Loved']);
         this._name = json['Name'];
         this._playCount = +json['Play Count'] || 0;
+        // this._playdate = json['Play Date UTC'] ? new Date(json['Play Date UTC']) : undefined;
         this._rating = +json['Rating'] / 20 || Globals.defaultRating;
-        this._ratingComputed = (json['Rating Computed'] === 'true');
-        this._releaseDate = json['Release Date'] ? new Date(json['Release Date']) : null;
+        this._ratingComputed = !!(json['Rating Computed']);
+        this._releaseDate = json['Release Date'] ? new Date(json['Release Date']) : undefined;
+        // this._size = +json['Size'];
         this._skipCount = +json['Skip Count'] || 0;
+        // this._skipDate = json['Skip Date'] ? new Date(json['Skip Date']) : undefined;
+        this._totalTime = +json['Total Time'];
 
         this._playlists = new Array<Playlist>();
     }
@@ -113,9 +145,7 @@ export class Song extends Presenter implements Rankable, Ratable, Likable, Diskl
 
     get disliked(): boolean { return this._disliked; }
 
-    get duration(): number { return this._duration; }
-
-    get explicit(): boolean { return this._explicit; }
+    get duration(): number { return this._totalTime; }
 
     get genre(): string { return this._genre; }
 
