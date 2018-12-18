@@ -21,6 +21,12 @@ body {
 }
 .flex {
   display: flex;
+  > * {
+    padding-right: 10px;
+    &:last-child {
+      padding-right: 0;
+    }
+  }
   > .flex-grow {
     flex-grow: 1;
   }
