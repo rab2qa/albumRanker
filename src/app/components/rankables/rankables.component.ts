@@ -9,19 +9,37 @@
 /*************/
 
 import { Component, OnInit, Input } from '@angular/core';
-import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { MatSelectChange } from '@angular/material';
 
-/***********/
-/* CLASSES */
-/***********/
+/**********/
+/* MODELS */
+/**********/
 
-import { Container } from '../../classes/container';
+import { Cache } from 'src/app/models/cache/cache';
+import { Comparison, ComparisonType } from 'src/app/models/presenter/comparison/comparison';
+import { Filter } from 'src/app/models/presenter/filter/filter';
+import { BooleanFilter } from 'src/app/models/presenter/filter/booleanFilter/booleanFilter';
+import { PaginationOptions } from 'src/app/models/paginationOptions/paginationOptions';
+import { Presenter } from 'src/app/models/presenter/presenter';
 
 /**************/
 /* INTERFACES */
 /**************/
 
-import { Rankable } from '../../interfaces/rankable';
+import { Rankable } from 'src/app/interfaces/rankable';
+
+interface ListHeader {
+    rankableTitle: string;
+    secondary?: string;
+}
+
+/////////////////////
+//                 //
+//     GLOBALS     //
+//                 //
+/////////////////////
+
+const cache = new Cache();
 
 ///////////////////////
 //                   //
@@ -36,36 +54,108 @@ import { Rankable } from '../../interfaces/rankable';
 })
 export class RankablesComponent implements OnInit {
 
-    @Input() rankables: Container<Rankable>;
-    @Input() canReorder: boolean = false;
+    /***********/
+    /*  INPUTS */
+    /***********/
+
+    @Input() filters: Array<Filter>;
+    @Input() name: string;
+    @Input() paginationOptions: PaginationOptions;
+    @Input() rankables: Array<Rankable>;
 
     /**************/
     /* PROPERTIES */
     /**************/
 
-    public listHeader: string;
+    public listHeader: ListHeader;
+
+    /*************/
+    /* ACCESSORS */
+    /*************/
+
+    get activeFilters(): Array<Filter> {
+        let activeFilters: Array<Filter> = cache.get('activeFilters');
+        if (!activeFilters) {
+            activeFilters = this.filters.filter(filter => filter.isActive());
+        }
+        return activeFilters;
+    }
+
+    get selectedComparison(): Comparison {
+        let selectedComparison: Comparison = cache.get('selectedComparison');
+        if (!selectedComparison) {
+            selectedComparison = this.selectedFilter && this.selectedFilter.comparisons.find(comparison => comparison.isSelected());
+        }
+        return selectedComparison;
+    }
+
+    get selectedFilter(): Filter {
+        let selectedFilter: Filter = cache.get('selectedFilter');
+        if (!selectedFilter) {
+            selectedFilter = this.filters.find(filter => filter.isSelected());
+        }
+        return selectedFilter;
+    }
+
+    get showRangeInput(): boolean {
+        return !!(this.selectedComparison && this.selectedComparison.id === ComparisonType.IsInTheRange);
+    }
+
+    get showValueInput(): boolean {
+        return !!(this.selectedFilter && this.selectedComparison && !(this.selectedFilter instanceof BooleanFilter));
+    }
 
     /******************/
     /* PUBLIC METHODS */
     /******************/
 
     public ngOnInit(): void {
-        this.listHeader = this.setListHeader(this.rankables.name.toLowerCase());
+        this.listHeader = this.setListHeader(this.name.toLowerCase());
     }
 
-    public setListHeader(name) {
+    public setListHeader(name): ListHeader {
         if (name === 'albums') {
-            return 'Artist/Album Title';
+            return {
+                rankableTitle: 'Artist/Album Title',
+                secondary: 'Year',
+            };
         } else if (name === 'artists') {
-            return 'Artist';
+            return {
+                rankableTitle: 'Artist',
+            };
         } else if (name === 'songs') {
-            return 'Artist/Song Title';
+            return {
+                rankableTitle: 'Artist/Song Title',
+            };
         }
     }
 
-    public handleItemDropped(event: CdkDragDrop<string[]>): void {
-        if (this.canReorder) {
-            moveItemInArray(this.rankables.page, event.previousIndex, event.currentIndex);
+    public onFilterUpdate(event: MatSelectChange): void {
+        const model: Presenter = event.value;
+        model.isSelected(true);
+        if (model instanceof Filter) {
+            cache.remove('selectedFilter');
+        } else if (model instanceof Comparison) {
+            cache.remove('selectedComparison');
+        }
+    }
+
+    public onApply(): void {
+        if (this.selectedFilter) {
+            this.selectedFilter.isActive(true);
+            cache.remove('activeFilters');
+        }
+    }
+
+    public onClearAll(): void {
+        this.activeFilters.forEach(filter => filter.isActive(false));
+        cache.remove('activeFilters')
+    }
+
+    public onClear(filter: Filter): void {
+        if (filter) {
+            filter.isActive(false);
+            cache.remove('activeFilters');
         }
     }
 

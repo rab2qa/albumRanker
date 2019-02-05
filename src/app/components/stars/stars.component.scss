@@ -1,5 +1,5 @@
 @import 'src/app/styles/variables';
-ul.star-ratings {
+ul.star-rankings {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -8,12 +8,13 @@ ul.star-ratings {
     display: inline-block;
     position: relative;
     color: #aaa;
-    .star-rating-fill {
+    font-size: 0.75rem;
+    .star-ranking-fill {
       position: absolute;
       left: 0;
       top: 0;
       overflow: hidden;
-      color: $primaryColorDark;
+      color: $primaryColor;
     }
   }
 }

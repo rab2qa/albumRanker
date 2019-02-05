@@ -5,19 +5,17 @@
 //////////////////////
 
 export interface Rankable {
-   
-    /**************/
-    /* PROPERTIES */
-    /**************/
 
-    ranking: number;
-    stars: Array<number>;
-    
-    /***********/
-    /* METHODS */
-    /***********/
+  /**************/
+  /* PROPERTIES */
+  /**************/
 
-    isRanked(): boolean;
-    isRankable(): boolean;
+  ranking: number;
+
+  /***********/
+  /* METHODS */
+  /***********/
+
+  isRanked(): boolean;
 
 } // End interface Rankable

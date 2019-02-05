@@ -33,7 +33,7 @@ export class XmlService {
 
     public fromText(text): object {
         const parser = new DOMParser();
-        return parser.parseFromString(text, "text/xml");
+        return parser.parseFromString(text, 'text/xml');
     }
 
     public parseXML(text: string) {
@@ -44,15 +44,32 @@ export class XmlService {
 
 
     public toJSON(xml): object {
-        const plist = xml.getElementsByTagName("plist")[0].firstElementChild;
-        return this.parseDictionary(plist);
+        const plist = xml.getElementsByTagName('plist')[0].firstElementChild;
+        return this._parseDictionary(plist);
     }
 
     /*******************/
     /* PRIVATE METHODS */
     /*******************/
 
-    private parseDictionary(node) {
+    private _parseArray(node) {
+        let response = [];
+
+        node.childNodes.forEach(element => {
+            switch (element.nodeName) {
+                case 'dict':
+                    response.push(this._parseDictionary(element));
+                    break;
+                case 'array':
+                    response.push(this._parseArray(element));
+                    break;
+            }
+        });
+
+        return response;
+    }
+
+    private _parseDictionary(node) {
         let response = {};
         let key = node.firstElementChild;
 
@@ -60,16 +77,16 @@ export class XmlService {
             let value = key.nextElementSibling;
             if (value) {
                 switch (value.nodeName) {
-                    case "dict":
-                        response[key.innerHTML] = this.parseDictionary(value);
+                    case 'dict':
+                        response[key.innerHTML] = this._parseDictionary(value);
                         break;
-                    case "Playlists":
+                    case 'Playlists':
                         break;
-                    case "array":
-                        response[key.innerHTML] = this.parseArray(value);
+                    case 'array':
+                        response[key.innerHTML] = this._parseArray(value);
                         break;
-                    case "true":
-                    case "false":
+                    case 'true':
+                    case 'false':
                         response[key.innerHTML] = value.nodeName;
                         break;
                     default:
@@ -78,23 +95,6 @@ export class XmlService {
                 key = value.nextElementSibling;
             }
         }
-
-        return response;
-    }
-
-    private parseArray(node) {
-        let response = [];
-
-        node.childNodes.forEach(element => {
-            switch (element.nodeName) {
-                case "dict":
-                    response.push(this.parseDictionary(element));
-                    break;
-                case "array":
-                    response.push(this.parseArray(element));
-                    break;
-            }
-        });
 
         return response;
     }

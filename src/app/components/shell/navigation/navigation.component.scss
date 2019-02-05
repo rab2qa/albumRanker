@@ -1,29 +1,37 @@
 @import 'src/app/styles/variables';
 .navigation {
-  margin: 0;
+  margin: 20px 0 0;
   padding: 0;
   list-style: none;
   > li {
+    font-family: 'Roboto Condensed', sans-serif;
+    text-transform: uppercase;
+    font-size: 1.125rem;
+    // font-weight: bold;
     display: block;
     cursor: pointer;
     outline: none;
-    padding: 10px 8px;
-    margin-bottom: 2px;
-    color: white;
+    padding: 10px 10px 10px 0;
+    margin-bottom: 5px;
+    color: $grayDark;
     border-radius: $borderRadius;
+    // border-top-left-radius: 30px;
+    // border-bottom-left-radius: 30px;
     i {
-      width: 25px;
+      width: 35px;
       text-align: center;
     }
     &.active {
-      background: $primaryColorLight;
+      color: $primaryColor;
+      // background: white;
       pointer-events: none;
     }
     &.upload {
-      color: $primaryColorLight;
+      opacity: 0.6;
+      font-size: 0.75rem;
     }
     &:hover {
-      color: $primaryColorDark;
+      color: $gray;
     }
   }
 }

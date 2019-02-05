@@ -1,22 +1,49 @@
+<!-- Edit Filter -->
+<mat-form-field>
+    <mat-select matNativeControl required [value]="selectedFilter" (selectionChange)="onFilterUpdate($event)">
+        <mat-option *ngFor="let filter of filters" [value]="filter">{{ filter.name }}</mat-option>
+    </mat-select>
+</mat-form-field>
+<mat-form-field *ngIf="selectedFilter">
+    <mat-select matNativeControl required (selectionChange)="onFilterUpdate($event)" [value]="selectedComparison">
+        <mat-option *ngFor="let comparison of selectedFilter.comparisons" [value]="comparison">{{ comparison.name }}</mat-option>
+    </mat-select>
+</mat-form-field>
+<input *ngIf="showValueInput" [(ngModel)]="selectedFilter.value">
+<input *ngIf="showRangeInput" [(ngModel)]="selectedFilter.rangeEnd">
+<button *ngIf="selectedFilter && selectedFilter.isValid()" (click)="onApply()">Apply Filter</button>
+
+<!-- Active Filter List -->
+<div *ngFor="let activeFilter of activeFilters">
+    <span>{{ activeFilter.name }} </span>
+    <ng-container *ngFor="let comparison of activeFilter.comparisons">
+        <span *ngIf="comparison.isSelected()">{{ comparison.name }} </span>
+    </ng-container>
+    <span>{{ activeFilter.dirtyValue }} </span>
+    <span *ngIf="activeFilter.rangeEnd">to {{ activeFilter.dirtyRangeEnd }} </span>
+    <button (click)="onClear(activeFilter)">Remove Filter</button>
+</div>
+
+<!-- Header -->
 <div class="list-header flex">
+    <div class="rankable-rank-number">
+        Rank #
+    </div>
     <div class="rankable-stars rankable-stars-relative">Relative Rating</div>
     <div class="rankable-title-text">
-        {{ listHeader }}
+        {{ listHeader.rankableTitle }}
+    </div>
+    <div class="rankable-secondary-text text-right" *ngIf="listHeader.secondary">
+        {{ listHeader.secondary }}
     </div>
 </div>
-<ng-container *ngIf="canReorder">
-    <div cdkDropList (cdkDropListDropped)="handleItemDropped($event)">
-        <ranker-rankable *ngFor="let rankable of rankables.page" [rankable]="rankable" [canReorder]="canReorder"
-            cdkDrag></ranker-rankable>
-    </div>
-</ng-container>
-<ng-container *ngIf="!canReorder">
-    <div>
-        <ranker-rankable *ngFor="let rankable of rankables.page" [rankable]="rankable"></ranker-rankable>
-    </div>
-</ng-container>
-<mat-paginator [disabled]="rankables.paginationOptions.disabled" [hidePageSize]="rankables.paginationOptions.hidePageSize"
-    [length]="rankables.paginationOptions.length" [pageIndex]="rankables.paginationOptions.pageIndex" [pageSize]="rankables.paginationOptions.pageSize"
-    [pageSizeOptions]="rankables.paginationOptions.pageSizeOptions" [showFirstLastButtons]="rankables.paginationOptions.showFirstLastButtons"
-    (page)="rankables.onPageChange($event)">
+
+<!-- Rankable -->
+<ranker-rankable *ngFor="let rankable of rankables; let i = index" [rankable]="rankable" [rankNumber]="(paginationOptions.pageSize * paginationOptions.pageIndex) + (i + 1)"></ranker-rankable>
+
+<!-- Pagination -->
+<mat-paginator [disabled]="paginationOptions.disabled" [hidePageSize]="paginationOptions.hidePageSize"
+    [length]="paginationOptions.length" [pageIndex]="paginationOptions.pageIndex" [pageSize]="paginationOptions.pageSize"
+    [pageSizeOptions]="paginationOptions.pageSizeOptions" [showFirstLastButtons]="paginationOptions.showFirstLastButtons"
+    (page)="paginationOptions.page($event)">
 </mat-paginator>

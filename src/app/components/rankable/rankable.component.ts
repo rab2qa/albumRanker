@@ -20,9 +20,9 @@ import { Rankable } from 'src/app/interfaces/rankable';
 /* MODELS */
 /**********/
 
-import { Album } from '../../models/album';
-import { Artist } from '../../models/artist';
-import { Song } from '../../models/song';
+import { Album } from '../../models/presenter/album/album';
+import { Artist } from '../../models/presenter/artist/artist';
+import { Song } from '../../models/presenter/song/song';
 
 ///////////////////////
 //                   //
@@ -36,9 +36,8 @@ import { Song } from '../../models/song';
     styleUrls: ['./rankable.component.scss', '../rankables/rankables.component.scss'],
 })
 export class RankableComponent implements OnInit {
-
     @Input() rankable: Rankable;
-    @Input() canReorder: boolean = false;
+    @Input() rankNumber: number;
 
     /**************/
     /* PROPERTIES */
@@ -64,7 +63,7 @@ export class RankableComponent implements OnInit {
     public itemIsArtist(): boolean {
         return this.rankable instanceof Artist;
     }
-    
+
     public setListItemTitle() {
         if (this.rankable instanceof Album || this.rankable instanceof Song) {
             this.listItemTitle = `${this.rankable.artist.name} "${this.rankable.name}"`;
@@ -84,7 +83,10 @@ export class RankableComponent implements OnInit {
     /*******************/
 
     private createItemDetails(): void {
-        if ((this.rankable instanceof Album && this.rankable.tracks) || (this.rankable instanceof Artist && this.rankable.albums)) {
+        if (
+            (this.rankable instanceof Album && this.rankable.tracks) ||
+            (this.rankable instanceof Artist && this.rankable.albums)
+        ) {
             this.canShowDetails = true;
         }
     }

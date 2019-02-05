@@ -10,6 +10,7 @@
 
 import { Component } from '@angular/core';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 /************/
 /* SERVICES */
@@ -17,7 +18,6 @@ import { Location } from '@angular/common';
 
 import { XmlService } from '../../services/xml.service';
 import { DataService } from '../../services/data.service';
-import { Router } from '@angular/router';
 
 ///////////////////////////
 //                       //
@@ -82,12 +82,16 @@ export class UploadComponent {
                 this.loading = false;
                 this.router.navigate(['/']);
             });
-            localStorage.setItem('libraryXML', libraryXML);
+            try {
+                localStorage.setItem('libraryXML', libraryXML);
+            } catch (error) {
+                console.warn('Unable to save imported library to Local Storage.');
+            }
         });
     }
 
     private async parseXML(text: string): Promise<Object> {
         return await this.xmlService.parseXML(text);
     }
-    
+
 } // End class UploadComponent
