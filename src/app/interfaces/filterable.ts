@@ -1,15 +1,3 @@
-//////////////////////////
-//                      //
-//     DEPENDENCIES     //
-//                      //
-//////////////////////////
-
-/***********/
-/* CLASSES */
-/***********/
-
-import { Filter } from "../models/presenter/filter/filter";
-
 ////////////////////////
 //                    //
 //     FILTERABLE     //
