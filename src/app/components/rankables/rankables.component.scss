@@ -8,14 +8,23 @@
   margin: 0 0 10px;
 }
 .rankable-stars {
+  flex: none;
   width: 90px;
 }
 .rankable-rank-number {
+  flex: none;
   width: 45px;
   color: $gray;
   text-align: center;
-  padding-right: 10px;
 }
 .rankable-title-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   flex-grow: 1;
+}
+.showing-details {
+  .rankable-title-text {
+    white-space: normal;
+  }
 }

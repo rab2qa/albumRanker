@@ -6,7 +6,7 @@
       <div class="rankable-stars">
         <ranker-stars [rankable]="rankable"></ranker-stars>
       </div>
-      <div class="flex-grow" [class.bold]="showDetails">
+      <div class="rankable-title-text" [class.bold]="showDetails">
         {{ listItemTitle }}
       </div>
       <div *ngIf="rankable.year" class="text-right">
@@ -21,7 +21,7 @@
             <div class="rankable-stars" *ngIf="song.ranking">
               <ranker-stars [rankable]="song"></ranker-stars>
             </div>
-            <div class="flex-grow">{{ song.name }}</div>
+            <div class="rankable-title-text">{{ song.name }}</div>
           </div>
         </ng-template>
       </ng-container>
@@ -32,7 +32,7 @@
             <div class="rankable-stars" *ngIf="album.ranking">
               <ranker-stars [rankable]="album"></ranker-stars>
             </div>
-            <div class="flex-grow">{{ album.name }}</div>
+            <div class="rankable-title-text">{{ album.name }}</div>
           </div>
         </ng-template>
       </ng-container>
