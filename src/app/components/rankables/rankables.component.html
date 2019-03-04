@@ -1,27 +1,31 @@
-<!-- Edit Filter -->
-<mat-form-field>
-    <mat-select matNativeControl required [value]="selectedFilter" (selectionChange)="onFilterUpdate($event)">
-        <mat-option *ngFor="let filter of filters" [value]="filter">{{ filter.name }}</mat-option>
-    </mat-select>
-</mat-form-field>
-<mat-form-field *ngIf="selectedFilter">
-    <mat-select matNativeControl required (selectionChange)="onFilterUpdate($event)" [value]="selectedComparison">
-        <mat-option *ngFor="let comparison of selectedFilter.comparisons" [value]="comparison">{{ comparison.name }}</mat-option>
-    </mat-select>
-</mat-form-field>
-<input *ngIf="showValueInput" [(ngModel)]="selectedFilter.value">
-<input *ngIf="showRangeInput" [(ngModel)]="selectedFilter.rangeEnd">
-<button *ngIf="selectedFilter && selectedFilter.isValid()" (click)="onApply()">Apply Filter</button>
+<div *ngIf="showFilters">
 
-<!-- Active Filter List -->
-<div *ngFor="let activeFilter of activeFilters">
-    <span>{{ activeFilter.name }} </span>
-    <ng-container *ngFor="let comparison of activeFilter.comparisons">
-        <span *ngIf="comparison.isSelected()">{{ comparison.name }} </span>
-    </ng-container>
-    <span>{{ activeFilter.dirtyValue }} </span>
-    <span *ngIf="activeFilter.rangeEnd">to {{ activeFilter.dirtyRangeEnd }} </span>
-    <button (click)="onClear(activeFilter)">Remove Filter</button>
+    <!-- Edit Filter -->
+    <mat-form-field>
+        <mat-select matNativeControl required [value]="selectedFilter" (selectionChange)="onFilterUpdate($event)">
+            <mat-option *ngFor="let filter of filters" [value]="filter">{{ filter.name }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <mat-form-field *ngIf="selectedFilter">
+        <mat-select matNativeControl required (selectionChange)="onFilterUpdate($event)" [value]="selectedComparison">
+            <mat-option *ngFor="let comparison of selectedFilter.comparisons" [value]="comparison">{{ comparison.name }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <input *ngIf="showValueInput" [(ngModel)]="selectedFilter.value">
+    <input *ngIf="showRangeInput" [(ngModel)]="selectedFilter.rangeEnd">
+    <button *ngIf="selectedFilter && selectedFilter.isValid()" (click)="onApply()">Apply Filter</button>
+
+    <!-- Active Filter List -->
+    <div *ngFor="let activeFilter of activeFilters">
+        <span>{{ activeFilter.name }} </span>
+        <ng-container *ngFor="let comparison of activeFilter.comparisons">
+            <span *ngIf="comparison.isSelected()">{{ comparison.name }} </span>
+        </ng-container>
+        <span>{{ activeFilter.dirtyValue }} </span>
+        <span *ngIf="activeFilter.rangeEnd">to {{ activeFilter.dirtyRangeEnd }} </span>
+        <button (click)="onClear(activeFilter)">Remove Filter</button>
+    </div>
+
 </div>
 
 <!-- Header -->

@@ -28,6 +28,12 @@ import { Presenter } from 'src/app/models/presenter/presenter';
 
 import { Rankable } from 'src/app/interfaces/rankable';
 
+/*************/
+/* UTILITIES */
+/*************/
+
+import { Features } from 'src/app/utilities/features';
+
 interface ListHeader {
     rankableTitle: string;
     secondary?: string;
@@ -95,6 +101,10 @@ export class RankablesComponent implements OnInit {
             selectedFilter = this.filters.find(filter => filter.isSelected());
         }
         return selectedFilter;
+    }
+
+    get showFilters(): boolean {
+        return Features.filtersEnabled;
     }
 
     get showRangeInput(): boolean {
